@@ -1,0 +1,10 @@
+{
+  "name": "@csi/ui-theme",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./styles.css": "./src/index.css",
+    "./theme-manager": "./src/theme-manager.ts"
+  }
+}
