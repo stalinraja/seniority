@@ -10,6 +10,7 @@ import {
 import { Badge } from "./ui/badge";
 import { Award } from "lucide-react";
 import { useLanguage } from "../i18n/language";
+import { ELEMENTARY_TET_PASS_MARK, HIGH_SCHOOL_TET_PASS_MARK } from "../config/features";
 
 interface SeniorityTableProps {
   rows: any[];
@@ -162,7 +163,7 @@ export function SeniorityTable({ rows, schoolType }: SeniorityTableProps) {
                             variant="outline"
                             className={
                               Number.isFinite(candidate.tetScore)
-                                ? Number(candidate.tetScore) >= 60
+                                ? Number(candidate.tetScore) >= HIGH_SCHOOL_TET_PASS_MARK
                                   ? "bg-green-50 text-green-700 border-green-200"
                                   : "bg-red-50 text-red-700 border-red-200"
                                 : candidate.tetQualified === true
@@ -239,13 +240,13 @@ export function SeniorityTable({ rows, schoolType }: SeniorityTableProps) {
                         <Badge
                           variant="outline"
                           className={
-                            Number(candidate.tedCompletion) >= 60
+                            Number(candidate.tetCompletion) >= ELEMENTARY_TET_PASS_MARK
                               ? "bg-green-50 text-green-700 border-green-200"
                               : "bg-red-50 text-red-700 border-red-200"
                           }
                         >
-                          {Number.isFinite(candidate.tedCompletion)
-                            ? `${candidate.tedCompletion}%${Number(candidate.tedCompletion) >= 60 ? " (Yes)" : " (No)"}`
+                          {Number.isFinite(candidate.tetCompletion)
+                            ? `${candidate.tetCompletion}%${Number(candidate.tetCompletion) >= ELEMENTARY_TET_PASS_MARK ? " (Yes)" : " (No)"}`
                             : "-"}
                         </Badge>
                       </TableCell>

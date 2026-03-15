@@ -17,6 +17,7 @@ import { useLanguage } from "../i18n/language";
 import {
   APPOINTMENT_REPORT_ENABLED,
   CLERGY_SECTION_ENABLED,
+  HIGH_SCHOOL_TET_PASS_MARK,
   HIGH_SCHOOL_SECTION_ENABLED,
   MIDDLE_SCHOOL_SECTION_ENABLED,
 } from "../config/features";
@@ -172,7 +173,7 @@ function parseTetMetrics(value: any): {
     const standaloneScore = Number(low.replace("%", ""));
     if (Number.isFinite(standaloneScore)) {
       return {
-        qualified: standaloneScore >= 60,
+        qualified: standaloneScore >= HIGH_SCHOOL_TET_PASS_MARK,
         bestScore: standaloneScore,
         bestYear: null,
       };
@@ -187,7 +188,7 @@ function parseTetMetrics(value: any): {
 
   const best = pairs[0];
   return {
-    qualified: best.score >= 60,
+    qualified: best.score >= HIGH_SCHOOL_TET_PASS_MARK,
     bestScore: best.score,
     bestYear: best.year,
   };
@@ -313,8 +314,14 @@ function mapElementarySchool(rows: any[]) {
   return rows
     .map((c: any, rowIndex: number) => {
       const dateOfBirth = parseDate(c.dateOfBirth || c.DateOfBirth || c["Date of Birth"]);
-      const tedRaw = c.tedCompletion || c["Ted Completion"] || c["TET Qualification"] || "";
-      const tedCompletion = Number(String(tedRaw).replace("%", "").trim());
+      const tetRaw =
+        c.tetCompletion ||
+        c.tedCompletion ||
+        c["Ted Completion"] ||
+        c["TET Qualification"] ||
+        c["TET %"] ||
+        "";
+      const tetCompletion = Number(String(tetRaw).replace("%", "").trim());
       const fallbackId = [
         c.memberId || c["Member ID"] || c["Member Id"] || "",
         c.name || c.Name || c["Full Name"] || "",
@@ -337,7 +344,7 @@ function mapElementarySchool(rows: any[]) {
         category: normalizeText(c.category || c.Category || ""),
         level: normalizeText(c.level || c.Level || ""),
         qualification: normalizeText(c.qualification || c.Qualification || ""),
-        tedCompletion: Number.isFinite(tedCompletion) ? tedCompletion : null,
+        tetCompletion: Number.isFinite(tetCompletion) ? tetCompletion : null,
         ...(() => {
           const appointment = getAppointmentFields(c, "elementary");
           if (!appointment.appointedLocation) {
@@ -449,7 +456,7 @@ function buildStableHashPayload(rows: any[]) {
     tetScore: r.tetScore ?? "",
     tetYear: r.tetYear ?? "",
     tetRaw: r.tetRaw ?? "",
-    tedCompletion: r.tedCompletion ?? "",
+    tetCompletion: r.tetCompletion ?? "",
     appointed: r.appointed ?? false,
     appointedRaw: r.appointedRaw ?? "",
     appointedDate: r.appointedDate ?? "",
@@ -645,12 +652,14 @@ export function Dashboard() {
       });
     }
 
-    rows = searchCandidatesGeneric(rows, searchQuery);
-    return schoolType === "high"
-      ? rankHighSchool(rows)
-      : schoolType === "elementary"
-      ? rankElementarySchool(rows)
-      : rankClergyOrdination(rows);
+    const ranked =
+      schoolType === "high"
+        ? rankHighSchool(rows)
+        : schoolType === "elementary"
+        ? rankElementarySchool(rows)
+        : rankClergyOrdination(rows);
+
+    return searchQuery.trim() ? searchCandidatesGeneric(ranked, searchQuery) : ranked;
   }, [currentCandidates, filters, searchQuery, schoolType]);
 
   const appointmentRows = useMemo(() => {

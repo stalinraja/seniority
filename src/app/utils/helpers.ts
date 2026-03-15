@@ -13,10 +13,10 @@ export function searchCandidatesGeneric(candidates: any[], query: string): any[]
       .map((part) => part.trim().toLowerCase())
       .filter(Boolean);
 
-    const tedText =
-      candidate.tedCompletion === null || candidate.tedCompletion === undefined
+    const tetText =
+      candidate.tetCompletion === null || candidate.tetCompletion === undefined
         ? ""
-        : String(candidate.tedCompletion);
+        : String(candidate.tetCompletion);
 
     const haystack = [
       candidate.name,
@@ -33,7 +33,7 @@ export function searchCandidatesGeneric(candidates: any[], query: string): any[]
       candidate.qualification,
       candidate.email,
       candidate.pincode,
-      tedText,
+      tetText,
       ...qualificationParts,
     ]
       .map((v) => String(v || "").toLowerCase())

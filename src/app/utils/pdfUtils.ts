@@ -1,5 +1,6 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { ELEMENTARY_TET_PASS_MARK } from "../config/features";
 
 type SchoolType = "high" | "elementary" | "clergy";
 
@@ -46,8 +47,8 @@ function getTetDisplay(candidate: any) {
 }
 
 function getElementaryTetDisplay(candidate: any) {
-  if (candidate.tedCompletion === null || candidate.tedCompletion === undefined) return "-";
-  return `${candidate.tedCompletion}%${Number(candidate.tedCompletion) >= 60 ? " (Yes)" : " (No)"}`;
+  if (candidate.tetCompletion === null || candidate.tetCompletion === undefined) return "-";
+  return `${candidate.tetCompletion}%${Number(candidate.tetCompletion) >= ELEMENTARY_TET_PASS_MARK ? " (Yes)" : " (No)"}`;
 }
 
 function hasMeaningfulValue(value: string | number) {

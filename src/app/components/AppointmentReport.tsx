@@ -106,7 +106,7 @@ export function AppointmentReport({
                   {isHigh || isElementary ? <TableCell>{row.category || ""}</TableCell> : null}
                   {isElementary ? <TableCell>{row.level || ""}</TableCell> : null}
                   {isHigh ? <TableCell>{row.tetRaw || (row.tetQualified === true ? "Yes" : row.tetQualified === false ? "No" : "-")}</TableCell> : null}
-                  {isElementary ? <TableCell>{Number.isFinite(row.tedCompletion) ? `${row.tedCompletion}%` : "-"}</TableCell> : null}
+                  {isElementary ? <TableCell>{Number.isFinite(row.tetCompletion) ? `${row.tetCompletion}%` : "-"}</TableCell> : null}
                   {!isHigh && !isElementary ? <TableCell>{row.yearOfPassing ?? ""}</TableCell> : null}
                   {!isHigh && !isElementary ? <TableCell>{row.yearsOfExperience ?? ""}</TableCell> : null}
                   <TableCell>{row.qualification || ""}</TableCell>

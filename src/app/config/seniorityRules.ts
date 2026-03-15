@@ -1,3 +1,5 @@
+import { ELEMENTARY_TET_PASS_MARK, HIGH_SCHOOL_TET_PASS_MARK } from "./features";
+
 export const SENIORITY_RULES = {
   highSchool: {
     pgTieBreakOrder: ["yearOfRegistering", "yearOfPassing", "dateOfBirth"] as const,
@@ -8,8 +10,8 @@ export const SENIORITY_RULES = {
     },
   },
   elementarySchool: {
-    tedQualifiedThreshold: 60,
-    tieBreakOrder: ["yearOfRegistering", "yearOfPassing", "dateOfBirth", "tedCompletion"] as const,
+    tetQualifiedThreshold: ELEMENTARY_TET_PASS_MARK,
+    tieBreakOrder: ["yearOfRegistering", "yearOfPassing", "dateOfBirth", "tetCompletion"] as const,
   },
   clergyOrdination: {
     tieBreakOrder: ["yearOfPassing", "yearsOfExperience", "dateOfBirth"] as const,
@@ -27,7 +29,7 @@ function getDateSortValue(value: any) {
 function hasTetData(candidate: any) {
   if (!Number.isFinite(candidate.tetScore)) return false;
   const score = Number(candidate.tetScore);
-  if (score < 60) return false;
+  if (score < HIGH_SCHOOL_TET_PASS_MARK) return false;
   if (candidate.tetQualified === false) return false;
   return true;
 }
@@ -41,7 +43,7 @@ function compareByRule(
     | "dateOfBirth"
     | "tetYear"
     | "tetScore"
-    | "tedCompletion"
+    | "tetCompletion"
     | "yearsOfExperience",
   extractPassingYear: (v: any) => number | null
 ) {
@@ -61,9 +63,9 @@ function compareByRule(
     const bScore = Number.isFinite(b.tetScore) ? Number(b.tetScore) : -1;
     return bScore - aScore;
   }
-  if (rule === "tedCompletion") {
-    const aScore = Number.isFinite(a.tedCompletion) ? Number(a.tedCompletion) : -1;
-    const bScore = Number.isFinite(b.tedCompletion) ? Number(b.tedCompletion) : -1;
+  if (rule === "tetCompletion") {
+    const aScore = Number.isFinite(a.tetCompletion) ? Number(a.tetCompletion) : -1;
+    const bScore = Number.isFinite(b.tetCompletion) ? Number(b.tetCompletion) : -1;
     return bScore - aScore;
   }
   if (rule === "yearsOfExperience") {
@@ -123,8 +125,8 @@ export function compareElementarySchoolCandidates(
   b: any,
   extractPassingYear: (v: any) => number | null
 ) {
-  const aPriority = Number(a.tedCompletion) >= SENIORITY_RULES.elementarySchool.tedQualifiedThreshold ? 1 : 0;
-  const bPriority = Number(b.tedCompletion) >= SENIORITY_RULES.elementarySchool.tedQualifiedThreshold ? 1 : 0;
+  const aPriority = Number(a.tetCompletion) >= SENIORITY_RULES.elementarySchool.tetQualifiedThreshold ? 1 : 0;
+  const bPriority = Number(b.tetCompletion) >= SENIORITY_RULES.elementarySchool.tetQualifiedThreshold ? 1 : 0;
   if (aPriority !== bPriority) return bPriority - aPriority;
 
   for (const rule of SENIORITY_RULES.elementarySchool.tieBreakOrder) {
@@ -151,8 +153,8 @@ export function getRankingRulesDisplay(language: "en" | "ta" = "en") {
   const high =
     language === "ta"
       ? [
-          "முதுகலை (PG): வேலைவாய்ப்பு அலுவலகத்தில் பதிவு செய்த ஆண்டு தான் முக்கியம். ஒரே ஆண்டில் பதிவு செய்திருந்தால், தேர்ச்சி பெற்ற ஆண்டு கணக்கிடப்படும். அதுவும் சமமாக இருந்தால், வயதில் மூத்தவருக்கு முன்னுரிமை வழங்கப்படும்.",
-          "இளகலை (UG): TET தேர்ச்சி பெற்றவர்கள் முதலில் வரிசைப்படுத்தப்படுவர்.",
+          "முதுகலை (PG): TET அவசியமில்லை. வேலைவாய்ப்பு அலுவலகத்தில் பதிவு செய்த ஆண்டு தான் முக்கியம். ஒரே ஆண்டில் பதிவு செய்திருந்தால், தேர்ச்சி பெற்ற ஆண்டு கணக்கிடப்படும். அதுவும் சமமாக இருந்தால், வயதில் மூத்தவருக்கு முன்னுரிமை வழங்கப்படும்.",
+          `இளகலை (UG): TET கட்டாயம். TET தேர்ச்சி (${HIGH_SCHOOL_TET_PASS_MARK}+) பெற்றவர்கள் முதலில் வரிசைப்படுத்தப்படுவர்.`,
           "வரிசை முறை:",
           "முதலில் பதிவு செய்த ஆண்டு.",
           "முதலில் தேர்ச்சி பெற்ற ஆண்டு.",
@@ -160,8 +162,8 @@ export function getRankingRulesDisplay(language: "en" | "ta" = "en") {
           "TET தேர்வில் எடுத்த அதிக மதிப்பெண் (TET உள்ளவர்களுக்கு மட்டும்).",
         ]
       : [
-          "For PG: The person who registered their degree first gets priority. If registration year is the same, the person who passed earlier gets priority. If still tied, the older person gets priority.",
-          "For UG: Candidates with passing TET are ranked before others.",
+          "For PG: TET is not required. The person who registered their degree first gets priority. If registration year is the same, the person who passed earlier gets priority. If still tied, the older person gets priority.",
+          `For UG: TET is mandatory. Candidates with passing TET (${HIGH_SCHOOL_TET_PASS_MARK}+) are ranked before others.`,
           "Ranking order:",
           "Earlier Year of Registration.",
           "Earlier Year of Passing.",
@@ -172,7 +174,7 @@ export function getRankingRulesDisplay(language: "en" | "ta" = "en") {
   const elementary =
     language === "ta"
       ? [
-          "முக்கிய விதி: TET தேர்வில் 60% அல்லது அதற்கு மேல் பெற்றவர்கள் முதல் முன்னுரிமை பெறுவர்.",
+          `முக்கிய விதி: TET தேர்வில் ${ELEMENTARY_TET_PASS_MARK}% அல்லது அதற்கு மேல் பெற்றவர்கள் முதல் முன்னுரிமை பெறுவர்.`,
           "பலர் தகுதி பெற்றால் பின்வரும் வரிசை பின்பற்றப்படும்:",
           "முதலில் பதிவு செய்த ஆண்டு.",
           "முதலில் தேர்ச்சி பெற்ற ஆண்டு.",
@@ -180,7 +182,7 @@ export function getRankingRulesDisplay(language: "en" | "ta" = "en") {
           "TET தேர்வில் எடுத்த அதிக மதிப்பெண்.",
         ]
       : [
-          "Priority 1: Candidates with TET score of 60% or more are ranked first.",
+          `Priority 1: Candidates with TET score of ${ELEMENTARY_TET_PASS_MARK}% or more are ranked first.`,
           "If multiple candidates qualify, the order is:",
           "Earlier Year of Registration.",
           "Earlier Year of Passing.",
