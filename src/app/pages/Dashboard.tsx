@@ -600,7 +600,8 @@ export function Dashboard() {
       ? elementaryCandidates
       : clergyCandidates;
 
-  const showSplash = !logoReady || loading || !initialLoadDone;
+  const totalCandidates = highSchoolCandidates.length + elementaryCandidates.length + clergyCandidates.length;
+  const showSplash = !logoReady || loading || !initialLoadDone || totalCandidates === 0;
 
   const filterGroups: FilterGroup[] = useMemo(() => {
     if (schoolType === "high") {
@@ -634,10 +635,7 @@ export function Dashboard() {
 
   const handleClearAllFilters = () => setFilters({});
 
-  const dashboardKey = useMemo(() =>
-    JSON.stringify({ schoolType, sortMode, searchQuery, filters }),
-    [schoolType, sortMode, searchQuery, filters]
-  );
+  const dashboardKey = useMemo(() => schoolType, [schoolType]);
 
   const filteredCandidates = useMemo(() => {
     let rows = [...currentCandidates];
@@ -823,7 +821,7 @@ export function Dashboard() {
         {showDashboard && (
           <DashboardVisual
             key={dashboardKey}
-            candidates={filteredCandidates}
+            candidates={currentCandidates}
             schoolType={schoolType}
             onClose={() => setShowDashboard(false)}
           />

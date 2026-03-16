@@ -240,18 +240,22 @@ export function getRankingRulesDisplay(language: "en" | "ta" = "en") {
   const elementary =
     language === "ta"
       ? [
-          `மூப்பு வரிசை (TET முன்னுரிமை இல்லை): பதிவு ஆண்டு -> தேர்ச்சி ஆண்டு (மாதம் இருந்தால் முன்னுரிமை) -> வயது -> அதிக TET மதிப்பெண்.`,
-          `நியமன வரிசை: TET ${ELEMENTARY_TET_PASS_MARK}%+ பெற்றவர்கள் முன்னுரிமை.`,
-          "நியமன சமநிலை வரிசை: பதிவு ஆண்டு -> தேர்ச்சி ஆண்டு (மாதம் இருந்தால் முன்னுரிமை) -> வயது -> அதிக TET மதிப்பெண்.",
+          "மூப்பு பார்வை (இயல்புநிலை):",
+          "பதிவு செய்த ஆண்டு முன்னுரிமை.",
+          "ஒரே ஆண்டு என்றால், தேர்ச்சி ஆண்டு/மாதம் இருந்தால் அதற்கு முன்னுரிமை.",
+          "இன்னும் சமமானால், வயது.",
+          "இன்னும் சமமானால், TET மதிப்பெண்.",
+          "நியமன பார்வை: TET தகுதி பெற்றவர்கள் முன்னுரிமை.",
+          "நியமன சமநிலை: மேலுள்ள வரிசையே பயன்படுத்தப்படும்.",
         ]
       : [
-          "Seniority list (default): TET is NOT used for priority. We rank by:",
-          "1) Earlier Year of Registration.",
-          "2) Earlier Year of Passing (if same year and month is available, earlier month wins).",
-          "3) Older Age (Date of Birth).",
-          "4) Higher TET mark (only if all above are tied).",
-          `Appointment order: TET ${ELEMENTARY_TET_PASS_MARK}%+ candidates are ranked before others.`,
-          "Appointment tie-breaks follow the same order: Registration -> Passing (month if available) -> Age -> TET marks.",
+          "Seniority view (default):",
+          "Earlier registration year comes first.",
+          "If the year is the same, earlier passing month/year comes first when available.",
+          "If still tied, older age comes first.",
+          "If still tied, higher TET mark comes first.",
+          "Appointment view: TET‑qualified candidates are prioritized.",
+          "Appointment tie‑breaks use the same order as above.",
         ];
 
   const clergy =

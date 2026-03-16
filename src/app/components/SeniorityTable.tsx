@@ -53,22 +53,23 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
 
   const rankHeader = (
     <TableHead className="w-28 font-semibold h-10 align-middle">
-      <div className={`flex flex-col gap-0.5 ${sortingPulse ? "animate-pulse" : ""}`}>
+      <div className={`flex items-center gap-2 ${sortingPulse ? "animate-pulse" : ""}`}>
         <span className="text-[12px] leading-3">{t("Rank", "வரிசை")}</span>
         {onSortModeChange && sortMode ? (
-          <div className="flex items-center gap-1 text-[10px] leading-3 text-slate-500">
-            <div className="relative">
-              <select
-                className="h-5 appearance-none rounded border border-blue-200 bg-blue-50 px-1.5 pr-4 text-[10px] font-semibold text-transparent shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-400 dark:border-blue-500/40 dark:bg-blue-950/40"
-                value={sortMode}
-                onChange={(e) => onSortModeChange(e.target.value as "seniority" | "appointment")}
-              >
-                <option value="seniority">{t("Seniority", "மூப்பு")}</option>
-                <option value="appointment">{t("Appointment", "நியமனம்")}</option>
-              </select>
-              <span className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-blue-700 dark:text-blue-200">{t("Sort by", "வரிசைப்படுத்து")}</span>
-              <ChevronDown className="pointer-events-none absolute right-1 top-1/2 h-3 w-3 -translate-y-1/2 text-blue-600/70" />
-            </div>
+          <div className="relative">
+            <select
+              className="h-5 w-[62px] appearance-none rounded border border-blue-200 bg-blue-50 px-1.5 pr-4 text-[10px] font-semibold text-transparent shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-400 dark:border-blue-500/40 dark:bg-blue-950/40"
+              value={sortMode}
+              onChange={(e) => onSortModeChange(e.target.value as "seniority" | "appointment")}
+              aria-label={t("Sort by", "வரிசைப்படுத்து")}
+            >
+              <option value="seniority">{t("Seniority", "மூப்பு")}</option>
+              <option value="appointment">{t("Appointment", "நியமனம்")}</option>
+            </select>
+            <span className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-blue-700 dark:text-blue-200">
+              {t("Sort by", "வரிசைப்படுத்து")}
+            </span>
+            <ChevronDown className="pointer-events-none absolute right-1 top-1/2 h-3 w-3 -translate-y-1/2 text-blue-600/70" />
           </div>
         ) : null}
       </div>
@@ -76,6 +77,10 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
   );
 
   const plainRankHeader = (
+    <TableHead className={`w-20 font-semibold ${sortingPulse ? "animate-pulse" : ""}`}>{t("Rank", "வரிசை")}</TableHead>
+  );
+
+ = (
     <TableHead className={`w-20 font-semibold ${sortingPulse ? "animate-pulse" : ""}`}>{t("Rank", "வரிசை")}</TableHead>
   );
 
