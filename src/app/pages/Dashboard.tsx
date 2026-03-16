@@ -489,6 +489,7 @@ export function Dashboard() {
   const [clergyCandidates, setClergyCandidates] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [initialLoadDone, setInitialLoadDone] = useState(false);
+  const [logoReady, setLogoReady] = useState(false);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
   const [sortingPulse, setSortingPulse] = useState(false);
   const [downloadingReport, setDownloadingReport] = useState(false);
@@ -599,7 +600,7 @@ export function Dashboard() {
       ? elementaryCandidates
       : clergyCandidates;
 
-  const showSplash = !initialLoadDone || (loading && !highSchoolCandidates.length && !elementaryCandidates.length && !clergyCandidates.length);
+  const showSplash = !logoReady || loading || !initialLoadDone;
 
   const filterGroups: FilterGroup[] = useMemo(() => {
     if (schoolType === "high") {
@@ -758,6 +759,7 @@ export function Dashboard() {
             loading="eager"
             decoding="async"
             fetchPriority="high"
+            onLoad={() => setLogoReady(true)}
           />
         </div>
       )}

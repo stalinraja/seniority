@@ -24,7 +24,7 @@ export function SearchBar({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder === "Search candidates..." ? t("Search candidates...", "விண்ணப்பதாரர்களை தேடுக...") : placeholder}
-        className="pl-10 sm:pl-12 pr-3 sm:pr-4 py-5 sm:py-6 text-sm sm:text-base border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-xl shadow-sm"
+        className="pl-10 sm:pl-12 pr-3 sm:pr-4 py-2 sm:py-3 text-sm sm:text-base border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-xl shadow-sm"
       />
     </div>
   );

@@ -338,6 +338,7 @@ export async function downloadCandidatesPDF(
 
       doc.setFontSize(8);
       doc.setFont("helvetica", "normal");
+      doc.text(`Printed: ${printedAt.toLocaleString()}`, 8, pageHeight - 6);
       doc.text(`Page ${pageNumber} of ${totalPages}`, pageWidth - 8, pageHeight - 6, { align: "right" });
     },
     theme: "grid",
@@ -448,6 +449,7 @@ export async function downloadAppointmentsReportPDF(
 
       doc.setFontSize(8);
       doc.setFont("helvetica", "normal");
+      doc.text(`Printed: ${printedAt.toLocaleString()}`, 8, pageHeight - 6);
       doc.text(`Page ${pageNumber} of ${totalPages}`, pageWidth - 8, pageHeight - 6, { align: "right" });
     },
     theme: "grid",

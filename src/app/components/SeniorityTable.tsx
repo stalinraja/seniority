@@ -60,13 +60,14 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
             <span className="shrink-0">{t("Sort by", "வரிசைப்படுத்து")}</span>
             <div className="relative">
               <select
-                className="h-5 appearance-none rounded border border-blue-200 bg-blue-50 px-1.5 pr-4 text-[10px] font-semibold text-blue-700 shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-400 dark:border-blue-500/40 dark:bg-blue-950/40 dark:text-blue-200"
+                className="h-5 appearance-none rounded border border-blue-200 bg-blue-50 px-1.5 pr-4 text-[10px] font-semibold text-transparent shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-400 dark:border-blue-500/40 dark:bg-blue-950/40"
                 value={sortMode}
                 onChange={(e) => onSortModeChange(e.target.value as "seniority" | "appointment")}
               >
                 <option value="seniority">{t("Seniority", "மூப்பு")}</option>
                 <option value="appointment">{t("Appointment", "நியமனம்")}</option>
               </select>
+              <span className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-blue-700 dark:text-blue-200">{t("Sort by", "வரிசைப்படுத்து")}</span>
               <ChevronDown className="pointer-events-none absolute right-1 top-1/2 h-3 w-3 -translate-y-1/2 text-blue-600/70" />
             </div>
           </div>

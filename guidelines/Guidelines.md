@@ -80,19 +80,19 @@ There are **two sort modes** for High and Elementary:
 ### English (Simple Explanation)
 1. High/Higher Secondary
 - **Seniority view (default):**
-  - 1) Earlier registration year comes first.
-  - 2) If the year is the same, earlier passing month/year comes first when available.
-  - 3) If still tied, older age comes first.
-  - 4) If still tied, higher TET score comes first.
+  - Earlier registration year comes first.
+  - If the year is the same, earlier passing month/year comes first when available.
+  - If still tied, older age comes first.
+  - If still tied, higher TET score comes first.
 - **Appointment view:** TET‑qualified candidates are prioritized.
   - Tie‑breaks follow the same order as above.
 
 2. Elementary/Middle
 - **Seniority view (default):**
-  - 1) Earlier registration year comes first.
-  - 2) If the year is the same, earlier passing month/year comes first when available.
-  - 3) If still tied, older age comes first.
-  - 4) If still tied, higher TET mark comes first.
+  - Earlier registration year comes first.
+  - If the year is the same, earlier passing month/year comes first when available.
+  - If still tied, older age comes first.
+  - If still tied, higher TET mark comes first.
 - **Appointment view:** TET‑qualified candidates are prioritized.
   - Tie‑breaks follow the same order as above.
 
