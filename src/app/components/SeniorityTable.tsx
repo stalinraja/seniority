@@ -87,7 +87,7 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
             </button>
             {sortMenuOpen ? (
               <div
-                className="left-0 top-full mt-1 z-50 w-44 rounded-lg border border-slate-200 bg-white shadow-xl dark:border-slate-700 dark:bg-slate-900 divide-y divide-slate-200 dark:divide-slate-700"
+                className="left-0 top-full mt-1 z-50 w-44 rounded-lg border border-slate-200 bg-white shadow-xl dark:border-slate-700 dark:bg-slate-900 divide-y divide-slate-200 dark:divide-slate-700 flex flex-col"
                 style={{ position: "absolute" }}
               >
                 <button
