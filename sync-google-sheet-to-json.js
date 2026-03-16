@@ -46,49 +46,52 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function parseCSVLine(line) {
-  const values = [];
-  let current = "";
+function parseCSV(text) {
+  const normalized = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+  const rows = [];
+  let currentRow = [];
+  let currentValue = "";
   let inQuotes = false;
 
-  for (let i = 0; i < line.length; i += 1) {
-    const ch = line[i];
-
+  for (let i = 0; i < normalized.length; i += 1) {
+    const ch = normalized[i];
     if (ch === '"') {
-      if (inQuotes && line[i + 1] === '"') {
-        current += '"';
+      if (inQuotes && normalized[i + 1] === '"') {
+        currentValue += '"';
         i += 1;
       } else {
         inQuotes = !inQuotes;
       }
       continue;
     }
-
     if (ch === "," && !inQuotes) {
-      values.push(current.trim());
-      current = "";
+      currentRow.push(currentValue.trim());
+      currentValue = "";
       continue;
     }
-
-    current += ch;
+    if (ch === "\n" && !inQuotes) {
+      currentRow.push(currentValue.trim());
+      currentValue = "";
+      if (currentRow.some((value) => value.length > 0)) {
+        rows.push(currentRow);
+      }
+      currentRow = [];
+      continue;
+    }
+    currentValue += ch;
   }
 
-  values.push(current.trim());
-  return values;
-}
+  if (currentValue.length > 0 || currentRow.length > 0) {
+    currentRow.push(currentValue.trim());
+    if (currentRow.some((value) => value.length > 0)) {
+      rows.push(currentRow);
+    }
+  }
 
-function parseCSV(text) {
-  const lines = text
-    .replace(/\r\n/g, "\n")
-    .replace(/\r/g, "\n")
-    .split("\n")
-    .filter((line) => line.trim().length > 0);
+  if (rows.length === 0) return [];
+  const headers = rows[0].map((header) => header.replace(/^\uFEFF/, ""));
 
-  if (lines.length === 0) return [];
-  const headers = parseCSVLine(lines[0].replace(/^\uFEFF/, ""));
-
-  return lines.slice(1).map((line) => {
-    const rowValues = parseCSVLine(line);
+  return rows.slice(1).map((rowValues) => {
     const row = {};
     headers.forEach((header, idx) => {
       row[header] = rowValues[idx] ?? "";
