@@ -1,6 +1,6 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import { ELEMENTARY_TET_PASS_MARK } from "../config/features";
+import { ELEMENTARY_TET_PASS_MARK, SHOW_MEMBER_ID } from "../config/features";
 
 type SchoolType = "high" | "elementary" | "clergy";
 

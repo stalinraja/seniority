@@ -10,7 +10,8 @@ import {
 import { Badge } from "./ui/badge";
 import { Award, ChevronDown } from "lucide-react";
 import { useLanguage } from "../i18n/language";
-import { ELEMENTARY_TET_PASS_MARK, HIGH_SCHOOL_TET_PASS_MARK } from "../config/features";
+import { useState } from "react";
+import { ELEMENTARY_TET_PASS_MARK, HIGH_SCHOOL_TET_PASS_MARK, SHOW_MEMBER_ID } from "../config/features";
 
 interface SeniorityTableProps {
   rows: any[];
@@ -57,24 +58,39 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
         <span className="text-[12px] leading-3">{t("Rank", "வரிசை")}</span>
         {onSortModeChange && sortMode ? (
           <div className="relative">
-            <select
-              className="h-5 w-[56px] appearance-none rounded border border-blue-200 bg-blue-50 px-1.5 pr-4 text-[10px] font-semibold text-transparent shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-400 dark:border-blue-500/40 dark:bg-blue-950/40"
-              value={sortMode}
-              onChange={(e) => onSortModeChange(e.target.value as "seniority" | "appointment")}
-              aria-label={t("Sort by", "வரிசைப்படுத்து")}
+            <button
+              type="button"
+              className="h-5 w-[64px] rounded border border-blue-200 bg-blue-50 px-1.5 pr-4 text-[10px] font-semibold text-blue-700 shadow-sm dark:border-blue-500/40 dark:bg-blue-950/40 dark:text-blue-200 flex items-center justify-between"
+              onClick={() => setSortMenuOpen((v) => !v)}
             >
-              <option value="seniority">{t("Seniority", "மூப்பு")}</option>
-              <option value="appointment">{t("Appointment", "நியமனம்")}</option>
-            </select>
-            <span className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-blue-700 dark:text-blue-200">
-              {t("Sort by", "வரிசைப்படுத்து")}
-            </span>
-            <ChevronDown className="pointer-events-none absolute right-1 top-1/2 h-3 w-3 -translate-y-1/2 text-blue-600/70" />
+              <span>{t("Sort by", "வரிசைப்படுத்து")}</span>
+              <ChevronDown className="h-3 w-3 text-blue-600/70" />
+            </button>
+            {sortMenuOpen ? (
+              <div className="absolute left-0 top-6 z-50 w-40 rounded border border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-900">
+                <button
+                  type="button"
+                  className="w-full px-2 py-2 text-left text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
+                  onClick={() => { onSortModeChange("seniority"); setSortMenuOpen(false); }}
+                >
+                  {t("Seniority", "மூப்பு")}
+                </button>
+                <button
+                  type="button"
+                  className="w-full px-2 py-2 text-left text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
+                  onClick={() => { onSortModeChange("appointment"); setSortMenuOpen(false); }}
+                >
+                  {t("Appointment", "நியமனம்")}
+                </button>
+              </div>
+            ) : null}
           </div>
         ) : null}
       </div>
     </TableHead>
   );
+
+    const [sortMenuOpen, setSortMenuOpen] = useState(false);
 
   const plainRankHeader = (
     <TableHead className={`w-20 font-semibold ${sortingPulse ? "animate-pulse" : ""}`}>{t("Rank", "வரிசை")}</TableHead>
@@ -88,7 +104,7 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
           {highSchool ? (
             <>
               {rankHeader}
-              <TableHead className="font-semibold">{t("Member ID", "உறுப்பினர் ஐடி")}</TableHead>
+              {SHOW_MEMBER_ID ? <TableHead className="font-semibold">{t("Member ID", "உறுப்பினர் ஐடி")}</TableHead> : null}
               <TableHead className="font-semibold">{t("Name", "பெயர்")}</TableHead>
               <TableHead className="font-semibold">{t("Date of Birth", "பிறந்த தேதி")}</TableHead>
               <TableHead className="font-semibold">{t("Category", "வகை")}</TableHead>
@@ -105,7 +121,7 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
           ) : clergy ? (
             <>
               {plainRankHeader}
-              <TableHead className="font-semibold">{t("Member ID", "உறுப்பினர் ஐடி")}</TableHead>
+              {SHOW_MEMBER_ID ? <TableHead className="font-semibold">{t("Member ID", "உறுப்பினர் ஐடி")}</TableHead> : null}
               <TableHead className="font-semibold">{t("Name", "பெயர்")}</TableHead>
               <TableHead className="font-semibold">{t("Date of Birth", "பிறந்த தேதி")}</TableHead>
               <TableHead className="font-semibold">{t("Year of Passing", "தேர்ச்சி ஆண்டு")}</TableHead>
@@ -116,7 +132,7 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
           ) : (
             <>
               {rankHeader}
-              <TableHead className="font-semibold">{t("Member ID", "உறுப்பினர் ஐடி")}</TableHead>
+              {SHOW_MEMBER_ID ? <TableHead className="font-semibold">{t("Member ID", "உறுப்பினர் ஐடி")}</TableHead> : null}
               <TableHead className="font-semibold">{t("Name", "பெயர்")}</TableHead>
               <TableHead className="font-semibold">{t("Date of Birth", "பிறந்த தேதி")}</TableHead>
               <TableHead className="font-semibold">{t("Year of Passing", "தேர்ச்சி ஆண்டு")}</TableHead>
@@ -165,7 +181,7 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                           <span className="font-semibold text-gray-900">{candidate.rank}</span>
                         </div>
                       </TableCell>
-                      <TableCell>{candidate.memberId || ""}</TableCell>
+                      {SHOW_MEMBER_ID ? <TableCell>{candidate.memberId || ""}</TableCell> : null}
                       <TableCell className="font-medium text-gray-900 table-responsive-cell">{candidate.name}</TableCell>
                       <TableCell className="text-gray-700">{formatDateWithAge(candidate.dateOfBirth)}</TableCell>
                       <TableCell>
@@ -231,7 +247,7 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                           <span className="font-semibold text-gray-900">{candidate.rank}</span>
                         </div>
                       </TableCell>
-                      <TableCell>{candidate.memberId || ""}</TableCell>
+                      {SHOW_MEMBER_ID ? <TableCell>{candidate.memberId || ""}</TableCell> : null}
                       <TableCell className="font-medium text-gray-900 table-responsive-cell">{candidate.name}</TableCell>
                       <TableCell className="text-gray-700">{formatDateWithAge(candidate.dateOfBirth)}</TableCell>
                       <TableCell className="text-gray-700">{candidate.yearOfPassing ?? ""}</TableCell>
@@ -255,7 +271,7 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                           <span className="font-semibold text-gray-900">{candidate.rank}</span>
                         </div>
                       </TableCell>
-                      <TableCell>{candidate.memberId || ""}</TableCell>
+                      {SHOW_MEMBER_ID ? <TableCell>{candidate.memberId || ""}</TableCell> : null}
                       <TableCell className="font-medium text-gray-900 table-responsive-cell">{candidate.name}</TableCell>
                       <TableCell className="text-gray-700">{formatDateWithAge(candidate.dateOfBirth)}</TableCell>
                       <TableCell className="text-gray-700">{candidate.yearOfPassing ?? ""}</TableCell>

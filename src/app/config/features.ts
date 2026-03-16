@@ -7,3 +7,4 @@ export const CLERGY_SECTION_ENABLED = true;
 export const NAVIGATION_TUTORIAL_ENABLED = true;
 export const HIGH_SCHOOL_TET_PASS_MARK = 60;
 export const ELEMENTARY_TET_PASS_MARK = 40;
+export const SHOW_MEMBER_ID = true;
