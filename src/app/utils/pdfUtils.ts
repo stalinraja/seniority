@@ -284,9 +284,6 @@ export async function downloadCandidatesPDF(
   doc.text(title, 28, 20);
 
   const printedAt = new Date();
-  doc.setFontSize(9);
-  doc.setFont("helvetica", "normal");
-  doc.text(`Printed: ${printedAt.toLocaleString()}`, 250, 12, { align: "right" });
 
   let startY = 26;
   if (filters) {
