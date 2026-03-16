@@ -606,8 +606,19 @@ export function Dashboard() {
 
   useEffect(() => {
     if (!readyToShowApp) return;
-    const id = setTimeout(() => setSplashVisible(false), 150);
-    return () => clearTimeout(id);
+    let raf1 = 0;
+    let raf2 = 0;
+    let timeoutId: number | undefined;
+    raf1 = requestAnimationFrame(() => {
+      raf2 = requestAnimationFrame(() => {
+        timeoutId = window.setTimeout(() => setSplashVisible(false), 200);
+      });
+    });
+    return () => {
+      if (raf1) cancelAnimationFrame(raf1);
+      if (raf2) cancelAnimationFrame(raf2);
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, [readyToShowApp]);
 
   const showSplash = splashVisible;
