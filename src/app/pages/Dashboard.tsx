@@ -48,8 +48,11 @@ function parseDate(value: any) {
   const raw = String(value).trim();
   if (!raw) return null;
 
-  // Supports dd.mm.yy, dd.mm.yyyy, dd/mm/yy, dd-mm-yy.
-  const m = raw.match(/^(\d{1,2})[./-](\d{1,2})[./-](\d{2,4})$/);
+  const compact = raw.replace(/\s+/g, "");
+  const normalized = compact.replace(/[./-]+/g, ".");
+
+  // Supports dd.mm.yy, dd.mm.yyyy, dd/mm/yy, dd-mm-yy (tolerates extra separators/spaces).
+  const m = normalized.match(/^(\d{1,2})\.(\d{1,2})\.(\d{2,4})$/);
   if (m) {
     const day = Number(m[1]);
     const month = Number(m[2]);
