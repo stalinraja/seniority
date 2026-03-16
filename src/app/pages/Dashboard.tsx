@@ -605,7 +605,9 @@ export function Dashboard() {
   const readyToShowApp = logoReady && !loading && initialLoadDone && totalCandidates > 0;
 
   useEffect(() => {
-    if (readyToShowApp) setSplashVisible(false);
+    if (!readyToShowApp) return;
+    const id = setTimeout(() => setSplashVisible(false), 150);
+    return () => clearTimeout(id);
   }, [readyToShowApp]);
 
   const showSplash = splashVisible;

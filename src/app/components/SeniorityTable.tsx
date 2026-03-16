@@ -97,7 +97,7 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
   );
 
   return (
-    <div className="glass-panel seniority-table-panel rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+    <div className="glass-panel seniority-table-panel rounded-lg border border-gray-200 shadow-sm">
       <Table className={highSchool ? "min-w-[1100px]" : clergy ? "min-w-[1000px]" : "min-w-[1200px]"}>
       <TableHeader>
         <TableRow className="bg-gray-50">
