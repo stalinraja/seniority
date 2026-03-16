@@ -40,12 +40,6 @@ function groupBy(arr: any[], key: string) {
     return acc;
   }, {} as Record<string, number>);
 
-  const councilLabeled = buildLabeledStats(councilStats);
-  const departmentLabeled = buildLabeledStats(departmentStats);
-  const pastorateLabeled = buildLabeledStats(pastorateStats);
-  const homePastorateLabeled = buildLabeledStats(homePastorateStats);
-  const qualificationLabeled = buildLabeledStats(qualificationStats);
-  const levelLabeled = buildLabeledStats(levelStats);
 }
 
 function buildLabeledStats(stats: Record<string, number>) {
@@ -111,6 +105,14 @@ export function DashboardVisual({
     window.addEventListener("themechange", onThemeChange);
     return () => window.removeEventListener("themechange", onThemeChange);
   }, []);
+
+
+  const councilLabeled = buildLabeledStats(councilStats);
+  const departmentLabeled = buildLabeledStats(departmentStats);
+  const pastorateLabeled = buildLabeledStats(pastorateStats);
+  const homePastorateLabeled = buildLabeledStats(homePastorateStats);
+  const qualificationLabeled = buildLabeledStats(qualificationStats);
+  const levelLabeled = buildLabeledStats(levelStats);
 
   const chartData = {
     council: {

@@ -534,6 +534,7 @@ export function Dashboard() {
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
+    let retryTimeout: NodeJS.Timeout | null = null;
     const load = (initial = false) => {
       if (initial) setLoading(true);
 
@@ -572,16 +573,30 @@ export function Dashboard() {
           if (initial) setInitialLoadDone(true);
         })
         .catch(() => {
-          setError(t("Failed to load data", "தரவு ஏற்ற முடியவில்லை"));
+          const hasData =
+            highSchoolCandidates.length > 0 || elementaryCandidates.length > 0 || clergyCandidates.length > 0;
+          if (!hasData || initial) {
+            setError(t("Failed to load data", "தரவு ஏற்ற முடியவில்லை"));
+          }
           setLoading(false);
           if (initial) setInitialLoadDone(true);
+
+          if (!retryTimeout) {
+            retryTimeout = setTimeout(() => {
+              retryTimeout = null;
+              load(false);
+            }, 5000);
+          }
         });
     };
 
     load(true);
     interval = setInterval(() => load(false), 60000);
-    return () => clearInterval(interval);
-  }, [t]);
+    return () => {
+      if (retryTimeout) clearTimeout(retryTimeout);
+      clearInterval(interval);
+    };
+  }, [t, highSchoolCandidates.length, elementaryCandidates.length, clergyCandidates.length]);
 
   const showSplash = !(splashDone && initialLoadDone);
 
