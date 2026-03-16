@@ -828,11 +828,13 @@ export function Dashboard() {
             </p>
 
             <div className="mt-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-              <SearchBar
-                value={searchQuery}
-                onChange={setSearchQuery}
-                className="max-w-xl"
-              />
+              <div className="flex-1 min-w-[220px]">
+                <SearchBar
+                  value={searchQuery}
+                  onChange={setSearchQuery}
+                  className="w-full"
+                />
+              </div>
               <div className="flex flex-wrap items-center gap-2">
                 <Button
                   className="bg-blue-600 hover:bg-blue-700 text-white"

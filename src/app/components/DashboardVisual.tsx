@@ -272,7 +272,7 @@ export function DashboardVisual({
           animate={{ scale: 1 }}
           exit={{ scale: 0.9 }}
           transition={{ duration: 0.4 }}
-          className="bg-[rgb(255,255,255)] dark:bg-[rgb(10,19,32)] rounded-xl shadow-xl p-4 sm:p-6 lg:p-8 max-w-3xl w-full relative border border-slate-200 dark:border-slate-700 max-h-[92vh] overflow-y-auto"
+          className="bg-[rgb(255,255,255)] dark:bg-[rgb(10,19,32)] rounded-xl shadow-xl p-4 sm:p-6 lg:p-8 max-w-3xl w-full relative border border-slate-200 dark:border-slate-700 max-h-[92vh] overflow-y-auto watermark-panel"
         >
           <Button
             onClick={onClose}
@@ -282,11 +282,11 @@ export function DashboardVisual({
             {t("Close", "மூடு")}
           </Button>
           <div className="flex flex-col items-center mb-6">
-            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="24" cy="24" r="24" fill="#eff6ff" />
-              <rect x="21" y="10" width="6" height="28" rx="3" fill="#2563eb" />
-              <rect x="10" y="21" width="28" height="6" rx="3" fill="#2563eb" />
-            </svg>
+            <img
+              src="/diocese-logo.png"
+              alt="CSI Thoothukudi Nazareth Diocese logo"
+              className="w-16 h-16 sm:w-20 sm:h-20 object-contain drop-shadow"
+            />
             <h2 className="text-2xl sm:text-3xl font-bold mt-2 mb-1 text-center text-slate-900">
               {t("Seniority Dashboard", "மூப்பு டாஷ்போர்டு")}
             </h2>

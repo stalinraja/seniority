@@ -28,8 +28,12 @@ export function Header() {
       <div className="px-4 sm:px-6 py-3 sm:py-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <Link to="/" className="flex items-center gap-3 min-w-0">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-sky-500/85 rounded-lg flex items-center justify-center shrink-0 ring-1 ring-white/40">
-              <span className="text-white font-bold text-sm sm:text-xl">CSI</span>
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/80 rounded-lg flex items-center justify-center shrink-0 ring-1 ring-slate-200/80 overflow-hidden">
+              <img
+                src="/diocese-logo.png"
+                alt="CSI Thoothukudi Nazareth Diocese logo"
+                className="w-full h-full object-contain p-1"
+              />
             </div>
             <div className="min-w-0">
               <h1 className="text-sm sm:text-xl font-semibold text-gray-900 truncate">
