@@ -1,8 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
-import type { CheckedState } from "@radix-ui/react-checkbox";
 import { Input } from "./ui/input";
-import { Checkbox } from "./ui/checkbox";
 import { Label } from "./ui/label";
 import { useLanguage } from "../i18n/language";
 
@@ -122,10 +120,13 @@ export function DropdownFilter({
               <div className="space-y-2 px-2">
                 {filteredItems.map((item) => (
                   <div key={item} className="flex items-center gap-2">
-                    <Checkbox
+                    <input
                       id={`${title}-${item}`}
-                      checked={selectedItems.includes(item)}
-                      onCheckedChange={(checked: CheckedState) => onChange(item, checked === true)}
+                      type="radio"
+                      name={`filter-${title}`}
+                      checked={selectedItems[0] === item}
+                      onChange={(e) => onChange(item, e.target.checked)}
+                      className="h-4 w-4 accent-blue-600"
                     />
                     <Label htmlFor={`${title}-${item}`} className="text-sm text-gray-700 dark:text-slate-200 cursor-pointer">
                       {item}

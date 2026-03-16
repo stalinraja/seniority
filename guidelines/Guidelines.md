@@ -69,33 +69,41 @@ File: `src/app/config/features.ts`
 
 ## 6) Ranking Rules (Simple)
 
+## 6) Ranking Rules (Updated)
+
+There are **two sort modes** for High and Elementary:
+- **Seniority** (default): ignores TET priority.
+- **Appointment**: uses current appointment order (TET priority still applies).
+
 ### English
-1. High/Higher Secondary (PG & UG)
-- PG: earlier registration year, then earlier passing year (month prioritized when available within the same year), then older age.
-- UG: TET-passed candidates come first.
-- Tie order: registration year -> passing year (month prioritized when available within the same year) -> age -> higher TET score.
+1. High/Higher Secondary
+- Seniority order: Registration year -> Passing year (month prioritized when available) -> Age -> Higher TET score.
+- Appointment order: UG TET candidates are prioritized.
+- Appointment tie order: Registration year -> Passing year (month prioritized when available) -> Age -> Higher TET score.
 
 2. Elementary/Middle
-- TET >= 60% gets first priority.
-- Tie order: registration year -> passing year (month prioritized when available within the same year) -> age -> higher TET marks.
+- Seniority order: Registration year -> Passing year (month prioritized when available) -> Age -> Higher TET marks.
+- Appointment order: TET 60%+ candidates are prioritized.
+- Appointment tie order: Registration year -> Passing year (month prioritized when available) -> Age -> Higher TET marks.
 
 3. Clergy
-- Earlier year of passing first (month prioritized when available within the same year).
+- Earlier year of passing first (month prioritized when available).
 - Then more years of experience.
 - Then older age.
 
 ### தமிழ்
 1. உயர்நிலை/மேல்நிலை
-- PG: பதிவு ஆண்டு -> தேர்ச்சி ஆண்டு (ஒரே ஆண்டில் மாதம் இருந்தால் அதற்கு முன்னுரிமை) -> வயது மூப்பு.
-- UG: TET தேர்ச்சி பெற்றவர்கள் முன்னுரிமை.
-- சமநிலை: பதிவு ஆண்டு -> தேர்ச்சி ஆண்டு (ஒரே ஆண்டில் மாதம் இருந்தால் அதற்கு முன்னுரிமை) -> வயது -> அதிக TET மதிப்பெண்.
+- மூப்பு வரிசை: பதிவு ஆண்டு -> தேர்ச்சி ஆண்டு (மாதம் இருந்தால் முன்னுரிமை) -> வயது -> அதிக TET மதிப்பெண்.
+- நியமன வரிசை: UG TET முன்னுரிமை.
+- நியமன சமநிலை வரிசை: பதிவு ஆண்டு -> தேர்ச்சி ஆண்டு (மாதம் இருந்தால் முன்னுரிமை) -> வயது -> அதிக TET மதிப்பெண்.
 
 2. தொடக்க/நடுநிலை
-- TET 60%+ முன்னுரிமை.
-- சமநிலை: பதிவு ஆண்டு -> தேர்ச்சி ஆண்டு (ஒரே ஆண்டில் மாதம் இருந்தால் அதற்கு முன்னுரிமை) -> வயது -> அதிக TET மதிப்பெண்.
+- மூப்பு வரிசை: பதிவு ஆண்டு -> தேர்ச்சி ஆண்டு (மாதம் இருந்தால் முன்னுரிமை) -> வயது -> அதிக TET மதிப்பெண்.
+- நியமன வரிசை: TET 60%+ முன்னுரிமை.
+- நியமன சமநிலை வரிசை: பதிவு ஆண்டு -> தேர்ச்சி ஆண்டு (மாதம் இருந்தால் முன்னுரிமை) -> வயது -> அதிக TET மதிப்பெண்.
 
 3. குருத்துவம்
-- தேர்ச்சி ஆண்டு முன்னுரிமை (ஒரே ஆண்டில் மாதம் இருந்தால் அதற்கு முன்னுரிமை).
+- தேர்ச்சி ஆண்டு முன்னுரிமை (மாதம் இருந்தால் முன்னுரிமை).
 - அடுத்தது பணி அனுபவம்.
 - அடுத்தது வயது மூப்பு.
 

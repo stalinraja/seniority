@@ -15,6 +15,8 @@ import { ELEMENTARY_TET_PASS_MARK, HIGH_SCHOOL_TET_PASS_MARK } from "../config/f
 interface SeniorityTableProps {
   rows: any[];
   schoolType: "high" | "elementary" | "clergy";
+  sortMode?: "seniority" | "appointment";
+  onSortModeChange?: (mode: "seniority" | "appointment") => void;
 }
 
 function formatDateWithAge(value: any) {
@@ -43,62 +45,88 @@ function elementaryCategoryClass(category: string) {
   return "bg-slate-50 text-slate-700 border-slate-200";
 }
 
-export function SeniorityTable({ rows, schoolType }: SeniorityTableProps) {
+export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange }: SeniorityTableProps) {
   const { t } = useLanguage();
   const highSchool = schoolType === "high";
   const clergy = schoolType === "clergy";
 
+  const rankHeader = (
+    <TableHead className="w-24 font-semibold">
+      <div className="flex flex-col gap-1">
+        <span>{t("Rank", "வரிசை")}</span>
+        {onSortModeChange && sortMode ? (
+          <label className="text-[10px] font-medium text-slate-500">
+            {t("Sort by", "வரிசைப்படுத்து")}
+            <select
+              className="mt-1 w-full rounded border border-slate-200 bg-white px-1 py-0.5 text-[11px] text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+              value={sortMode}
+              onChange={(e) => onSortModeChange(e.target.value as "seniority" | "appointment")}
+            >
+              <option value="seniority">{t("Seniority", "மூப்பு")}</option>
+              <option value="appointment">{t("Appointment", "நியமனம்")}</option>
+            </select>
+          </label>
+        ) : null}
+      </div>
+    </TableHead>
+  );
+
+  const plainRankHeader = (
+    <TableHead className="w-20 font-semibold">{t("Rank", "வரிசை")}</TableHead>
+  );
+
   return (
     <div className="glass-panel rounded-lg border border-gray-200 shadow-sm overflow-hidden">
       <Table className={highSchool ? "min-w-[1100px]" : clergy ? "min-w-[1000px]" : "min-w-[1200px]"}>
-          <TableHeader>
-            <TableRow className="bg-gray-50">
-              {highSchool ? (
-                <>
-                  <TableHead className="w-20 font-semibold">{t("Rank", "வரிசை")}</TableHead>
-                  <TableHead className="font-semibold">{t("Member ID", "உறுப்பினர் ஐடி")}</TableHead>
-                  <TableHead className="font-semibold">{t("Name", "பெயர்")}</TableHead>
-                  <TableHead className="font-semibold">{t("Date of Birth", "பிறந்த தேதி")}</TableHead>
-                  <TableHead className="font-semibold">{t("Category", "வகை")}</TableHead>
-                  <TableHead className="font-semibold">{t("Department", "துறை")}</TableHead>
-                  <TableHead className="font-semibold">{t("Qualification", "தகுதி")}</TableHead>
-                  <TableHead className="font-semibold">{t("Year of Passing", "தேர்ச்சி ஆண்டு")}</TableHead>
-                  <TableHead className="font-semibold">{t("Year of Registering", "பதிவு ஆண்டு")}</TableHead>
-                  <TableHead className="font-semibold">{t("TET Qualified", "TET தகுதி")}</TableHead>
-                  <TableHead className="font-semibold">{t("Address", "முகவரி")}</TableHead>
-                  <TableHead className="font-semibold">{t("Pincode", "அஞ்சல் குறியீடு")}</TableHead>
-                  <TableHead className="font-semibold">{t("Pastorate", "பாஸ்டரேட்")}</TableHead>
-                  <TableHead className="font-semibold">{t("Council", "கவுன்சில்")}</TableHead>
-                </>
-              ) : clergy ? (
-                <>
-                  <TableHead className="w-20 font-semibold">{t("Rank", "வரிசை")}</TableHead>
-                  <TableHead className="font-semibold">{t("Member ID", "உறுப்பினர் ஐடி")}</TableHead>
-                  <TableHead className="font-semibold">{t("Name", "பெயர்")}</TableHead>
-                  <TableHead className="font-semibold">{t("Date of Birth", "பிறந்த தேதி")}</TableHead>
-                  <TableHead className="font-semibold">{t("Year of Passing", "தேர்ச்சி ஆண்டு")}</TableHead>
-                  <TableHead className="font-semibold">{t("Years of Experience", "பணியாண்டுகள்")}</TableHead>
-                  <TableHead className="font-semibold">{t("Qualification", "தகுதி")}</TableHead>
-                  <TableHead className="font-semibold">{t("Home Pastorate", "சொந்த பாஸ்டரேட்")}</TableHead>
-                </>
-              ) : (
-                <>
-                  <TableHead className="w-20 font-semibold">{t("Rank", "வரிசை")}</TableHead>
-                  <TableHead className="font-semibold">{t("Member ID", "உறுப்பினர் ஐடி")}</TableHead>
-                  <TableHead className="font-semibold">{t("Name", "பெயர்")}</TableHead>
-                  <TableHead className="font-semibold">{t("Date of Birth", "பிறந்த தேதி")}</TableHead>
-                  <TableHead className="font-semibold">{t("Year of Passing", "தேர்ச்சி ஆண்டு")}</TableHead>
-                  <TableHead className="font-semibold">{t("Year of Registering", "பதிவு ஆண்டு")}</TableHead>
-                  <TableHead className="font-semibold">{t("Qualification", "தகுதி")}</TableHead>
-                  <TableHead className="font-semibold">{t("TET Qualification", "TET தகுதி")}</TableHead>
-                  <TableHead className="font-semibold">{t("Category", "வகை")}</TableHead>
-                  <TableHead className="font-semibold">{t("Level", "நிலை")}</TableHead>
-                  <TableHead className="font-semibold">{t("Pastorate", "பாஸ்டரேட்")}</TableHead>
-                  <TableHead className="font-semibold">{t("Council", "கவுன்சில்")}</TableHead>
-                </>
-              )}
-            </TableRow>
-          </TableHeader>
+      <TableHeader>
+        <TableRow className="bg-gray-50">
+          {highSchool ? (
+            <>
+              {rankHeader}
+              <TableHead className="font-semibold">{t("Member ID", "உறுப்பினர் ஐடி")}</TableHead>
+              <TableHead className="font-semibold">{t("Name", "பெயர்")}</TableHead>
+              <TableHead className="font-semibold">{t("Date of Birth", "பிறந்த தேதி")}</TableHead>
+              <TableHead className="font-semibold">{t("Category", "வகை")}</TableHead>
+              <TableHead className="font-semibold">{t("Department", "துறை")}</TableHead>
+              <TableHead className="font-semibold">{t("Qualification", "தகுதி")}</TableHead>
+              <TableHead className="font-semibold">{t("Year of Passing", "தேர்ச்சி ஆண்டு")}</TableHead>
+              <TableHead className="font-semibold">{t("Year of Registering", "பதிவு ஆண்டு")}</TableHead>
+              <TableHead className="font-semibold">{t("TET Qualified", "TET தகுதி")}</TableHead>
+              <TableHead className="font-semibold">{t("Address", "முகவரி")}</TableHead>
+              <TableHead className="font-semibold">{t("Pincode", "அஞ்சல் குறியீடு")}</TableHead>
+              <TableHead className="font-semibold">{t("Pastorate", "பாஸ்டரேட்")}</TableHead>
+              <TableHead className="font-semibold">{t("Council", "கவுன்சில்")}</TableHead>
+            </>
+          ) : clergy ? (
+            <>
+              {plainRankHeader}
+              <TableHead className="font-semibold">{t("Member ID", "உறுப்பினர் ஐடி")}</TableHead>
+              <TableHead className="font-semibold">{t("Name", "பெயர்")}</TableHead>
+              <TableHead className="font-semibold">{t("Date of Birth", "பிறந்த தேதி")}</TableHead>
+              <TableHead className="font-semibold">{t("Year of Passing", "தேர்ச்சி ஆண்டு")}</TableHead>
+              <TableHead className="font-semibold">{t("Years of Experience", "பணியாண்டுகள்")}</TableHead>
+              <TableHead className="font-semibold">{t("Qualification", "தகுதி")}</TableHead>
+              <TableHead className="font-semibold">{t("Home Pastorate", "சொந்த பாஸ்டரேட்")}</TableHead>
+            </>
+          ) : (
+            <>
+              {rankHeader}
+              <TableHead className="font-semibold">{t("Member ID", "உறுப்பினர் ஐடி")}</TableHead>
+              <TableHead className="font-semibold">{t("Name", "பெயர்")}</TableHead>
+              <TableHead className="font-semibold">{t("Date of Birth", "பிறந்த தேதி")}</TableHead>
+              <TableHead className="font-semibold">{t("Year of Passing", "தேர்ச்சி ஆண்டு")}</TableHead>
+              <TableHead className="font-semibold">{t("Year of Registering", "பதிவு ஆண்டு")}</TableHead>
+              <TableHead className="font-semibold">{t("Qualification", "தகுதி")}</TableHead>
+              <TableHead className="font-semibold">{t("TET Qualification", "TET தகுதி")}</TableHead>
+              <TableHead className="font-semibold">{t("Category", "வகை")}</TableHead>
+              <TableHead className="font-semibold">{t("Level", "நிலை")}</TableHead>
+              <TableHead className="font-semibold">{t("Pastorate", "பாஸ்டரேட்")}</TableHead>
+              <TableHead className="font-semibold">{t("Council", "கவுன்சில்")}</TableHead>
+            </>
+          )}
+        </TableRow>
+      </TableHeader>
+
           <TableBody>
             {rows.length === 0 ? (
               <TableRow>

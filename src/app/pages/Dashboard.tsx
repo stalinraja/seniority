@@ -11,7 +11,9 @@ import { useSearchParams } from "react-router";
 import {
   compareClergyOrdinationCandidates,
   compareElementarySchoolCandidates,
+  compareElementarySchoolSeniorityCandidates,
   compareHighSchoolCandidates,
+  compareHighSchoolSeniorityCandidates,
 } from "../config/seniorityRules";
 import { useLanguage } from "../i18n/language";
 import {
@@ -23,6 +25,8 @@ import {
 } from "../config/features";
 
 type SchoolType = "high" | "elementary" | "clergy";
+
+type SortMode = "seniority" | "appointment";
 
 function normalizeText(value: any) {
   return String(value ?? "")
@@ -412,15 +416,15 @@ function mapClergyOrdination(rows: any[]) {
     .filter((c) => c.name !== "Unnamed" && c.dateOfBirth && c.yearOfPassing !== null);
 }
 
-function rankHighSchool(rows: any[]) {
+function rankHighSchool(rows: any[], mode: SortMode) {
   return [...rows]
-    .sort((a, b) => compareHighSchoolCandidates(a, b, extractPassingYear))
+    .sort((a, b) => (mode === "seniority" ? compareHighSchoolSeniorityCandidates(a, b, extractPassingYear) : compareHighSchoolCandidates(a, b, extractPassingYear)))
     .map((c, idx) => ({ ...c, rank: idx + 1 }));
 }
 
-function rankElementarySchool(rows: any[]) {
+function rankElementarySchool(rows: any[], mode: SortMode) {
   return [...rows]
-    .sort((a, b) => compareElementarySchoolCandidates(a, b, extractPassingYear))
+    .sort((a, b) => (mode === "seniority" ? compareElementarySchoolSeniorityCandidates(a, b, extractPassingYear) : compareElementarySchoolCandidates(a, b, extractPassingYear)))
     .map((c, idx) => ({ ...c, rank: idx + 1 }));
 }
 
@@ -477,6 +481,7 @@ export function Dashboard() {
   const [showAppointments, setShowAppointments] = useState(
     APPOINTMENT_REPORT_ENABLED && searchParams.get("appointments") === "1"
   );
+  const [sortMode, setSortMode] = useState<SortMode>("seniority");
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState<Record<string, string[]>>({});
   const [highSchoolCandidates, setHighSchoolCandidates] = useState<any[]>([]);
@@ -610,22 +615,10 @@ export function Dashboard() {
   }, [schoolType, currentCandidates, t]);
 
   const handleFilterChange = (category: string, value: string, checked: boolean) => {
-    const normalizedIncoming = normalizeFilterKey(value);
-    setFilters((prev) => {
-      const current = prev[category] || [];
-      const currentMap = new Map(current.map((item) => [normalizeFilterKey(item), item]));
-
-      if (checked) {
-        currentMap.set(normalizedIncoming, normalizeText(value));
-      } else {
-        currentMap.delete(normalizedIncoming);
-      }
-
-      return {
-        ...prev,
-        [category]: Array.from(currentMap.values()),
-      };
-    });
+    setFilters((prev) => ({
+      ...prev,
+      [category]: checked ? [normalizeText(value)] : [],
+    }));
   };
 
   const handleClearAllFilters = () => setFilters({});
@@ -668,9 +661,9 @@ export function Dashboard() {
 
     const ranked =
       schoolType === "high"
-        ? rankHighSchool(rows)
+        ? rankHighSchool(rows, sortMode)
         : schoolType === "elementary"
-        ? rankElementarySchool(rows)
+        ? rankElementarySchool(rows, sortMode)
         : rankClergyOrdination(rows);
 
     return searchQuery.trim() ? searchCandidatesGeneric(ranked, searchQuery) : ranked;
@@ -679,9 +672,9 @@ export function Dashboard() {
   const appointmentRows = useMemo(() => {
     const ranked =
       schoolType === "high"
-        ? rankHighSchool(currentCandidates)
+        ? rankHighSchool(currentCandidates, "appointment")
         : schoolType === "elementary"
-        ? rankElementarySchool(currentCandidates)
+        ? rankElementarySchool(currentCandidates, "appointment")
         : rankClergyOrdination(currentCandidates);
     return ranked.filter((row) => row.appointed === true);
   }, [currentCandidates, schoolType]);
@@ -896,7 +889,12 @@ export function Dashboard() {
 
           {!loading && !error && (
             <>
-              <SeniorityTable rows={pagedCandidates} schoolType={schoolType} />
+              <SeniorityTable
+                rows={pagedCandidates}
+                schoolType={schoolType}
+                sortMode={sortMode}
+                onSortModeChange={setSortMode}
+              />
               {filteredCandidates.length > PAGE_SIZE && (
                 <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
                   <p className="text-sm text-gray-600">

@@ -156,6 +156,23 @@ export function compareHighSchoolCandidates(
   return 0;
 }
 
+
+export function compareHighSchoolSeniorityCandidates(
+  a: any,
+  b: any,
+  extractPassingYear: (v: any) => number | null
+) {
+  const order: Array<
+    "yearOfRegistering" | "yearOfPassing" | "dateOfBirth" | "tetScore"
+  > = ["yearOfRegistering", "yearOfPassing", "dateOfBirth", "tetScore"];
+
+  for (const rule of order) {
+    const diff = compareByRule(a, b, rule, extractPassingYear);
+    if (diff !== 0) return diff;
+  }
+  return 0;
+}
+
 export function compareElementarySchoolCandidates(
   a: any,
   b: any,
@@ -170,6 +187,23 @@ export function compareElementarySchoolCandidates(
     if (diff !== 0) return diff;
   }
 
+  return 0;
+}
+
+
+export function compareElementarySchoolSeniorityCandidates(
+  a: any,
+  b: any,
+  extractPassingYear: (v: any) => number | null
+) {
+  const order: Array<
+    "yearOfRegistering" | "yearOfPassing" | "dateOfBirth" | "tetCompletion"
+  > = ["yearOfRegistering", "yearOfPassing", "dateOfBirth", "tetCompletion"];
+
+  for (const rule of order) {
+    const diff = compareByRule(a, b, rule, extractPassingYear);
+    if (diff !== 0) return diff;
+  }
   return 0;
 }
 
@@ -189,45 +223,27 @@ export function getRankingRulesDisplay(language: "en" | "ta" = "en") {
   const high =
     language === "ta"
       ? [
-          "முதுகலை (PG): TET அவசியமில்லை. வேலைவாய்ப்பு அலுவலகத்தில் பதிவு செய்த ஆண்டு தான் முக்கியம். ஒரே ஆண்டில் பதிவு செய்திருந்தால், தேர்ச்சி பெற்ற ஆண்டு கணக்கிடப்படும். அதுவும் சமமாக இருந்தால், வயதில் மூத்தவருக்கு முன்னுரிமை வழங்கப்படும்.",
-          `இளகலை (UG): TET கட்டாயம். TET தேர்ச்சி (${HIGH_SCHOOL_TET_PASS_MARK}+) பெற்றவர்கள் முதலில் வரிசைப்படுத்தப்படுவர்.`,
-          "வரிசை முறை:",
-          "முதலில் பதிவு செய்த ஆண்டு.",
-          "முதலில் தேர்ச்சி பெற்ற ஆண்டு.",
-          "ஒரே ஆண்டு என்றால், மாதம் இருந்தால் அதற்கு முன்னுரிமை.",
-          "அதிக வயது (பிறந்த தேதி அடிப்படையில்).",
-          "TET தேர்வில் எடுத்த அதிக மதிப்பெண் (TET உள்ளவர்களுக்கு மட்டும்).",
+          "மூப்பு வரிசை (TET முன்னுரிமை இல்லை): பதிவு ஆண்டு -> தேர்ச்சி ஆண்டு (மாதம் இருந்தால் முன்னுரிமை) -> வயது மூப்பு -> அதிக TET மதிப்பெண்.",
+          `நியமன வரிசை: UG TET (${HIGH_SCHOOL_TET_PASS_MARK}+) பெற்றவர்கள் முன்னுரிமை.`,
+          "நியமன சமநிலை வரிசை: பதிவு ஆண்டு -> தேர்ச்சி ஆண்டு (மாதம் இருந்தால் முன்னுரிமை) -> வயது -> அதிக TET மதிப்பெண்.",
         ]
       : [
-          "For PG: TET is not required. The person who registered their degree first gets priority. If registration year is the same, the person who passed earlier gets priority. If still tied, the older person gets priority.",
-          `For UG: TET is mandatory. Candidates with passing TET (${HIGH_SCHOOL_TET_PASS_MARK}+) are ranked before others.`,
-          "Ranking order:",
-          "Earlier Year of Registration.",
-          "Earlier Year of Passing.",
-          "If the year is the same and month is available, earlier month gets priority.",
-          "Older Age (Date of Birth).",
-          "Higher TET Score (for TET candidates).",
+          "Seniority order (no TET priority): Year of Registration -> Year of Passing (month prioritized when available) -> Older Age -> Higher TET Score.",
+          `Appointment order: UG TET (${HIGH_SCHOOL_TET_PASS_MARK}+) candidates are ranked before non-TET candidates.`,
+          "Appointment tie-break order: Registration Year -> Passing Year (month prioritized when available) -> Age -> Higher TET Score.",
         ];
 
   const elementary =
     language === "ta"
       ? [
-          `முக்கிய விதி: TET தேர்வில் ${ELEMENTARY_TET_PASS_MARK}% அல்லது அதற்கு மேல் பெற்றவர்கள் முதல் முன்னுரிமை பெறுவர்.`,
-          "பலர் தகுதி பெற்றால் பின்வரும் வரிசை பின்பற்றப்படும்:",
-          "முதலில் பதிவு செய்த ஆண்டு.",
-          "முதலில் தேர்ச்சி பெற்ற ஆண்டு.",
-          "ஒரே ஆண்டு என்றால், மாதம் இருந்தால் அதற்கு முன்னுரிமை.",
-          "அதிக வயது (பிறந்த தேதி அடிப்படையில்).",
-          "TET தேர்வில் எடுத்த அதிக மதிப்பெண்.",
+          `மூப்பு வரிசை (TET முன்னுரிமை இல்லை): பதிவு ஆண்டு -> தேர்ச்சி ஆண்டு (மாதம் இருந்தால் முன்னுரிமை) -> வயது -> அதிக TET மதிப்பெண்.`,
+          `நியமன வரிசை: TET ${ELEMENTARY_TET_PASS_MARK}%+ பெற்றவர்கள் முன்னுரிமை.`,
+          "நியமன சமநிலை வரிசை: பதிவு ஆண்டு -> தேர்ச்சி ஆண்டு (மாதம் இருந்தால் முன்னுரிமை) -> வயது -> அதிக TET மதிப்பெண்.",
         ]
       : [
-          `Priority 1: Candidates with TET score of ${ELEMENTARY_TET_PASS_MARK}% or more are ranked first.`,
-          "If multiple candidates qualify, the order is:",
-          "Earlier Year of Registration.",
-          "Earlier Year of Passing.",
-          "If the year is the same and month is available, earlier month gets priority.",
-          "Older Age (Date of Birth).",
-          "Higher TET Marks.",
+          `Seniority order (no TET priority): Year of Registration -> Year of Passing (month prioritized when available) -> Older Age -> Higher TET Marks.`,
+          `Appointment order: TET ${ELEMENTARY_TET_PASS_MARK}%+ candidates are ranked before others.`,
+          "Appointment tie-break order: Registration Year -> Passing Year (month prioritized when available) -> Age -> Higher TET Marks.",
         ];
 
   const clergy =

@@ -12,7 +12,7 @@ export function resolveInitialTheme(): ThemeMode {
   if (typeof window === "undefined") return "light";
   const saved = localStorage.getItem(STORAGE_KEY);
   if (saved === "dark" || saved === "light") return saved;
-  return prefersDark() ? "dark" : "light";
+  return "light";
 }
 
 export function applyTheme(mode: ThemeMode): void {

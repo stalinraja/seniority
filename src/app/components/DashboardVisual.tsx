@@ -41,6 +41,14 @@ function groupBy(arr: any[], key: string) {
   }, {} as Record<string, number>);
 }
 
+function buildLabeledStats(stats: Record<string, number>) {
+  const entries = Object.entries(stats);
+  return {
+    labels: entries.map(([label, value]) => `${label} (${value})`),
+    values: entries.map(([, value]) => value),
+  };
+}
+
 export function DashboardVisual({
   candidates,
   onClose,
@@ -64,6 +72,13 @@ export function DashboardVisual({
   const qualificationStats = groupBy(candidates, "qualification");
   const levelStats = groupBy(candidates, "level");
   const pgugStats = candidates.reduce((acc, curr) => {
+
+  const councilLabeled = buildLabeledStats(councilStats);
+  const departmentLabeled = buildLabeledStats(departmentStats);
+  const pastorateLabeled = buildLabeledStats(pastorateStats);
+  const homePastorateLabeled = buildLabeledStats(homePastorateStats);
+  const qualificationLabeled = buildLabeledStats(qualificationStats);
+  const levelLabeled = buildLabeledStats(levelStats);
     const value = curr.pgug || curr.category || "Unknown";
     acc[value] = (acc[value] || 0) + 1;
     return acc;
@@ -99,11 +114,11 @@ export function DashboardVisual({
 
   const chartData = {
     council: {
-      labels: Object.keys(councilStats),
+      labels: councilLabeled.labels,
       datasets: [
         {
           label: t("Candidates by Council", "கவுன்சில் வாரியான விண்ணப்பதாரர்கள்"),
-          data: Object.values(councilStats),
+          data: councilLabeled.values,
           backgroundColor: getPalette(Object.keys(councilStats).length),
           borderWidth: 1,
           borderColor: "#ffffff",
@@ -112,11 +127,11 @@ export function DashboardVisual({
       ],
     },
     department: {
-      labels: Object.keys(departmentStats),
+      labels: departmentLabeled.labels,
       datasets: [
         {
           label: t("By Department", "துறை அடிப்படையில்"),
-          data: Object.values(departmentStats),
+          data: departmentLabeled.values,
           backgroundColor: getPalette(Object.keys(departmentStats).length),
           borderWidth: 1,
           borderColor: "#ffffff",
@@ -125,11 +140,11 @@ export function DashboardVisual({
       ],
     },
     pastorate: {
-      labels: Object.keys(pastorateStats),
+      labels: pastorateLabeled.labels,
       datasets: [
         {
           label: t("By Pastorate", "பாஸ்டரேட் அடிப்படையில்"),
-          data: Object.values(pastorateStats),
+          data: pastorateLabeled.values,
           backgroundColor: getPalette(Object.keys(pastorateStats).length),
           borderWidth: 1,
           borderColor: "#ffffff",
@@ -138,11 +153,11 @@ export function DashboardVisual({
       ],
     },
     homePastorate: {
-      labels: Object.keys(homePastorateStats),
+      labels: homePastorateLabeled.labels,
       datasets: [
         {
           label: t("By Home Pastorate", "சொந்த பாஸ்டரேட் அடிப்படையில்"),
-          data: Object.values(homePastorateStats),
+          data: homePastorateLabeled.values,
           backgroundColor: getPalette(Object.keys(homePastorateStats).length),
           borderWidth: 1,
           borderColor: "#ffffff",
@@ -151,11 +166,11 @@ export function DashboardVisual({
       ],
     },
     qualification: {
-      labels: Object.keys(qualificationStats),
+      labels: qualificationLabeled.labels,
       datasets: [
         {
           label: t("By Qualification", "தகுதி அடிப்படையில்"),
-          data: Object.values(qualificationStats),
+          data: qualificationLabeled.values,
           backgroundColor: getPalette(Object.keys(qualificationStats).length),
           borderWidth: 1,
           borderColor: "#ffffff",
@@ -164,11 +179,11 @@ export function DashboardVisual({
       ],
     },
     level: {
-      labels: Object.keys(levelStats),
+      labels: levelLabeled.labels,
       datasets: [
         {
           label: t("By Level", "நிலை அடிப்படையில்"),
-          data: Object.values(levelStats),
+          data: levelLabeled.values,
           backgroundColor: getPalette(Object.keys(levelStats).length),
           borderWidth: 1,
           borderColor: "#ffffff",
@@ -177,11 +192,11 @@ export function DashboardVisual({
       ],
     },
     pgug: {
-      labels: Object.keys(pgugStats),
+      labels: buildLabeledStats(pgugStats).labels,
       datasets: [
         {
           label: t("Category Split", "வகைப் பிரிவு"),
-          data: Object.values(pgugStats),
+          data: buildLabeledStats(pgugStats).values,
           backgroundColor: getPalette(Object.keys(pgugStats).length),
           borderWidth: 1,
           borderColor: "#ffffff",
@@ -212,13 +227,14 @@ export function DashboardVisual({
         boxPadding: 6,
       },
     },
+    interaction: { mode: "nearest" as const, intersect: false },
     animation: {
       duration: 1500,
       easing: "easeInOutBack",
     },
     scales: {
       x: {
-        ticks: { color: isDark ? "#cbd5e1" : "#475569", font: { weight: 600 } },
+        ticks: { color: isDark ? "#cbd5e1" : "#475569", font: { weight: 600 }, autoSkip: false, maxRotation: 45 },
         grid: { color: isDark ? "rgba(100,116,139,0.35)" : "#e2e8f0" },
       },
       y: {
@@ -250,6 +266,7 @@ export function DashboardVisual({
         boxPadding: 6,
       },
     },
+    interaction: { mode: "nearest" as const, intersect: false },
     cutout: "58%",
     animation: {
       duration: 1200,
