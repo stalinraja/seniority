@@ -228,9 +228,13 @@ export function getRankingRulesDisplay(language: "en" | "ta" = "en") {
           "நியமன சமநிலை வரிசை: பதிவு ஆண்டு -> தேர்ச்சி ஆண்டு (மாதம் இருந்தால் முன்னுரிமை) -> வயது -> அதிக TET மதிப்பெண்.",
         ]
       : [
-          "Seniority order (no TET priority): Year of Registration -> Year of Passing (month prioritized when available) -> Older Age -> Higher TET Score.",
-          `Appointment order: UG TET (${HIGH_SCHOOL_TET_PASS_MARK}+) candidates are ranked before non-TET candidates.`,
-          "Appointment tie-break order: Registration Year -> Passing Year (month prioritized when available) -> Age -> Higher TET Score.",
+          "Seniority list (default): TET is NOT used for priority. We rank by:",
+          "1) Earlier Year of Registration (who registered first).",
+          "2) Earlier Year of Passing (if same year and month is available, earlier month wins).",
+          "3) Older Age (Date of Birth).",
+          "4) Higher TET score (only used if all above are tied).",
+          `Appointment order: UG candidates with TET ${HIGH_SCHOOL_TET_PASS_MARK}+ are listed before non‑TET candidates.`,
+          "Appointment tie-breaks follow the same order: Registration -> Passing (month if available) -> Age -> TET score.",
         ];
 
   const elementary =
@@ -241,9 +245,13 @@ export function getRankingRulesDisplay(language: "en" | "ta" = "en") {
           "நியமன சமநிலை வரிசை: பதிவு ஆண்டு -> தேர்ச்சி ஆண்டு (மாதம் இருந்தால் முன்னுரிமை) -> வயது -> அதிக TET மதிப்பெண்.",
         ]
       : [
-          `Seniority order (no TET priority): Year of Registration -> Year of Passing (month prioritized when available) -> Older Age -> Higher TET Marks.`,
+          "Seniority list (default): TET is NOT used for priority. We rank by:",
+          "1) Earlier Year of Registration.",
+          "2) Earlier Year of Passing (if same year and month is available, earlier month wins).",
+          "3) Older Age (Date of Birth).",
+          "4) Higher TET mark (only if all above are tied).",
           `Appointment order: TET ${ELEMENTARY_TET_PASS_MARK}%+ candidates are ranked before others.`,
-          "Appointment tie-break order: Registration Year -> Passing Year (month prioritized when available) -> Age -> Higher TET Marks.",
+          "Appointment tie-breaks follow the same order: Registration -> Passing (month if available) -> Age -> TET marks.",
         ];
 
   const clergy =

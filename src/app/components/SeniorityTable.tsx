@@ -17,6 +17,7 @@ interface SeniorityTableProps {
   schoolType: "high" | "elementary" | "clergy";
   sortMode?: "seniority" | "appointment";
   onSortModeChange?: (mode: "seniority" | "appointment") => void;
+  sortingPulse?: boolean;
 }
 
 function formatDateWithAge(value: any) {
@@ -45,34 +46,46 @@ function elementaryCategoryClass(category: string) {
   return "bg-slate-50 text-slate-700 border-slate-200";
 }
 
-export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange }: SeniorityTableProps) {
+export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, sortingPulse }: SeniorityTableProps) {
   const { t } = useLanguage();
   const highSchool = schoolType === "high";
   const clergy = schoolType === "clergy";
 
   const rankHeader = (
-    <TableHead className="w-24 font-semibold">
-      <div className="flex flex-col gap-1">
-        <span>{t("Rank", "வரிசை")}</span>
+    <TableHead className="w-32 font-semibold align-top">
+      <div className={`flex flex-col gap-2 ${sortingPulse ? "animate-pulse" : ""}`}>
+        <span className="leading-none">{t("Rank", "வரிசை")}</span>
         {onSortModeChange && sortMode ? (
-          <label className="text-[10px] font-medium text-slate-500">
-            {t("Sort by", "வரிசைப்படுத்து")}
-            <select
-              className="mt-1 w-full rounded border border-slate-200 bg-white px-1 py-0.5 text-[11px] text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
-              value={sortMode}
-              onChange={(e) => onSortModeChange(e.target.value as "seniority" | "appointment")}
-            >
-              <option value="seniority">{t("Seniority", "மூப்பு")}</option>
-              <option value="appointment">{t("Appointment", "நியமனம்")}</option>
-            </select>
-          </label>
+          <div className="flex flex-col gap-1 text-[11px] font-medium text-slate-600">
+            <span className="uppercase tracking-wide text-[10px] text-slate-400">{t("Sort by", "வரிசைப்படுத்து")}</span>
+            <label className="flex items-center gap-2">
+              <input
+                type="radio"
+                name="rank-sort"
+                className="h-3.5 w-3.5 accent-blue-600"
+                checked={sortMode === "seniority"}
+                onChange={() => onSortModeChange("seniority")}
+              />
+              <span>{t("Seniority", "மூப்பு")}</span>
+            </label>
+            <label className="flex items-center gap-2">
+              <input
+                type="radio"
+                name="rank-sort"
+                className="h-3.5 w-3.5 accent-blue-600"
+                checked={sortMode === "appointment"}
+                onChange={() => onSortModeChange("appointment")}
+              />
+              <span>{t("Appointment", "நியமனம்")}</span>
+            </label>
+          </div>
         ) : null}
       </div>
     </TableHead>
   );
 
   const plainRankHeader = (
-    <TableHead className="w-20 font-semibold">{t("Rank", "வரிசை")}</TableHead>
+    <TableHead className={`w-20 font-semibold ${sortingPulse ? "animate-pulse" : ""}`}>{t("Rank", "வரிசை")}</TableHead>
   );
 
   return (
@@ -155,7 +168,7 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange }:
                   {highSchool ? (
                     <>
                       <TableCell>
-                        <div className="flex items-center gap-2">
+                        <div className={`flex items-center gap-2 ${sortingPulse ? "animate-pulse" : ""}`}>
                           {candidate.rank === 1 && <Award className="w-4 h-4 text-yellow-500" />}
                           <span className="font-semibold text-gray-900">{candidate.rank}</span>
                         </div>
@@ -221,7 +234,7 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange }:
                   ) : clergy ? (
                     <>
                       <TableCell>
-                        <div className="flex items-center gap-2">
+                        <div className={`flex items-center gap-2 ${sortingPulse ? "animate-pulse" : ""}`}>
                           {candidate.rank === 1 && <Award className="w-4 h-4 text-yellow-500" />}
                           <span className="font-semibold text-gray-900">{candidate.rank}</span>
                         </div>
@@ -245,7 +258,7 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange }:
                   ) : (
                     <>
                       <TableCell>
-                        <div className="flex items-center gap-2">
+                        <div className={`flex items-center gap-2 ${sortingPulse ? "animate-pulse" : ""}`}>
                           {candidate.rank === 1 && <Award className="w-4 h-4 text-yellow-500" />}
                           <span className="font-semibold text-gray-900">{candidate.rank}</span>
                         </div>

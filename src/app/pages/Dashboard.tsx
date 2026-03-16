@@ -491,6 +491,7 @@ export function Dashboard() {
   const [splashDone, setSplashDone] = useState(false);
   const [initialLoadDone, setInitialLoadDone] = useState(false);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
+  const [sortingPulse, setSortingPulse] = useState(false);
   const [downloadingReport, setDownloadingReport] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
@@ -667,7 +668,7 @@ export function Dashboard() {
         : rankClergyOrdination(rows);
 
     return searchQuery.trim() ? searchCandidatesGeneric(ranked, searchQuery) : ranked;
-  }, [currentCandidates, filters, searchQuery, schoolType]);
+  }, [currentCandidates, filters, searchQuery, schoolType, sortMode]);
 
   const appointmentRows = useMemo(() => {
     const ranked =
@@ -687,7 +688,13 @@ export function Dashboard() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [filters, searchQuery, schoolType]);
+  }, [filters, searchQuery, schoolType, sortMode]);
+
+  useEffect(() => {
+    setSortingPulse(true);
+    const t = setTimeout(() => setSortingPulse(false), 450);
+    return () => clearTimeout(t);
+  }, [sortMode]);
 
   const pagedCandidates = useMemo(() => {
     const startIndex = (currentPage - 1) * PAGE_SIZE;
@@ -698,7 +705,7 @@ export function Dashboard() {
     try {
       setDownloadingPdf(true);
       const mod = await import("../utils/pdfUtils");
-      mod.downloadCandidatesPDF(filteredCandidates, filters as any, schoolType);
+      mod.downloadCandidatesPDF(filteredCandidates, filters as any, schoolType, sortMode);
     } finally {
       setDownloadingPdf(false);
     }
@@ -894,6 +901,7 @@ export function Dashboard() {
                 schoolType={schoolType}
                 sortMode={sortMode}
                 onSortModeChange={setSortMode}
+                sortingPulse={sortingPulse}
               />
               {filteredCandidates.length > PAGE_SIZE && (
                 <div className="mt-4 flex flex-wrap items-center justify-between gap-3">

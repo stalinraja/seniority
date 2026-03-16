@@ -211,7 +211,7 @@ function slugifyPart(value: string) {
     .replace(/^-+|-+$/g, "");
 }
 
-function buildPdfFileName(schoolType: SchoolType, filters: Record<string, string[]>) {
+function buildPdfFileName(schoolType: SchoolType, filters: Record<string, string[]>, sortMode: "seniority" | "appointment" = "seniority") {
   const base =
     schoolType === "high"
       ? "high-school-seniority"
@@ -234,22 +234,23 @@ function buildPdfFileName(schoolType: SchoolType, filters: Record<string, string
 
   const datePart = new Date().toISOString().slice(0, 10);
   const filterSuffix = filterParts.length ? `-${filterParts.join("-")}` : "-all";
-  return `${base}${filterSuffix}-${datePart}.pdf`;
+  return `${base}-${sortMode}${filterSuffix}-${datePart}.pdf`;
 }
 
 export function downloadCandidatesPDF(
   candidates: any[],
   filters: Record<string, string[]>,
-  schoolType: SchoolType = "high"
+  schoolType: SchoolType = "high",
+  sortMode: "seniority" | "appointment" = "seniority"
 ) {
   const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
   doc.setFont("helvetica", "bold");
   doc.setFontSize(14);
   doc.text(
     schoolType === "high"
-      ? "High/Higher Secondary School Seniority List"
+      ? `High/Higher Secondary School ${sortMode === "appointment" ? "Appointment" : "Seniority"} List`
       : schoolType === "elementary"
-      ? "Elementry/Middle School Seniority List"
+      ? `Elementry/Middle School ${sortMode === "appointment" ? "Appointment" : "Seniority"} List`
       : "Clergy Ordination Seniority List",
     8,
     14
@@ -315,7 +316,7 @@ export function downloadCandidatesPDF(
     columnStyles,
   });
 
-  doc.save(buildPdfFileName(schoolType, filters));
+  doc.save(buildPdfFileName(schoolType, filters, sortMode));
 }
 
 function buildAppointmentReportFileName(schoolType: AppointmentSchoolType) {

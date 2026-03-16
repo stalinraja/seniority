@@ -39,6 +39,13 @@ function groupBy(arr: any[], key: string) {
     acc[val] = (acc[val] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
+
+  const councilLabeled = buildLabeledStats(councilStats);
+  const departmentLabeled = buildLabeledStats(departmentStats);
+  const pastorateLabeled = buildLabeledStats(pastorateStats);
+  const homePastorateLabeled = buildLabeledStats(homePastorateStats);
+  const qualificationLabeled = buildLabeledStats(qualificationStats);
+  const levelLabeled = buildLabeledStats(levelStats);
 }
 
 function buildLabeledStats(stats: Record<string, number>) {
@@ -72,13 +79,6 @@ export function DashboardVisual({
   const qualificationStats = groupBy(candidates, "qualification");
   const levelStats = groupBy(candidates, "level");
   const pgugStats = candidates.reduce((acc, curr) => {
-
-  const councilLabeled = buildLabeledStats(councilStats);
-  const departmentLabeled = buildLabeledStats(departmentStats);
-  const pastorateLabeled = buildLabeledStats(pastorateStats);
-  const homePastorateLabeled = buildLabeledStats(homePastorateStats);
-  const qualificationLabeled = buildLabeledStats(qualificationStats);
-  const levelLabeled = buildLabeledStats(levelStats);
     const value = curr.pgug || curr.category || "Unknown";
     acc[value] = (acc[value] || 0) + 1;
     return acc;
