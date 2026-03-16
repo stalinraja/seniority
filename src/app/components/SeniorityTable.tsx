@@ -52,6 +52,8 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
   const highSchool = schoolType === "high";
   const clergy = schoolType === "clergy";
 
+  const [sortMenuOpen, setSortMenuOpen] = useState(false);
+
   const rankHeader = (
     <TableHead className="w-32 font-semibold h-10 align-middle">
       <div className={`flex items-center gap-2 ${sortingPulse ? "animate-pulse" : ""}`}>
@@ -90,14 +92,12 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
     </TableHead>
   );
 
-    const [sortMenuOpen, setSortMenuOpen] = useState(false);
-
-  const plainRankHeader = (
+    const plainRankHeader = (
     <TableHead className={`w-20 font-semibold ${sortingPulse ? "animate-pulse" : ""}`}>{t("Rank", "வரிசை")}</TableHead>
   );
 
   return (
-    <div className="glass-panel rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+    <div className="glass-panel seniority-table-panel rounded-lg border border-gray-200 shadow-sm overflow-hidden">
       <Table className={highSchool ? "min-w-[1100px]" : clergy ? "min-w-[1000px]" : "min-w-[1200px]"}>
       <TableHeader>
         <TableRow className="bg-gray-50">

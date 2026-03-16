@@ -1,3 +1,21 @@
 @import "./fonts.css";
 @import "./tailwind.css";
 @import "../../packages/ui-theme/src/index.css";
+
+
+.seniority-table-panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("/diocese-logo.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 180px 180px;
+  opacity: 0.06;
+}
+
+.seniority-table-panel > * {
+  position: relative;
+  z-index: 1;
+}
