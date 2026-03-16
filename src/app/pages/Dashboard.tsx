@@ -826,7 +826,52 @@ export function Dashboard() {
                     `${filteredCandidates.length} வடிகட்டப்பட்டதில் ${pagedCandidates.length} காட்டப்படுகிறது (மொத்தம்: ${currentCandidates.length})`
                   )}
             </p>
+
+            <div className="mt-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+              <SearchBar
+                value={searchQuery}
+                onChange={setSearchQuery}
+                className="max-w-xl"
+              />
+              <div className="flex flex-wrap items-center gap-2">
+                <Button
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  onClick={handleDownloadPdf}
+                  disabled={downloadingPdf || filteredCandidates.length === 0}
+                >
+                  {downloadingPdf
+                    ? t("Preparing PDF...", "PDF தயாராகிறது...")
+                    : t("Download PDF", "PDF பதிவிறக்கம்")}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowDashboard(true)}
+                  disabled={showDashboard || filteredCandidates.length === 0}
+                >
+                  {t("Open Dashboard", "டாஷ்போர்டை திற")}
+                </Button>
+                {APPOINTMENT_REPORT_ENABLED ? (
+                  <Button variant="outline" onClick={handleToggleAppointments}>
+                    {showAppointments
+                      ? t("Hide Appointments", "நியமனங்களை மறை")
+                      : t("Show Appointments", "நியமனங்களை காண்பி")}
+                  </Button>
+                ) : null}
+              </div>
+            </div>
           </div>
+
+          {showAppointments && (
+            <div className="mb-4">
+              <AppointmentReport
+                rows={appointmentRows}
+                schoolType={schoolType}
+                onDownload={handleDownloadAppointmentsReport}
+                downloading={downloadingReport}
+              />
+            </div>
+          )}
+
 
           {!loading && !error && (
             <>
