@@ -12,16 +12,18 @@ const DEFAULT_ELEMENTARY_SCHOOL_CSV_URL =
 const DEFAULT_CLERGY_ORDINATION_CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vQizNtmY220qkpPceFvfQk_M241lqzKs3K3ffxYTng5cLslZK_Xm6LlkQelDWdXQH2Plo_AmYwmnBew/pub?gid=271291357&single=true&output=csv";
 
-function parseCSVLine(line: string) {
-  const values: string[] = [];
-  let current = "";
+function parseCSV(text: string) {
+  const normalized = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+  const rows: string[][] = [];
+  let currentRow: string[] = [];
+  let currentValue = "";
   let inQuotes = false;
 
-  for (let i = 0; i < line.length; i += 1) {
-    const ch = line[i];
+  for (let i = 0; i < normalized.length; i += 1) {
+    const ch = normalized[i];
     if (ch === '"') {
-      if (inQuotes && line[i + 1] === '"') {
-        current += '"';
+      if (inQuotes && normalized[i + 1] === '"') {
+        currentValue += '"';
         i += 1;
       } else {
         inQuotes = !inQuotes;
@@ -29,29 +31,33 @@ function parseCSVLine(line: string) {
       continue;
     }
     if (ch === "," && !inQuotes) {
-      values.push(current.trim());
-      current = "";
+      currentRow.push(currentValue.trim());
+      currentValue = "";
       continue;
     }
-    current += ch;
+    if (ch === "\n" && !inQuotes) {
+      currentRow.push(currentValue.trim());
+      currentValue = "";
+      if (currentRow.some((value) => value.length > 0)) {
+        rows.push(currentRow);
+      }
+      currentRow = [];
+      continue;
+    }
+    currentValue += ch;
   }
 
-  values.push(current.trim());
-  return values;
-}
+  if (currentValue.length > 0 || currentRow.length > 0) {
+    currentRow.push(currentValue.trim());
+    if (currentRow.some((value) => value.length > 0)) {
+      rows.push(currentRow);
+    }
+  }
 
-function parseCSV(text: string) {
-  const lines = text
-    .replace(/\r\n/g, "\n")
-    .replace(/\r/g, "\n")
-    .split("\n")
-    .filter((line) => line.trim().length > 0);
+  if (!rows.length) return [];
+  const headers = rows[0].map((header) => header.replace(/^\uFEFF/, ""));
 
-  if (!lines.length) return [];
-  const headers = parseCSVLine(lines[0].replace(/^\uFEFF/, ""));
-
-  return lines.slice(1).map((line) => {
-    const rowValues = parseCSVLine(line);
+  return rows.slice(1).map((rowValues) => {
     const row: Record<string, string> = {};
     headers.forEach((header, idx) => {
       row[header] = rowValues[idx] ?? "";
@@ -78,23 +84,32 @@ function normalizePayload(parsed: any): SchoolDataPayload {
   };
 }
 
-async function fetchRowsFromUrl(url: string): Promise<any[] | SchoolDataPayload> {
-  const response = await fetch(appendNoCacheParam(url), { cache: "no-store" });
-  if (!response.ok) throw new Error(`Failed to load data from ${url}`);
+async function fetchRowsFromUrl(url: string, attempt = 1): Promise<any[] | SchoolDataPayload> {
+  try {
+    const response = await fetch(appendNoCacheParam(url), { cache: "no-store" });
+    if (!response.ok) throw new Error(`Failed to load data from ${url}`);
 
-  const contentType = String(response.headers.get("content-type") || "").toLowerCase();
-  const raw = await response.text();
-  const isJson = contentType.includes("application/json") || url.toLowerCase().includes(".json");
+    const contentType = String(response.headers.get("content-type") || "").toLowerCase();
+    const raw = await response.text();
+    const isJson = contentType.includes("application/json") || url.toLowerCase().includes(".json");
 
-  if (isJson) {
-    return normalizePayload(JSON.parse(raw));
+    if (isJson) {
+      return normalizePayload(JSON.parse(raw));
+    }
+
+    if (/<html/i.test(raw) || contentType.includes("text/html")) {
+      throw new Error(`Expected CSV/JSON but received HTML from ${url}`);
+    }
+
+    return parseCSV(raw);
+  } catch (error) {
+    if (attempt < 3) {
+      const backoffMs = attempt === 1 ? 500 : 1500;
+      await new Promise((resolve) => setTimeout(resolve, backoffMs));
+      return fetchRowsFromUrl(url, attempt + 1);
+    }
+    throw error;
   }
-
-  if (/<html/i.test(raw) || contentType.includes("text/html")) {
-    throw new Error(`Expected CSV/JSON but received HTML from ${url}`);
-  }
-
-  return parseCSV(raw);
 }
 
 function getConfiguredUrls() {
