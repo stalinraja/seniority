@@ -22,6 +22,30 @@ function getPassingYear(value: any, extractPassingYear: (v: any) => number | nul
   return extractPassingYear(value) ?? Number.MAX_SAFE_INTEGER;
 }
 
+function getPassingMonth(value: any) {
+  if (value === undefined || value === null) return null;
+  const raw = String(value).trim();
+  if (!raw) return null;
+  const match = raw.match(/[A-Za-z]{3,9}/);
+  if (!match) return null;
+  const token = match[0].replace(/\./g, "").toLowerCase().slice(0, 3);
+  const months: Record<string, number> = {
+    jan: 0,
+    feb: 1,
+    mar: 2,
+    apr: 3,
+    may: 4,
+    jun: 5,
+    jul: 6,
+    aug: 7,
+    sep: 8,
+    oct: 9,
+    nov: 10,
+    dec: 11,
+  };
+  return Object.prototype.hasOwnProperty.call(months, token) ? months[token] : null;
+}
+
 function getDateSortValue(value: any) {
   return value instanceof Date ? value.getTime() : Number.MAX_SAFE_INTEGER;
 }
@@ -51,7 +75,19 @@ function compareByRule(
     return Number(a.yearOfRegistering ?? Number.MAX_SAFE_INTEGER) - Number(b.yearOfRegistering ?? Number.MAX_SAFE_INTEGER);
   }
   if (rule === "yearOfPassing") {
-    return getPassingYear(a.yearOfPassing, extractPassingYear) - getPassingYear(b.yearOfPassing, extractPassingYear);
+    const aYear = getPassingYear(a.yearOfPassing, extractPassingYear);
+    const bYear = getPassingYear(b.yearOfPassing, extractPassingYear);
+    if (aYear !== bYear) return aYear - bYear;
+
+    const aMonth = getPassingMonth(a.yearOfPassing);
+    const bMonth = getPassingMonth(b.yearOfPassing);
+    if (aMonth !== null || bMonth !== null) {
+      const am = aMonth ?? Number.MAX_SAFE_INTEGER;
+      const bm = bMonth ?? Number.MAX_SAFE_INTEGER;
+      if (am !== bm) return am - bm;
+    }
+
+    return 0;
   }
   if (rule === "tetYear") {
     const aTetYear = Number.isFinite(a.tetYear) ? Number(a.tetYear) : Number.MAX_SAFE_INTEGER;
@@ -158,6 +194,7 @@ export function getRankingRulesDisplay(language: "en" | "ta" = "en") {
           "வரிசை முறை:",
           "முதலில் பதிவு செய்த ஆண்டு.",
           "முதலில் தேர்ச்சி பெற்ற ஆண்டு.",
+          "ஒரே ஆண்டு என்றால், மாதம் இருந்தால் அதற்கு முன்னுரிமை.",
           "அதிக வயது (பிறந்த தேதி அடிப்படையில்).",
           "TET தேர்வில் எடுத்த அதிக மதிப்பெண் (TET உள்ளவர்களுக்கு மட்டும்).",
         ]
@@ -167,6 +204,7 @@ export function getRankingRulesDisplay(language: "en" | "ta" = "en") {
           "Ranking order:",
           "Earlier Year of Registration.",
           "Earlier Year of Passing.",
+          "If the year is the same and month is available, earlier month gets priority.",
           "Older Age (Date of Birth).",
           "Higher TET Score (for TET candidates).",
         ];
@@ -178,6 +216,7 @@ export function getRankingRulesDisplay(language: "en" | "ta" = "en") {
           "பலர் தகுதி பெற்றால் பின்வரும் வரிசை பின்பற்றப்படும்:",
           "முதலில் பதிவு செய்த ஆண்டு.",
           "முதலில் தேர்ச்சி பெற்ற ஆண்டு.",
+          "ஒரே ஆண்டு என்றால், மாதம் இருந்தால் அதற்கு முன்னுரிமை.",
           "அதிக வயது (பிறந்த தேதி அடிப்படையில்).",
           "TET தேர்வில் எடுத்த அதிக மதிப்பெண்.",
         ]
@@ -186,6 +225,7 @@ export function getRankingRulesDisplay(language: "en" | "ta" = "en") {
           "If multiple candidates qualify, the order is:",
           "Earlier Year of Registration.",
           "Earlier Year of Passing.",
+          "If the year is the same and month is available, earlier month gets priority.",
           "Older Age (Date of Birth).",
           "Higher TET Marks.",
         ];
@@ -194,11 +234,13 @@ export function getRankingRulesDisplay(language: "en" | "ta" = "en") {
     language === "ta"
       ? [
           "நிலை 1: முதலில் Ordination (Year of Passing) பெற்றவர் முன்னுரிமை.",
+          "ஒரே ஆண்டு என்றால், மாதம் இருந்தால் அதற்கு முன்னுரிமை.",
           "நிலை 2: அதிக ஆண்டுகள் பணி அனுபவம் உள்ளவர் முன்னுரிமை.",
           "நிலை 3: வயதில் மூத்தவர் முன்னுரிமை.",
         ]
       : [
           "Priority 1: Earlier Year of Ordination (Year of Passing).",
+          "If the year is the same and month is available, earlier month gets priority.",
           "Priority 2: Higher Years of Experience.",
           "Priority 3: Older Age (Date of Birth).",
         ];
