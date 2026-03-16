@@ -53,23 +53,14 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
   const clergy = schoolType === "clergy";
 
   const [sortMenuOpen, setSortMenuOpen] = useState(false);
-  const sortButtonRef = useRef<HTMLButtonElement | null>(null);
-  const sortMenuRef = useRef<HTMLDivElement | null>(null);
-  const [sortMenuPos, setSortMenuPos] = useState({ top: 0, left: 0, width: 0 });
-
-  useEffect(() => {
-    if (!sortMenuOpen || !sortButtonRef.current) return;
-    const rect = sortButtonRef.current.getBoundingClientRect();
-    setSortMenuPos({ top: rect.bottom + 6, left: rect.left, width: rect.width });
-  }, [sortMenuOpen]);
+  const sortWrapRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!sortMenuOpen) return;
     const handleOutside = (event: MouseEvent | TouchEvent) => {
       const target = event.target as Node | null;
       if (!target) return;
-      if (sortButtonRef.current?.contains(target)) return;
-      if (sortMenuRef.current?.contains(target)) return;
+      if (sortWrapRef.current?.contains(target)) return;
       setSortMenuOpen(false);
     };
     document.addEventListener("mousedown", handleOutside);
@@ -85,9 +76,8 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
       <div className={`flex items-center gap-2 ${sortingPulse ? "animate-pulse" : ""}`}>
         <span className="text-[12px] leading-3">{t("Rank", "வரிசை")}</span>
         {onSortModeChange && sortMode ? (
-          <div className="relative">
+          <div ref={sortWrapRef} className="relative">
             <button
-              ref={sortButtonRef}
               type="button"
               className="h-6 rounded border border-blue-200 bg-blue-50 px-2 text-[10px] font-semibold text-blue-700 shadow-sm dark:border-blue-500/40 dark:bg-blue-950/40 dark:text-blue-200 flex items-center gap-1.5"
               onClick={() => setSortMenuOpen((v) => !v)}
@@ -95,6 +85,24 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
               <span>{t("Sort by", "வரிசைப்படுத்து")}</span>
               <ChevronDown className="h-3 w-3 text-blue-600/70 shrink-0" />
             </button>
+            {sortMenuOpen ? (
+              <div className="absolute left-0 top-full mt-1 z-50 w-44 rounded-lg border border-slate-200 bg-white shadow-xl dark:border-slate-700 dark:bg-slate-900 overflow-hidden">
+                <button
+                  type="button"
+                  className="w-full px-3 py-2 text-left text-sm font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700"
+                  onClick={() => { onSortModeChange("seniority"); setSortMenuOpen(false); }}
+                >
+                  {t("Seniority", "மூப்பு")}
+                </button>
+                <button
+                  type="button"
+                  className="w-full px-3 py-2 text-left text-sm font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700"
+                  onClick={() => { onSortModeChange("appointment"); setSortMenuOpen(false); }}
+                >
+                  {t("Appointment", "நியமனம்")}
+                </button>
+              </div>
+            ) : null}
           </div>
         ) : null}
       </div>
@@ -105,33 +113,8 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
     <TableHead className={`w-20 font-semibold ${sortingPulse ? "animate-pulse" : ""}`}>{t("Rank", "வரிசை")}</TableHead>
   );
 
-  const sortMenu = sortMenuOpen ? (
-    <div
-      ref={sortMenuRef}
-      className="fixed z-[2147483647] w-44 rounded-lg border border-slate-200 bg-white shadow-xl dark:border-slate-700 dark:bg-slate-900 overflow-hidden"
-      style={{ top: sortMenuPos.top, left: sortMenuPos.left }}
-    >
-      <button
-        type="button"
-        className="w-full px-3 py-2 text-left text-sm font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700"
-        onClick={() => { onSortModeChange?.("seniority"); setSortMenuOpen(false); }}
-      >
-        {t("Seniority", "மூப்பு")}
-      </button>
-      <button
-        type="button"
-        className="w-full px-3 py-2 text-left text-sm font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700"
-        onClick={() => { onSortModeChange?.("appointment"); setSortMenuOpen(false); }}
-      >
-        {t("Appointment", "நியமனம்")}
-      </button>
-    </div>
-  ) : null;
-
   return (
     <div className="glass-panel seniority-table-panel rounded-lg border border-gray-200 shadow-sm">
-      {sortMenu}
-
       <Table className={highSchool ? "min-w-[1100px]" : clergy ? "min-w-[1000px]" : "min-w-[1200px]"}>
       <TableHeader>
         <TableRow className="bg-gray-50">
