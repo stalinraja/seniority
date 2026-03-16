@@ -86,7 +86,10 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
               <ChevronDown className="h-3 w-3 text-blue-600/70 shrink-0" />
             </button>
             {sortMenuOpen ? (
-              <div className="absolute left-0 top-full mt-1 z-50 w-44 rounded-lg border border-slate-200 bg-white shadow-xl dark:border-slate-700 dark:bg-slate-900 overflow-hidden">
+              <div
+                className="left-0 top-full mt-1 z-50 w-44 rounded-lg border border-slate-200 bg-white shadow-xl dark:border-slate-700 dark:bg-slate-900 divide-y divide-slate-200 dark:divide-slate-700"
+                style={{ position: "absolute" }}
+              >
                 <button
                   type="button"
                   className="w-full px-3 py-2 text-left text-sm font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700"
