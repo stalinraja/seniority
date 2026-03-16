@@ -727,113 +727,46 @@ export function Dashboard() {
       <div className="flex-1 flex flex-col overflow-visible min-w-0">
         <div className="px-4 sm:px-6 pt-4 sm:pt-5 pb-3 glass-panel border-b border-gray-200 rounded-b-xl relative z-[2147481000] overflow-visible">
           <div className="flex flex-wrap justify-center gap-2 mb-4">
-            return (
-              <div className="flex h-full flex-col dashboard-shell">
-                <div className="flex-1 flex flex-col overflow-visible min-w-0">
-                  <div className="px-4 sm:px-6 pt-4 sm:pt-5 pb-3 glass-panel border-b border-gray-200 rounded-b-xl relative z-[2147481000] overflow-visible">
-                    <div className="flex flex-wrap justify-center gap-2 mb-4">
-                      {/* ...existing code for school type buttons... */}
-                      {HIGH_SCHOOL_SECTION_ENABLED ? (
-                        <Button
-                          variant={schoolType === "high" ? "default" : "outline"}
-                          className={`w-full sm:w-auto ${
-                            schoolType === "high"
-                              ? "bg-blue-600 hover:bg-blue-700 text-white"
-                              : "bg-[rgb(250,252,255)] text-slate-900 border-slate-300 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-600 dark:hover:bg-slate-700"
-                          }`}
-                          onClick={() => setSchoolType("high")}
-                        >
-                          {t("High/Higher Secondary School Seniority", "உயர்நிலை/மேல்நிலை பள்ளி மூப்பு")}
-                        </Button>
-                      ) : null}
-                      {MIDDLE_SCHOOL_SECTION_ENABLED ? (
-                        <Button
-                          variant={schoolType === "elementary" ? "default" : "outline"}
-                          className={`w-full sm:w-auto ${
-                            schoolType === "elementary"
-                              ? "bg-blue-600 hover:bg-blue-700 text-white"
-                              : "bg-[rgb(250,252,255)] text-slate-900 border-slate-300 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-600 dark:hover:bg-slate-700"
-                          }`}
-                          onClick={() => setSchoolType("elementary")}
-                        >
-                          {t("Elementry/Middle School Seniority", "தொடக்க/நடுநிலை பள்ளி மூப்பு")}
-                        </Button>
-                      ) : null}
-                      {CLERGY_SECTION_ENABLED ? (
-                        <Button
-                          variant={schoolType === "clergy" ? "default" : "outline"}
-                          className={`w-full sm:w-auto ${
-                            schoolType === "clergy"
-                              ? "bg-blue-600 hover:bg-blue-700 text-white"
-                              : "bg-[rgb(250,252,255)] text-slate-900 border-slate-300 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-600 dark:hover:bg-slate-700"
-                          }`}
-                          onClick={() => setSchoolType("clergy")}
-                        >
-                          {t("Clergy Ordination Seniority", "குருத்துவ அர்ப்பணிப்பு மூப்பு")}
-                        </Button>
-                      ) : null}
-                    </div>
-                    {/* ...existing code... */}
-                    <div className="mb-4">
-                      <div className="flex items-center gap-4 flex-wrap">
-                        <h2 className="text-2xl font-semibold text-gray-900">
-                          {schoolType === "high"
-                            ? t("High/Higher Secondary School Seniority List", "உயர்நிலை/மேல்நிலை பள்ளி மூப்பு பட்டியல்")
-                            : schoolType === "elementary"
-                            ? t("Elementry/Middle School Seniority List", "தொடக்க/நடுநிலை பள்ளி மூப்பு பட்டியல்")
-                            : t("Clergy Ordination Seniority List", "குருத்துவ அர்ப்பணிப்பு மூப்பு பட்டியல்")}
-                        </h2>
-                        {loading && (
-                          <span className="inline-flex items-center gap-1 text-blue-600 animate-pulse">
-                            <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
-                            </svg>
-                            {t("Loading...", "ஏற்றப்படுகிறது...")}
-                          </span>
-                        )}
-                        {lastUpdated && !loading && (
-                          <span className="text-xs text-gray-500">
-                            {t("Last updated", "கடைசியாக புதுப்பிக்கப்பட்டது")}: {lastUpdated.toLocaleTimeString()}
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-gray-600 mt-1">
-                        {error ? (
-                          <>
-                            <span className="text-red-600 font-semibold">{error}</span>
-                            <br />
-                            <Button className="mt-2 bg-red-500 hover:bg-red-600 text-white" onClick={() => window.location.reload()}>
-                              {t("Retry", "மீண்டும் முயற்சி செய்க")}
-                            </Button>
-                            <br />
-                            <span className="text-xs text-gray-500">
-                              {t(
-                                "If you continue to see missing candidates or departments, please check the Google Sheet for completeness and verify the sync script is using the correct sheet/tab (GID) and includes all departments.",
-                                "விண்ணப்பதாரர்கள் அல்லது துறைகள் காணப்படவில்லை என்றால், Google Sheet-ஐ முழுமையாக உள்ளதா மற்றும் sync script சரியான sheet/tab (GID) பயன்படுத்துகிறதா என்பதை சரிபார்க்கவும்."
-                              )}
-                            </span>
-                          </>
-                        ) : currentCandidates.length === 0 ? (
-                          t(
-                            "No data loaded. Please check your sync script and Google Sheet URL.",
-                            "தரவு ஏற்றப்படவில்லை. உங்கள் sync script மற்றும் Google Sheet URL-ஐ சரிபார்க்கவும்."
-                          )
-                        ) : (
-                          t(
-                            `Showing ${pagedCandidates.length} of ${filteredCandidates.length} filtered (total: ${currentCandidates.length})`,
-                            `${filteredCandidates.length} வடிகட்டப்பட்டதில் ${pagedCandidates.length} காட்டப்படுகிறது (மொத்தம்: ${currentCandidates.length})`
-                          )
-                        )}
-                      </p>
-                    </div>
-                    {/* ...existing code... */}
-                  </div>
-                  {/* ...existing code... */}
-                </div>
-              </div>
-            </div>
-          ) : null}
+            {HIGH_SCHOOL_SECTION_ENABLED ? (
+              <Button
+                variant={schoolType === "high" ? "default" : "outline"}
+                className={`w-full sm:w-auto ${
+                  schoolType === "high"
+                    ? "bg-blue-600 hover:bg-blue-700 text-white"
+                    : "bg-[rgb(250,252,255)] text-slate-900 border-slate-300 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-600 dark:hover:bg-slate-700"
+                }`}
+                onClick={() => setSchoolType("high")}
+              >
+                {t("High/Higher Secondary School Seniority", "உயர்நிலை/மேல்நிலை பள்ளி மூப்பு")}
+              </Button>
+            ) : null}
+            {MIDDLE_SCHOOL_SECTION_ENABLED ? (
+              <Button
+                variant={schoolType === "elementary" ? "default" : "outline"}
+                className={`w-full sm:w-auto ${
+                  schoolType === "elementary"
+                    ? "bg-blue-600 hover:bg-blue-700 text-white"
+                    : "bg-[rgb(250,252,255)] text-slate-900 border-slate-300 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-600 dark:hover:bg-slate-700"
+                }`}
+                onClick={() => setSchoolType("elementary")}
+              >
+                {t("Elementry/Middle School Seniority", "தொடக்க/நடுநிலை பள்ளி மூப்பு")}
+              </Button>
+            ) : null}
+            {CLERGY_SECTION_ENABLED ? (
+              <Button
+                variant={schoolType === "clergy" ? "default" : "outline"}
+                className={`w-full sm:w-auto ${
+                  schoolType === "clergy"
+                    ? "bg-blue-600 hover:bg-blue-700 text-white"
+                    : "bg-[rgb(250,252,255)] text-slate-900 border-slate-300 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-600 dark:hover:bg-slate-700"
+                }`}
+                onClick={() => setSchoolType("clergy")}
+              >
+                {t("Clergy Ordination Seniority", "குருத்துவ அர்ப்பணிப்பு மூப்பு")}
+              </Button>
+            ) : null}
+          </div>
 
           <div className="mt-4">
             <FilterSidebar
