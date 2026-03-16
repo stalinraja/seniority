@@ -57,7 +57,6 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
         <span className="text-[12px] leading-3">{t("Rank", "வரிசை")}</span>
         {onSortModeChange && sortMode ? (
           <div className="flex items-center gap-1 text-[10px] leading-3 text-slate-500">
-            <span className="shrink-0">{t("Sort by", "வரிசைப்படுத்து")}</span>
             <div className="relative">
               <select
                 className="h-5 appearance-none rounded border border-blue-200 bg-blue-50 px-1.5 pr-4 text-[10px] font-semibold text-transparent shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-400 dark:border-blue-500/40 dark:bg-blue-950/40"
