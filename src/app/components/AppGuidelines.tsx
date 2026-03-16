@@ -21,7 +21,7 @@ export function AppGuidelines() {
               "மேலுள்ள தேர்வில் இருந்து மூப்பு வகையை (உயர்நிலை/மேல்நிலை அல்லது தொடக்க/நடுநிலை) தேர்வு செய்யவும்."
             )}
           </li>
-          <li>{t("Use Filters to narrow the list and Search to find candidates quickly.", "பட்டியலை குறைக்க வடிகட்டிகளை பயன்படுத்தவும்; விண்ணப்பதாரரை விரைவாக கண்டுபிடிக்க தேடலை பயன்படுத்தவும்.")}</li>
+          <li>{t("Use Filters to narrow the list, Search to find candidates quickly, and Sort By to switch between Seniority and Appointment views.", "பட்டியலை குறைக்க வடிகட்டிகளை பயன்படுத்தவும்; விண்ணப்பதாரரை விரைவாக கண்டுபிடிக்க தேடலை பயன்படுத்தவும்; மூப்பு மற்றும் நியமன பார்வையை மாற்ற Sort By பயன்படுத்தவும்.")}</li>
           <li>{t("Use Dashboard for visual summary and Download PDF for reports.", "காட்சி சுருக்கத்திற்கு டாஷ்போர்டை பயன்படுத்தவும்; அறிக்கைக்கு PDF பதிவிறக்கம் செய்யவும்.")}</li>
           <li>{t("Use Apply page to download the required school application form and view vacancies.", "தேவையான பள்ளி விண்ணப்பப் படிவத்தை பதிவிறக்கம் செய்யவும்; காலிப்பணியிடங்களை பார்க்கவும் விண்ணப்பப் பக்கத்தை பயன்படுத்தவும்.")}</li>
         </ol>

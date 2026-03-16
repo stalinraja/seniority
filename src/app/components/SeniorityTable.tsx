@@ -52,22 +52,22 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
   const clergy = schoolType === "clergy";
 
   const rankHeader = (
-    <TableHead className="w-32 font-semibold align-top">
-      <div className={`flex flex-col gap-2 ${sortingPulse ? "animate-pulse" : ""}`}>
-        <span className="leading-none">{t("Rank", "வரிசை")}</span>
+    <TableHead className="w-28 font-semibold h-10 align-middle">
+      <div className={`flex flex-col gap-0.5 ${sortingPulse ? "animate-pulse" : ""}`}>
+        <span className="text-[12px] leading-3">{t("Rank", "வரிசை")}</span>
         {onSortModeChange && sortMode ? (
-          <div className="flex flex-col gap-1">
-            <span className="uppercase tracking-wide text-[10px] text-slate-400">{t("Sort by", "வரிசைப்படுத்து")}</span>
+          <div className="flex items-center gap-1 text-[10px] leading-3 text-slate-500">
+            <span>{t("Sort by", "வரிசைப்படுத்து")}</span>
             <div className="relative">
               <select
-                className="w-full appearance-none rounded border border-blue-200 bg-blue-50 px-2 py-1 pr-6 text-[11px] font-semibold text-blue-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 dark:border-blue-500/40 dark:bg-blue-950/40 dark:text-blue-200"
+                className="h-5 appearance-none rounded border border-blue-200 bg-blue-50 px-1.5 pr-4 text-[10px] font-semibold text-blue-700 shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-400 dark:border-blue-500/40 dark:bg-blue-950/40 dark:text-blue-200"
                 value={sortMode}
                 onChange={(e) => onSortModeChange(e.target.value as "seniority" | "appointment")}
               >
                 <option value="seniority">{t("Seniority", "மூப்பு")}</option>
                 <option value="appointment">{t("Appointment", "நியமனம்")}</option>
               </select>
-              <ChevronDown className="pointer-events-none absolute right-1.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-blue-600/70" />
+              <ChevronDown className="pointer-events-none absolute right-1 top-1/2 h-3 w-3 -translate-y-1/2 text-blue-600/70" />
             </div>
           </div>
         ) : null}

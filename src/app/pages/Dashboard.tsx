@@ -592,7 +592,7 @@ export function Dashboard() {
     };
   }, [t, highSchoolCandidates.length, elementaryCandidates.length, clergyCandidates.length]);
 
-  const showSplash = !initialLoadDone;
+  const showSplash = !initialLoadDone || (loading && currentCandidates.length === 0);
 
   const currentCandidates =
     schoolType === "high"
@@ -719,7 +719,7 @@ export function Dashboard() {
     try {
       setDownloadingPdf(true);
       const mod = await import("../utils/pdfUtils");
-      mod.downloadCandidatesPDF(filteredCandidates, filters as any, schoolType, sortMode, searchQuery);
+      await mod.downloadCandidatesPDF(filteredCandidates, filters as any, schoolType, sortMode, searchQuery);
     } finally {
       setDownloadingPdf(false);
     }
@@ -755,6 +755,9 @@ export function Dashboard() {
             src="/diocese-logo.png"
             alt="CSI Thoothukudi Nazareth Diocese logo"
             className="w-28 h-28 sm:w-36 sm:h-36 object-contain animate-pulse"
+            loading="eager"
+            decoding="async"
+            fetchPriority="high"
           />
         </div>
       )}

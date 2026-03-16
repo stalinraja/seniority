@@ -211,6 +211,24 @@ function slugifyPart(value: string) {
     .replace(/^-+|-+$/g, "");
 }
 
+
+async function loadLogoDataUrl(): Promise<string | null> {
+  try {
+    const url = `${import.meta.env.BASE_URL || "/"}diocese-logo.png`;
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const blob = await res.blob();
+    return await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(typeof reader.result === "string" ? reader.result : null);
+      reader.onerror = () => resolve(null);
+      reader.readAsDataURL(blob);
+    });
+  } catch {
+    return null;
+  }
+}
+
 function buildPdfFileName(schoolType: SchoolType, filters: Record<string, string[]>, sortMode: "seniority" | "appointment" = "seniority", searchQuery = "") {
   const base =
     schoolType === "high"
@@ -239,7 +257,7 @@ function buildPdfFileName(schoolType: SchoolType, filters: Record<string, string
   return `${base}-${sortMode}${filterSuffix}${searchSuffix}-${datePart}.pdf`;
 }
 
-export function downloadCandidatesPDF(
+export async function downloadCandidatesPDF(
   candidates: any[],
   filters: Record<string, string[]>,
   schoolType: SchoolType = "high",
@@ -247,19 +265,30 @@ export function downloadCandidatesPDF(
   searchQuery = ""
 ) {
   const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+  const logoDataUrl = await loadLogoDataUrl();
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(14);
-  doc.text(
+  doc.setFontSize(16);
+  const title =
     schoolType === "high"
       ? `High/Higher Secondary School ${sortMode === "appointment" ? "Appointment" : "Seniority"} List`
       : schoolType === "elementary"
       ? `Elementry/Middle School ${sortMode === "appointment" ? "Appointment" : "Seniority"} List`
-      : "Clergy Ordination Seniority List",
-    8,
-    14
-  );
+      : "Clergy Ordination Seniority List";
 
-  let startY = 20;
+  if (logoDataUrl) {
+    doc.addImage(logoDataUrl, "PNG", 8, 6, 16, 16);
+  }
+  doc.text("CSI Thoothukudi Nazareth Diocese", 28, 13);
+  doc.setFontSize(12);
+  doc.setFont("helvetica", "normal");
+  doc.text(title, 28, 20);
+
+  const printedAt = new Date();
+  doc.setFontSize(9);
+  doc.setFont("helvetica", "normal");
+  doc.text(`Printed: ${printedAt.toLocaleString()}`, 250, 12, { align: "right" });
+
+  let startY = 26;
   if (filters) {
     const filterText = Object.entries(filters)
       .filter(([, v]) => v && v.length)
@@ -285,10 +314,46 @@ export function downloadCandidatesPDF(
   const rows = candidates.map((candidate) => columns.map((col) => col.getValue(candidate)));
   const columnStyles = buildColumnStyles(doc, columns);
 
+
+  const filterText = Object.entries(filters || {})
+    .filter(([, v]) => v && v.length)
+    .map(([k, v]) => `${k}: ${v.join(", ")}`)
+    .join(" | ");
+  const searchText = searchQuery ? `Search: ${searchQuery}` : "";
+  const sortText = `Sorted by: ${sortMode === "appointment" ? "Appointment" : "Seniority"}`;
+  const metaText = [sortText, filterText, searchText].filter(Boolean).join(" | ");
+
+  if (metaText) {
+    const wrapped = doc.splitTextToSize(metaText, 285);
+    doc.text(wrapped, 8, startY);
+    startY += wrapped.length * 4 + 2;
+  }
+
   autoTable(doc, {
     head: headers,
     body: rows,
     startY,
+    didDrawPage: (data) => {
+      const totalPages = doc.getNumberOfPages();
+      const pageNumber = data.pageNumber;
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+
+      if (logoDataUrl) {
+        const GState = (doc as any).GState;
+        if (GState && (doc as any).setGState) {
+          (doc as any).setGState(new GState({ opacity: 0.06 }));
+        }
+        doc.addImage(logoDataUrl, "PNG", pageWidth / 2 - 30, pageHeight / 2 - 30, 60, 60);
+        if (GState && (doc as any).setGState) {
+          (doc as any).setGState(new GState({ opacity: 1 }));
+        }
+      }
+
+      doc.setFontSize(8);
+      doc.setFont("helvetica", "normal");
+      doc.text(`Page ${pageNumber} of ${totalPages}`, pageWidth - 8, pageHeight - 6, { align: "right" });
+    },
     theme: "grid",
     styles: {
       font: "helvetica",
@@ -338,6 +403,7 @@ export function downloadAppointmentsReportPDF(
   schoolType: AppointmentSchoolType
 ) {
   const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+  const logoDataUrl = await loadLogoDataUrl();
   doc.setFont("helvetica", "bold");
   doc.setFontSize(13);
   doc.text(
@@ -357,6 +423,21 @@ export function downloadAppointmentsReportPDF(
   const headers = [columns.map((col) => col.title)];
   const rows = appointmentRows.map((candidate) => columns.map((col) => col.getValue(candidate)));
   const columnStyles = buildColumnStyles(doc, columns);
+
+
+  const filterText = Object.entries(filters || {})
+    .filter(([, v]) => v && v.length)
+    .map(([k, v]) => `${k}: ${v.join(", ")}`)
+    .join(" | ");
+  const searchText = searchQuery ? `Search: ${searchQuery}` : "";
+  const sortText = `Sorted by: ${sortMode === "appointment" ? "Appointment" : "Seniority"}`;
+  const metaText = [sortText, filterText, searchText].filter(Boolean).join(" | ");
+
+  if (metaText) {
+    const wrapped = doc.splitTextToSize(metaText, 285);
+    doc.text(wrapped, 8, startY);
+    startY += wrapped.length * 4 + 2;
+  }
 
   autoTable(doc, {
     head: headers,
