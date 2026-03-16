@@ -69,17 +69,17 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
               <ChevronDown className="h-3 w-3 text-blue-600/70" />
             </button>
             {sortMenuOpen ? (
-              <div className="absolute left-0 top-6 z-50 w-40 rounded border border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-900">
+              <div className="absolute left-0 top-6 z-50 w-44 rounded-lg border border-slate-200 bg-white shadow-xl dark:border-slate-700 dark:bg-slate-900 overflow-hidden">
                 <button
                   type="button"
-                  className="w-full px-2 py-2 text-left text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
+                  className="w-full px-3 py-2 text-left text-sm font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700"
                   onClick={() => { onSortModeChange("seniority"); setSortMenuOpen(false); }}
                 >
                   {t("Seniority", "மூப்பு")}
                 </button>
                 <button
                   type="button"
-                  className="w-full px-2 py-2 text-left text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
+                  className="w-full px-3 py-2 text-left text-sm font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700"
                   onClick={() => { onSortModeChange("appointment"); setSortMenuOpen(false); }}
                 >
                   {t("Appointment", "நியமனம்")}

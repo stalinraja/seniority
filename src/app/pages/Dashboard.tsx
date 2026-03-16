@@ -490,6 +490,7 @@ export function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [initialLoadDone, setInitialLoadDone] = useState(false);
   const [logoReady, setLogoReady] = useState(false);
+  const [splashVisible, setSplashVisible] = useState(true);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
   const [sortingPulse, setSortingPulse] = useState(false);
   const [downloadingReport, setDownloadingReport] = useState(false);
@@ -601,7 +602,13 @@ export function Dashboard() {
       : clergyCandidates;
 
   const totalCandidates = highSchoolCandidates.length + elementaryCandidates.length + clergyCandidates.length;
-  const showSplash = !logoReady || loading || !initialLoadDone || totalCandidates === 0;
+  const readyToShowApp = logoReady && !loading && initialLoadDone && totalCandidates > 0;
+
+  useEffect(() => {
+    if (readyToShowApp) setSplashVisible(false);
+  }, [readyToShowApp]);
+
+  const showSplash = splashVisible;
 
   const filterGroups: FilterGroup[] = useMemo(() => {
     if (schoolType === "high") {
@@ -761,7 +768,11 @@ export function Dashboard() {
           />
         </div>
       )}
-      <div className="flex h-full flex-col dashboard-shell">
+      <div
+        className={`flex h-full flex-col dashboard-shell transition-opacity duration-300 ${
+          showSplash ? "opacity-0 pointer-events-none" : "opacity-100"
+        }`}
+      >
       <div className="flex-1 flex flex-col overflow-visible min-w-0">
         <div className="px-4 sm:px-6 pt-4 sm:pt-5 pb-3 glass-panel border-b border-gray-200 rounded-b-xl relative z-[2147481000] overflow-visible">
           <div className="flex flex-wrap justify-center gap-2 mb-4">
