@@ -52,13 +52,13 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
   const clergy = schoolType === "clergy";
 
   const rankHeader = (
-    <TableHead className="w-28 font-semibold h-10 align-middle">
+    <TableHead className="w-32 font-semibold h-10 align-middle">
       <div className={`flex items-center gap-2 ${sortingPulse ? "animate-pulse" : ""}`}>
         <span className="text-[12px] leading-3">{t("Rank", "வரிசை")}</span>
         {onSortModeChange && sortMode ? (
           <div className="relative">
             <select
-              className="h-5 w-[62px] appearance-none rounded border border-blue-200 bg-blue-50 px-1.5 pr-4 text-[10px] font-semibold text-transparent shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-400 dark:border-blue-500/40 dark:bg-blue-950/40"
+              className="h-5 w-[56px] appearance-none rounded border border-blue-200 bg-blue-50 px-1.5 pr-4 text-[10px] font-semibold text-transparent shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-400 dark:border-blue-500/40 dark:bg-blue-950/40"
               value={sortMode}
               onChange={(e) => onSortModeChange(e.target.value as "seniority" | "appointment")}
               aria-label={t("Sort by", "வரிசைப்படுத்து")}

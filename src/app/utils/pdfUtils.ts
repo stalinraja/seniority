@@ -71,8 +71,7 @@ function getHighColumns(): PdfColumn[] {
     { key: "qualification", title: "Qualification", minWidth: 34, weight: 2.5, wrap: true, getValue: (c) => splitQualifications(c.qualification) },
     { key: "yearOfPassing", title: "Year of Passing", align: "center", minWidth: 18, weight: 1.2, getValue: (c) => c.yearOfPassing || "" },
     { key: "yearOfRegistering", title: "Year of Registering", align: "center", minWidth: 18, weight: 1.2, getValue: (c) => c.yearOfRegistering ?? "" },
-    { key: "tet", title: "TET Qualified", align: "center", minWidth: 20, weight: 1.5, getValue: (c) => getTetDisplay(c) },
-    { key: "address", title: "Address", minWidth: 40, weight: 3, wrap: true, getValue: (c) => c.address || "-" },
+    { key: "tet", title: "TET Qualified", align: "center", minWidth: 24, weight: 2, getValue: (c) => getTetDisplay(c) },
     { key: "pincode", title: "Pincode", align: "center", minWidth: 14, weight: 1, getValue: (c) => c.pincode || "-" },
     { key: "pastorate", title: "Pastorate", minWidth: 22, weight: 1.6, wrap: true, getValue: (c) => c.pastorate || "-" },
     { key: "council", title: "Council", minWidth: 20, weight: 1.5, wrap: true, getValue: (c) => c.council || "-" },
@@ -286,21 +285,27 @@ export async function downloadCandidatesPDF(
   const printedAt = new Date();
 
   let startY = 26;
-  if (filters) {
-    const filterText = Object.entries(filters)
-      .filter(([, v]) => v && v.length)
-      .map(([k, v]) => `${k}: ${v.join(", ")}`)
-      .join(" | ");
-    if (filterText) {
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(9);
-      const wrapped = doc.splitTextToSize(`Filters: ${filterText}`, 285);
-      doc.text(wrapped, 8, startY);
-      startY += wrapped.length * 4 + 2;
-    }
+
+  const filterText = Object.entries(filters || {})
+    .filter(([, v]) => v && v.length)
+    .map(([k, v]) => `${k}: ${v.join(", ")}`)
+    .join(" | ");
+  const sortText = `Sorted by: ${sortMode === "appointment" ? "Appointment" : "Seniority"}`;
+  const searchText = searchQuery ? `Search: ${searchQuery}` : "";
+  const metaText = [filterText ? `Filters: ${filterText}` : "", sortText, searchText]
+    .filter(Boolean)
+    .join(" | ");
+
+  if (metaText) {
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    const wrapped = doc.splitTextToSize(metaText, 285);
+    doc.text(wrapped, 8, startY);
+    startY += wrapped.length * 4 + 2;
   }
 
-  const allColumns =
+  const allColumns
+ =
     schoolType === "high"
       ? getHighColumns()
       : schoolType === "elementary"
