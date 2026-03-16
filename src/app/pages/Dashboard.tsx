@@ -483,6 +483,8 @@ export function Dashboard() {
   const [elementaryCandidates, setElementaryCandidates] = useState<any[]>([]);
   const [clergyCandidates, setClergyCandidates] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [splashDone, setSplashDone] = useState(false);
+  const [initialLoadDone, setInitialLoadDone] = useState(false);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
   const [downloadingReport, setDownloadingReport] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -518,6 +520,11 @@ export function Dashboard() {
     setSearchQuery("");
     setCurrentPage(1);
   }, [schoolType]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setSplashDone(true), 3000);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -556,10 +563,12 @@ export function Dashboard() {
 
           setError(null);
           setLoading(false);
+          if (initial) setInitialLoadDone(true);
         })
         .catch(() => {
           setError(t("Failed to load data", "தரவு ஏற்ற முடியவில்லை"));
           setLoading(false);
+          if (initial) setInitialLoadDone(true);
         });
     };
 
@@ -567,6 +576,8 @@ export function Dashboard() {
     interval = setInterval(() => load(false), 60000);
     return () => clearInterval(interval);
   }, [t]);
+
+  const showSplash = !(splashDone && initialLoadDone);
 
   const currentCandidates =
     schoolType === "high"
@@ -723,7 +734,17 @@ export function Dashboard() {
   };
 
   return (
-    <div className="flex h-full flex-col dashboard-shell">
+    <>
+      {showSplash && (
+        <div className="fixed inset-0 z-[2147483646] flex items-center justify-center bg-white dark:bg-slate-950">
+          <img
+            src="/diocese-logo.png"
+            alt="CSI Thoothukudi Nazareth Diocese logo"
+            className="w-28 h-28 sm:w-36 sm:h-36 object-contain animate-pulse"
+          />
+        </div>
+      )}
+      <div className="flex h-full flex-col dashboard-shell">
       <div className="flex-1 flex flex-col overflow-visible min-w-0">
         <div className="px-4 sm:px-6 pt-4 sm:pt-5 pb-3 glass-panel border-b border-gray-200 rounded-b-xl relative z-[2147481000] overflow-visible">
           <div className="flex flex-wrap justify-center gap-2 mb-4">
@@ -828,13 +849,11 @@ export function Dashboard() {
             </p>
 
             <div className="mt-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-              <div className="flex-1 min-w-[220px]">
-                <SearchBar
-                  value={searchQuery}
-                  onChange={setSearchQuery}
-                  className="w-full"
-                />
-              </div>
+              <SearchBar
+                value={searchQuery}
+                onChange={setSearchQuery}
+                className="max-w-xl"
+              />
               <div className="flex flex-wrap items-center gap-2">
                 <Button
                   className="bg-blue-600 hover:bg-blue-700 text-white"
@@ -906,5 +925,6 @@ export function Dashboard() {
         </div>
       </div>
     </div>
+    </>
   );
 }

@@ -272,7 +272,7 @@ export function DashboardVisual({
           animate={{ scale: 1 }}
           exit={{ scale: 0.9 }}
           transition={{ duration: 0.4 }}
-          className="bg-[rgb(255,255,255)] dark:bg-[rgb(10,19,32)] rounded-xl shadow-xl p-4 sm:p-6 lg:p-8 max-w-3xl w-full relative border border-slate-200 dark:border-slate-700 max-h-[92vh] overflow-y-auto watermark-panel"
+          className="bg-[rgb(255,255,255)] dark:bg-[rgb(10,19,32)] rounded-xl shadow-xl p-4 sm:p-6 lg:p-8 max-w-3xl w-full relative border border-slate-200 dark:border-slate-700 max-h-[92vh] overflow-y-auto"
         >
           <Button
             onClick={onClose}
