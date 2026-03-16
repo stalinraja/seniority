@@ -8,7 +8,7 @@ import {
   TableRow,
 } from "./ui/table";
 import { Badge } from "./ui/badge";
-import { Award } from "lucide-react";
+import { Award, ChevronDown } from "lucide-react";
 import { useLanguage } from "../i18n/language";
 import { ELEMENTARY_TET_PASS_MARK, HIGH_SCHOOL_TET_PASS_MARK } from "../config/features";
 

@@ -488,7 +488,6 @@ export function Dashboard() {
   const [elementaryCandidates, setElementaryCandidates] = useState<any[]>([]);
   const [clergyCandidates, setClergyCandidates] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [splashDone, setSplashDone] = useState(false);
   const [initialLoadDone, setInitialLoadDone] = useState(false);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
   const [sortingPulse, setSortingPulse] = useState(false);
@@ -526,11 +525,6 @@ export function Dashboard() {
     setSearchQuery("");
     setCurrentPage(1);
   }, [schoolType]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setSplashDone(true), 3000);
-    return () => clearTimeout(timer);
-  }, []);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -598,7 +592,7 @@ export function Dashboard() {
     };
   }, [t, highSchoolCandidates.length, elementaryCandidates.length, clergyCandidates.length]);
 
-  const showSplash = !(splashDone && initialLoadDone);
+  const showSplash = !initialLoadDone;
 
   const currentCandidates =
     schoolType === "high"
