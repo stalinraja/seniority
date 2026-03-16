@@ -741,7 +741,7 @@ export function Dashboard() {
     try {
       setDownloadingReport(true);
       const mod = await import("../utils/pdfUtils");
-      mod.downloadAppointmentsReportPDF(appointmentRows, schoolType);
+      await mod.downloadAppointmentsReportPDF(appointmentRows, schoolType);
     } finally {
       setDownloadingReport(false);
     }

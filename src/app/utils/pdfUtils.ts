@@ -315,20 +315,6 @@ export async function downloadCandidatesPDF(
   const columnStyles = buildColumnStyles(doc, columns);
 
 
-  const filterText = Object.entries(filters || {})
-    .filter(([, v]) => v && v.length)
-    .map(([k, v]) => `${k}: ${v.join(", ")}`)
-    .join(" | ");
-  const searchText = searchQuery ? `Search: ${searchQuery}` : "";
-  const sortText = `Sorted by: ${sortMode === "appointment" ? "Appointment" : "Seniority"}`;
-  const metaText = [sortText, filterText, searchText].filter(Boolean).join(" | ");
-
-  if (metaText) {
-    const wrapped = doc.splitTextToSize(metaText, 285);
-    doc.text(wrapped, 8, startY);
-    startY += wrapped.length * 4 + 2;
-  }
-
   autoTable(doc, {
     head: headers,
     body: rows,
@@ -398,7 +384,7 @@ function buildAppointmentReportFileName(schoolType: AppointmentSchoolType) {
   return `${base}-${datePart}.pdf`;
 }
 
-export function downloadAppointmentsReportPDF(
+export async function downloadAppointmentsReportPDF(
   appointmentRows: any[],
   schoolType: AppointmentSchoolType
 ) {
@@ -443,6 +429,27 @@ export function downloadAppointmentsReportPDF(
     head: headers,
     body: rows,
     startY: 23,
+    didDrawPage: (data) => {
+      const totalPages = doc.getNumberOfPages();
+      const pageNumber = data.pageNumber;
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+
+      if (logoDataUrl) {
+        const GState = (doc as any).GState;
+        if (GState && (doc as any).setGState) {
+          (doc as any).setGState(new GState({ opacity: 0.06 }));
+        }
+        doc.addImage(logoDataUrl, "PNG", pageWidth / 2 - 30, pageHeight / 2 - 30, 60, 60);
+        if (GState && (doc as any).setGState) {
+          (doc as any).setGState(new GState({ opacity: 1 }));
+        }
+      }
+
+      doc.setFontSize(8);
+      doc.setFont("helvetica", "normal");
+      doc.text(`Page ${pageNumber} of ${totalPages}`, pageWidth - 8, pageHeight - 6, { align: "right" });
+    },
     theme: "grid",
     styles: {
       font: "helvetica",
