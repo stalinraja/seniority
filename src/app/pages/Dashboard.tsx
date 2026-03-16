@@ -592,14 +592,14 @@ export function Dashboard() {
     };
   }, [t, highSchoolCandidates.length, elementaryCandidates.length, clergyCandidates.length]);
 
-  const showSplash = !initialLoadDone || (loading && currentCandidates.length === 0);
-
   const currentCandidates =
     schoolType === "high"
       ? highSchoolCandidates
       : schoolType === "elementary"
       ? elementaryCandidates
       : clergyCandidates;
+
+  const showSplash = !initialLoadDone || (loading && !highSchoolCandidates.length && !elementaryCandidates.length && !clergyCandidates.length);
 
   const filterGroups: FilterGroup[] = useMemo(() => {
     if (schoolType === "high") {
