@@ -228,13 +228,13 @@ export function getRankingRulesDisplay(language: "en" | "ta" = "en") {
           "நியமன சமநிலை வரிசை: பதிவு ஆண்டு -> தேர்ச்சி ஆண்டு (மாதம் இருந்தால் முன்னுரிமை) -> வயது -> அதிக TET மதிப்பெண்.",
         ]
       : [
-          "Seniority list (default): TET is NOT used for priority. We rank by:",
-          "1) Earlier Year of Registration (who registered first).",
-          "2) Earlier Year of Passing (if same year and month is available, earlier month wins).",
-          "3) Older Age (Date of Birth).",
-          "4) Higher TET score (only used if all above are tied).",
-          `Appointment order: UG candidates with TET ${HIGH_SCHOOL_TET_PASS_MARK}+ are listed before non‑TET candidates.`,
-          "Appointment tie-breaks follow the same order: Registration -> Passing (month if available) -> Age -> TET score.",
+          "Seniority view (default):",
+          "1) Earlier registration year comes first.",
+          "2) If the year is the same, earlier passing month/year comes first when available.",
+          "3) If still tied, older age comes first.",
+          "4) If still tied, higher TET score comes first.",
+          "Appointment view: TET‑qualified candidates are prioritized.",
+          "Appointment tie‑breaks use the same order as above.",
         ];
 
   const elementary =

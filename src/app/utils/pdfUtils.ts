@@ -211,7 +211,7 @@ function slugifyPart(value: string) {
     .replace(/^-+|-+$/g, "");
 }
 
-function buildPdfFileName(schoolType: SchoolType, filters: Record<string, string[]>, sortMode: "seniority" | "appointment" = "seniority") {
+function buildPdfFileName(schoolType: SchoolType, filters: Record<string, string[]>, sortMode: "seniority" | "appointment" = "seniority", searchQuery = "") {
   const base =
     schoolType === "high"
       ? "high-school-seniority"
@@ -234,14 +234,17 @@ function buildPdfFileName(schoolType: SchoolType, filters: Record<string, string
 
   const datePart = new Date().toISOString().slice(0, 10);
   const filterSuffix = filterParts.length ? `-${filterParts.join("-")}` : "-all";
-  return `${base}-${sortMode}${filterSuffix}-${datePart}.pdf`;
+  const searchPart = slugifyPart(searchQuery).slice(0, 40);
+  const searchSuffix = searchPart ? `-search-${searchPart}` : "";
+  return `${base}-${sortMode}${filterSuffix}${searchSuffix}-${datePart}.pdf`;
 }
 
 export function downloadCandidatesPDF(
   candidates: any[],
   filters: Record<string, string[]>,
   schoolType: SchoolType = "high",
-  sortMode: "seniority" | "appointment" = "seniority"
+  sortMode: "seniority" | "appointment" = "seniority",
+  searchQuery = ""
 ) {
   const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
   doc.setFont("helvetica", "bold");
@@ -316,7 +319,7 @@ export function downloadCandidatesPDF(
     columnStyles,
   });
 
-  doc.save(buildPdfFileName(schoolType, filters, sortMode));
+  doc.save(buildPdfFileName(schoolType, filters, sortMode, searchQuery));
 }
 
 function buildAppointmentReportFileName(schoolType: AppointmentSchoolType) {

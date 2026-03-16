@@ -639,6 +639,11 @@ export function Dashboard() {
 
   const handleClearAllFilters = () => setFilters({});
 
+  const dashboardKey = useMemo(() =>
+    JSON.stringify({ schoolType, sortMode, searchQuery, filters }),
+    [schoolType, sortMode, searchQuery, filters]
+  );
+
   const filteredCandidates = useMemo(() => {
     let rows = [...currentCandidates];
 
@@ -720,7 +725,7 @@ export function Dashboard() {
     try {
       setDownloadingPdf(true);
       const mod = await import("../utils/pdfUtils");
-      mod.downloadCandidatesPDF(filteredCandidates, filters as any, schoolType, sortMode);
+      mod.downloadCandidatesPDF(filteredCandidates, filters as any, schoolType, sortMode, searchQuery);
     } finally {
       setDownloadingPdf(false);
     }
@@ -818,6 +823,7 @@ export function Dashboard() {
 
         {showDashboard && (
           <DashboardVisual
+            key={dashboardKey}
             candidates={filteredCandidates}
             schoolType={schoolType}
             onClose={() => setShowDashboard(false)}
@@ -864,11 +870,13 @@ export function Dashboard() {
             </p>
 
             <div className="mt-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-              <SearchBar
-                value={searchQuery}
-                onChange={setSearchQuery}
-                className="max-w-xl"
-              />
+              <div className="flex-1">
+                <SearchBar
+                  value={searchQuery}
+                  onChange={setSearchQuery}
+                  className="w-full"
+                />
+              </div>
               <div className="flex flex-wrap items-center gap-2">
                 <Button
                   className="bg-blue-600 hover:bg-blue-700 text-white"

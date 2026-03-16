@@ -56,28 +56,19 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
       <div className={`flex flex-col gap-2 ${sortingPulse ? "animate-pulse" : ""}`}>
         <span className="leading-none">{t("Rank", "வரிசை")}</span>
         {onSortModeChange && sortMode ? (
-          <div className="flex flex-col gap-1 text-[11px] font-medium text-slate-600">
+          <div className="flex flex-col gap-1">
             <span className="uppercase tracking-wide text-[10px] text-slate-400">{t("Sort by", "வரிசைப்படுத்து")}</span>
-            <label className="flex items-center gap-2">
-              <input
-                type="radio"
-                name="rank-sort"
-                className="h-3.5 w-3.5 accent-blue-600"
-                checked={sortMode === "seniority"}
-                onChange={() => onSortModeChange("seniority")}
-              />
-              <span>{t("Seniority", "மூப்பு")}</span>
-            </label>
-            <label className="flex items-center gap-2">
-              <input
-                type="radio"
-                name="rank-sort"
-                className="h-3.5 w-3.5 accent-blue-600"
-                checked={sortMode === "appointment"}
-                onChange={() => onSortModeChange("appointment")}
-              />
-              <span>{t("Appointment", "நியமனம்")}</span>
-            </label>
+            <div className="relative">
+              <select
+                className="w-full appearance-none rounded border border-blue-200 bg-blue-50 px-2 py-1 pr-6 text-[11px] font-semibold text-blue-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 dark:border-blue-500/40 dark:bg-blue-950/40 dark:text-blue-200"
+                value={sortMode}
+                onChange={(e) => onSortModeChange(e.target.value as "seniority" | "appointment")}
+              >
+                <option value="seniority">{t("Seniority", "மூப்பு")}</option>
+                <option value="appointment">{t("Appointment", "நியமனம்")}</option>
+              </select>
+              <ChevronDown className="pointer-events-none absolute right-1.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-blue-600/70" />
+            </div>
           </div>
         ) : null}
       </div>

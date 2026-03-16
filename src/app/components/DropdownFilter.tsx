@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { ChevronDown } from "lucide-react";
 import { createPortal } from "react-dom";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
@@ -92,12 +93,15 @@ export function DropdownFilter({
       <div className="relative">
         <button
           ref={triggerRef}
-          className={`filter-dropdown__trigger w-full border rounded text-left ${compact ? "px-2.5 py-1.5 text-sm" : "px-3 py-2"}`}
+          className={`filter-dropdown__trigger w-full border rounded text-left flex items-center justify-between gap-2 ${compact ? "px-2.5 py-1.5 text-sm" : "px-3 py-2"}`}
           onClick={() => setOpen((o) => !o)}
         >
-          {selectedItems.length
-            ? t(`${selectedItems.length} selected`, `${selectedItems.length} தேர்வு செய்யப்பட்டது`)
-            : t(`Select ${title}`, `${title} தேர்வு செய்க`)}
+          <span className="truncate">
+            {selectedItems.length
+              ? t(`${selectedItems.length} selected`, `${selectedItems.length} தேர்வு செய்யப்பட்டது`)
+              : t(`Select ${title}`, `${title} தேர்வு செய்க`)}
+          </span>
+          <ChevronDown className="w-4 h-4 text-slate-400" />
         </button>
         {open &&
           typeof document !== "undefined" &&
@@ -119,19 +123,18 @@ export function DropdownFilter({
               />
               <div className="space-y-2 px-2">
                 {filteredItems.map((item) => (
-                  <div key={item} className="flex items-center gap-2">
+                  <label key={item} className="flex items-center gap-2 text-sm text-gray-700 dark:text-slate-200 cursor-pointer">
                     <input
                       id={`${title}-${item}`}
                       type="radio"
                       name={`filter-${title}`}
                       checked={selectedItems[0] === item}
                       onChange={(e) => onChange(item, e.target.checked)}
-                      className="h-4 w-4 accent-blue-600"
+                      className="peer sr-only"
                     />
-                    <Label htmlFor={`${title}-${item}`} className="text-sm text-gray-700 dark:text-slate-200 cursor-pointer">
-                      {item}
-                    </Label>
-                  </div>
+                    <span className="h-4 w-4 rounded-full border border-slate-300 bg-white shadow-sm transition peer-checked:border-blue-600 peer-checked:bg-blue-600 peer-focus-visible:ring-2 peer-focus-visible:ring-blue-500" />
+                    <span>{item}</span>
+                  </label>
                 ))}
                 {filteredItems.length === 0 && (
                   <div className="text-gray-500 dark:text-slate-300 text-sm px-2 py-1">
