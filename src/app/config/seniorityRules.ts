@@ -223,22 +223,20 @@ export function getRankingRulesDisplay(language: "en" | "ta" = "en") {
   const high =
     language === "ta"
       ? [
-          "இது முதுகலை (PG) மற்றும் இளங்கலை (UG) என இரண்டு பிரிவுகளுக்கும் பொருந்தும். இளங்கலை ஆசிரியர்களுக்கு TET தேர்ச்சி கட்டாயம்.",
-          "மூப்பு வரிசை: பதிவு செய்த தேதி முதலில்.",
+                    "தரவரிசை: பதிவு செய்த தேதி முதலில்.",
           "ஒரே ஆண்டில் பதிவு செய்திருந்தால், முதலில் தேர்ச்சி பெற்றவர் (மாதம்/ஆண்டு) முன்னுரிமை.",
-          "இன்னும் சமமானால், வயதில் மூத்தவர் முன்னுரிமை.",
+          "இன்னும் சமமானால், முன்னதாக பிறந்தவர் முன்னுரிமை.",
           "இன்னும் சமமானால், TET மதிப்பெண் அதிகம் பெற்றவர் முன்னுரிமை.",
           "நியமன முன்னுரிமை: TET தேர்ச்சி பெற்றவர்கள் முதலில்.",
-          "TET தேர்ச்சி பெற்றவர்கள் பலரானால், மேற்கண்ட மூப்பு வரிசை பயன்படுத்தப்படும்.",
+          "TET தேர்ச்சி பெற்றால், மேற்கண்ட தரவரிசை பயன்படுத்தப்படும்.",
         ]
       : [
-          "Applies to both PG and UG categories. For UG candidates, TET qualification is mandatory.",
-          "Seniority order: earlier registration date/year comes first.",
+                    "Ranking order: earlier registration date/year comes first.",
           "If registration year is the same, earlier passing month/year comes first.",
-          "If still tied, older age comes first.",
+          "If still tied, born earlier comes first.",
           "If still tied, higher TET score comes first.",
           "Appointment priority: TET‑qualified candidates always come first.",
-          "If multiple TET‑qualified, the same seniority order is used.",
+          "If TET Qualified, the same ranking order is used.",
         ];
 
   const elementary =
@@ -247,23 +245,23 @@ export function getRankingRulesDisplay(language: "en" | "ta" = "en") {
           "இந்த தரவரிசைப் பட்டியல் பாஸ்டரேட் (Pastorate) அளவில் பராமரிக்கப்படுகிறது.",
           "பாஸ்டரேட் காலியிடங்களுக்கு பாஸ்டரேட் தரவரிசை பயன்படுத்தப்படும்.",
           "கவுன்சில் தரவரிசை அனைத்து பாஸ்டரேட்களின் கூட்டுத் தரவரிசையாகவும், மறைமாவட்ட தரவரிசை அனைத்து கவுன்சில்களின் கூட்டுத் தரவரிசையாகவும் அமையும்.",
-          "மூப்பு வரிசை: பதிவு செய்த தேதி முதலில்.",
+          "தரவரிசை: பதிவு செய்த தேதி முதலில்.",
           "ஒரே ஆண்டில் பதிவு செய்திருந்தால், முதலில் தேர்ச்சி பெற்றவர் (மாதம்/ஆண்டு) முன்னுரிமை.",
-          "இன்னும் சமமானால், வயதில் மூத்தவர் முன்னுரிமை.",
+          "இன்னும் சமமானால், முன்னதாக பிறந்தவர் முன்னுரிமை.",
           "இன்னும் சமமானால், TET மதிப்பெண் அதிகம் பெற்றவர் முன்னுரிமை.",
           "நியமன முன்னுரிமை: TET தேர்ச்சி பெற்றவர்கள் முதலில்.",
-          "TET தேர்ச்சி பெற்றவர்கள் பலரானால், மேற்கண்ட மூப்பு வரிசை பயன்படுத்தப்படும்.",
+          "TET தேர்ச்சி பெற்றால், மேற்கண்ட தரவரிசை பயன்படுத்தப்படும்.",
         ]
       : [
           "Rankings are maintained at the Pastorate level.",
           "Vacancies at a Pastorate use the Pastorate ranking.",
           "Council ranking is cumulative of all Pastorates; Diocese ranking is cumulative of all Councils.",
-          "Seniority order: earlier registration date/year comes first.",
+          "Ranking order: earlier registration date/year comes first.",
           "If registration year is the same, earlier passing month/year comes first.",
-          "If still tied, older age comes first.",
+          "If still tied, born earlier comes first.",
           "If still tied, higher TET score comes first.",
           "Appointment priority: TET‑qualified candidates always come first.",
-          "If multiple TET‑qualified, the same seniority order is used.",
+          "If TET Qualified, the same ranking order is used.",
         ];
 
   const clergy =

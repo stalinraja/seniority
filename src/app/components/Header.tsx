@@ -31,13 +31,13 @@ export function Header() {
             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center shrink-0 ring-1 ring-slate-200/80 dark:ring-slate-700/80 bg-white/85 dark:bg-slate-900/70 overflow-hidden shadow-sm">
               <img
                 src="/diocese-logo.png"
-                alt="CSI Thoothukudi-Nazareth DIocese logo"
+                alt="CSI Thoothukudi-Nazareth Diocese logo"
                 className="w-full h-full object-contain p-1"
               />
             </div>
             <div className="min-w-0">
               <h1 className="text-sm sm:text-xl font-semibold text-gray-900 truncate">
-                CSI Thoothukudi-Nazareth DIocese
+                CSI Thoothukudi-Nazareth Diocese
               </h1>
               <p className="text-xs sm:text-sm text-gray-600">
                 {t("Employment Priority List", "வேலை நியமன முன்னுரிமை பட்டியல்")}

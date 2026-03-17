@@ -772,7 +772,7 @@ export function Dashboard() {
         <div className="fixed inset-0 z-[2147483646] flex items-center justify-center bg-white dark:bg-slate-950">
           <img
             src="/diocese-logo.png"
-            alt="CSI Thoothukudi-Nazareth DIocese logo"
+            alt="CSI Thoothukudi-Nazareth Diocese logo"
             className="w-28 h-28 sm:w-36 sm:h-36 object-contain animate-pulse"
             loading="eager"
             decoding="async"
@@ -799,7 +799,7 @@ export function Dashboard() {
                 }`}
                 onClick={() => setSchoolType("high")}
               >
-                {t("High/Higher Secondary School Seniority", "உயர்நிலை/மேல்நிலை பள்ளி மூப்பு")}
+                {t("High/Higher Secondary School Priority", "உயர்நிலை/மேல்நிலை பள்ளி முன்னுரிமை")}
               </Button>
             ) : null}
             {MIDDLE_SCHOOL_SECTION_ENABLED ? (
@@ -812,7 +812,7 @@ export function Dashboard() {
                 }`}
                 onClick={() => setSchoolType("elementary")}
               >
-                {t("Elementry/Middle School Seniority", "தொடக்க/நடுநிலை பள்ளி மூப்பு")}
+                {t("Elementry/Middle School Priority", "தொடக்க/நடுநிலை பள்ளி முன்னுரிமை")}
               </Button>
             ) : null}
             {CLERGY_SECTION_ENABLED ? (
@@ -825,7 +825,7 @@ export function Dashboard() {
                 }`}
                 onClick={() => setSchoolType("clergy")}
               >
-                {t("Clergy Ordination Seniority", "குருத்துவ அர்ப்பணிப்பு மூப்பு")}
+                {t("Clergy Ordination Priority", "குருத்துவ அர்ப்பணிப்பு முன்னுரிமை")}
               </Button>
             ) : null}
           </div>
@@ -856,10 +856,10 @@ export function Dashboard() {
             <div className="flex items-center gap-4 flex-wrap">
               <h2 className="text-2xl font-semibold text-gray-900">
                 {schoolType === "high"
-                  ? t("High/Higher Secondary School Seniority List", "உயர்நிலை/மேல்நிலை பள்ளி மூப்பு பட்டியல்")
+                  ? t("High/Higher Secondary School Priority List", "உயர்நிலை/மேல்நிலை பள்ளி முன்னுரிமை பட்டியல்")
                   : schoolType === "elementary"
-                  ? t("Elementry/Middle School Seniority List", "தொடக்க/நடுநிலை பள்ளி மூப்பு பட்டியல்")
-                  : t("Clergy Ordination Seniority List", "குருத்துவ அர்ப்பணிப்பு மூப்பு பட்டியல்")}
+                  ? t("Elementry/Middle School Priority List", "தொடக்க/நடுநிலை பள்ளி முன்னுரிமை பட்டியல்")
+                  : t("Clergy Ordination Priority List", "குருத்துவ அர்ப்பணிப்பு முன்னுரிமை பட்டியல்")}
               </h2>
               {loading && (
                 <span className="inline-flex items-center gap-1 text-blue-600 animate-pulse">

@@ -17,7 +17,7 @@ export function AppGuidelines() {
         <ol className="list-decimal list-inside space-y-1">
           <li>
             {t(
-              "Choose the seniority type (High/Higher Secondary School or Elementry/Middle School) from the top selector.",
+              "Choose the priority type (High/Higher Secondary School or Elementry/Middle School) from the top selector.",
               "மேலுள்ள தேர்வில் இருந்து மூப்பு வகையை (உயர்நிலை/மேல்நிலை அல்லது தொடக்க/நடுநிலை) தேர்வு செய்யவும்."
             )}
           </li>

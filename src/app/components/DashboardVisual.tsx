@@ -303,11 +303,11 @@ export function DashboardVisual({
           <div className="flex flex-col items-center mb-6">
             <img
               src="/diocese-logo.png"
-              alt="CSI Thoothukudi-Nazareth DIocese logo"
+              alt="CSI Thoothukudi-Nazareth Diocese logo"
               className="w-16 h-16 sm:w-20 sm:h-20 object-contain drop-shadow"
             />
             <h2 className="text-2xl sm:text-3xl font-bold mt-2 mb-1 text-center text-slate-900">
-              {t("Seniority Dashboard", "மூப்பு டாஷ்போர்டு")}
+              {t("Priority Dashboard", "முன்னுரிமை டாஷ்போர்டு")}
             </h2>
             <span className="text-slate-500 font-medium text-sm">
               {isElementary

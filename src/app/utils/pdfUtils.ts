@@ -269,15 +269,15 @@ export async function downloadCandidatesPDF(
   doc.setFontSize(16);
   const title =
     schoolType === "high"
-      ? `High/Higher Secondary School ${sortMode === "appointment" ? "Appointment" : "Seniority"} List`
+      ? `High/Higher Secondary School ${sortMode === "appointment" ? "Appointment" : "Priority"} List`
       : schoolType === "elementary"
-      ? `Elementry/Middle School ${sortMode === "appointment" ? "Appointment" : "Seniority"} List`
-      : "Clergy Ordination Seniority List";
+      ? `Elementry/Middle School ${sortMode === "appointment" ? "Appointment" : "Priority"} List`
+      : "Clergy Ordination Priority List";
 
   if (logoDataUrl) {
     doc.addImage(logoDataUrl, "PNG", 8, 6, 16, 16);
   }
-  doc.text("CSI Thoothukudi-Nazareth DIocese", 28, 13);
+  doc.text("CSI Thoothukudi-Nazareth Diocese", 28, 13);
   doc.setFontSize(12);
   doc.setFont("helvetica", "normal");
   doc.text(title, 28, 20);
