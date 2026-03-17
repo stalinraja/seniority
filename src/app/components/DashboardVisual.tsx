@@ -209,7 +209,7 @@ export function DashboardVisual({
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        display: true,
+        display: false,
         position: "bottom" as const,
         labels: { color: isDark ? "#e2e8f0" : "#334155", font: { size: 13, weight: 600 } },
       },
@@ -254,18 +254,18 @@ export function DashboardVisual({
   return (
     <AnimatePresence>
       <motion.div
-        initial={{ opacity: 0, y: 40 }}
+        initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 40 }}
-        transition={{ duration: 0.5 }}
+        exit={{ opacity: 0, y: 24 }}
+        transition={{ duration: 0.45, ease: "easeOut" }}
         className="fixed inset-0 z-[2147483647] flex items-center justify-center p-3 sm:p-4"
         style={{ backgroundColor: "rgba(15, 23, 42, 0.66)" }}
       >
         <motion.div
-          initial={{ scale: 0.9 }}
-          animate={{ scale: 1 }}
-          exit={{ scale: 0.9 }}
-          transition={{ duration: 0.4 }}
+          initial={{ scale: 0.96, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.98, opacity: 0 }}
+          transition={{ duration: 0.35, ease: "easeOut" }}
           className="bg-[rgb(255,255,255)] dark:bg-[rgb(10,19,32)] rounded-xl shadow-xl p-4 sm:p-6 lg:p-8 max-w-3xl w-full relative border border-slate-200 dark:border-slate-700 max-h-[92vh] overflow-y-auto"
         >
           <Button
@@ -275,7 +275,12 @@ export function DashboardVisual({
           >
             {t("Close", "மூடு")}
           </Button>
-          <div className="flex flex-col items-center mb-6">
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: 0.05 }}
+            className="flex flex-col items-center mb-6"
+          >
             <img
               src="/diocese-logo.png"
               alt="CSI Thoothukudi-Nazareth Diocese logo"
@@ -291,8 +296,13 @@ export function DashboardVisual({
                 ? t("Overview by home pastorate and qualification.", "சொந்த பாஸ்டரேட் மற்றும் தகுதி அடிப்படையிலான காட்சி.")
                 : t("Overview by department and category.", "துறை மற்றும் வகை அடிப்படையிலான காட்சி.")}
             </span>
-          </div>
-          <div className="flex justify-center gap-2 sm:gap-3 mb-6 flex-wrap">
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: 0.1 }}
+            className="flex justify-center gap-2 sm:gap-3 mb-6 flex-wrap"
+          >
             {tabs.map((t) => (
               <button
                 key={t.key}
@@ -306,12 +316,17 @@ export function DashboardVisual({
                 {t.label}
               </button>
             ))}
-          </div>
+          </motion.div>
           <div className="w-full flex flex-col items-center justify-center">
             <div className="w-full h-[300px] sm:h-[360px] lg:h-[380px] flex items-center justify-center">
-              <div className="w-full max-w-[520px] h-full">
+              <motion.div
+                initial={{ scale: 0.98, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.35, ease: "easeOut" }}
+                className="w-full max-w-[520px] h-full"
+              >
                 <Doughnut data={activeChart} options={pieOptions} />
-              </div>
+              </motion.div>
             </div>
             <div className="w-full mt-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -328,9 +343,9 @@ export function DashboardVisual({
                         className="h-3 w-3 rounded-full shrink-0"
                         style={{ backgroundColor: activeChart.datasets[0]?.backgroundColor?.[idx] || "#94a3b8" }}
                       />
-                      <span className="text-sm font-medium text-slate-700 dark:text-slate-200 truncate">{label}</span>
+                      <span className="text-sm font-medium text-slate-700 dark:text-slate-200 break-words">{label}</span>
                     </div>
-                    <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">{activeChart.datasets[0]?.data?.[idx] ?? 0}</span>
+                    <span className="text-sm font-semibold text-slate-900 dark:text-slate-100 tabular-nums">{activeChart.datasets[0]?.data?.[idx] ?? 0}</span>
                   </motion.div>
                 ))}
               </div>
