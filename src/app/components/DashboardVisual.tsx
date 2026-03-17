@@ -234,6 +234,23 @@ export function DashboardVisual({
     },
   };
 
+  const activeChart =
+    tab === "council"
+      ? chartData.council
+      : tab === "department"
+      ? chartData.department
+      : tab === "pastorate"
+      ? chartData.pastorate
+      : tab === "homePastorate"
+      ? chartData.homePastorate
+      : tab === "qualification"
+      ? chartData.qualification
+      : tab === "level"
+      ? chartData.level
+      : chartData.pgug;
+
+  const pieOptions = { ...doughnutOptions, cutout: "0%" };
+
   return (
     <AnimatePresence>
       <motion.div
