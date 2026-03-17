@@ -42,7 +42,7 @@ function groupBy(arr: any[], key: string) {
 function buildLabeledStats(stats: Record<string, number>) {
   const entries = Object.entries(stats);
   return {
-    labels: entries.map(([label, value]) => `${label} (${value})`),
+    labels: entries.map(([label]) => String(label)),
     values: entries.map(([, value]) => value),
   };
 }
@@ -316,7 +316,13 @@ export function DashboardVisual({
             <div className="w-full mt-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {activeChart.labels.map((label, idx) => (
-                  <div key={`${label}-${idx}`} className="flex items-center justify-between rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2">
+                  <motion.div
+                    key={`${label}-${idx}`}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.25, delay: idx * 0.02 }}
+                    className="flex items-center justify-between rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2"
+                  >
                     <div className="flex items-center gap-2 min-w-0">
                       <span
                         className="h-3 w-3 rounded-full shrink-0"
@@ -325,7 +331,7 @@ export function DashboardVisual({
                       <span className="text-sm font-medium text-slate-700 dark:text-slate-200 truncate">{label}</span>
                     </div>
                     <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">{activeChart.datasets[0]?.data?.[idx] ?? 0}</span>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             </div>
