@@ -268,21 +268,35 @@ function pickVisibleColumns(columns: PdfColumn[], candidates: any[]) {
   });
 }
 
+function getHeaderMinWidth(doc: jsPDF, title: string) {
+  const prevSize = doc.getFontSize();
+  doc.setFontSize(8);
+  const width = doc.getTextWidth(title) + 6;
+  doc.setFontSize(prevSize);
+  return Math.ceil(width);
+}
+
 function buildColumnStyles(doc: jsPDF, columns: PdfColumn[]) {
   const marginLeft = 6;
   const marginRight = 6;
   const contentWidth = doc.internal.pageSize.getWidth() - marginLeft - marginRight;
-  const minSum = columns.reduce((sum, col) => sum + col.minWidth, 0);
+
+  const effectiveMinWidths = columns.map((col) => {
+    const headerMin = getHeaderMinWidth(doc, col.title);
+    return Math.max(col.minWidth, headerMin);
+  });
+
+  const minSum = effectiveMinWidths.reduce((sum, w) => sum + w, 0);
   const widths: number[] = [];
 
   if (minSum > contentWidth) {
     const scale = contentWidth / minSum;
-    columns.forEach((col) => widths.push(Number((col.minWidth * scale).toFixed(2))));
+    effectiveMinWidths.forEach((w) => widths.push(Number((w * scale).toFixed(2))));
   } else {
     const extra = contentWidth - minSum;
     const weightSum = columns.reduce((sum, col) => sum + col.weight, 0) || 1;
-    columns.forEach((col) => {
-      const width = col.minWidth + (extra * col.weight) / weightSum;
+    columns.forEach((col, idx) => {
+      const width = effectiveMinWidths[idx] + (extra * col.weight) / weightSum;
       widths.push(Number(width.toFixed(2)));
     });
   }
@@ -439,6 +453,7 @@ export async function downloadCandidatesPDF(
     head: headers,
     body: rows,
     startY,
+    headStyles: { overflow: "linebreak", cellWidth: "wrap" },
     didDrawPage: (data) => {
       const totalPages = doc.getNumberOfPages();
       const pageNumber = data.pageNumber;
@@ -550,6 +565,7 @@ export async function downloadAppointmentsReportPDF(
     head: headers,
     body: rows,
     startY: 23,
+    headStyles: { overflow: "linebreak", cellWidth: "wrap" },
     didDrawPage: (data) => {
       const totalPages = doc.getNumberOfPages();
       const pageNumber = data.pageNumber;

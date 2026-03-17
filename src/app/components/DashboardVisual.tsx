@@ -1,12 +1,9 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
-import { Bar, Doughnut } from "react-chartjs-2";
+import { Doughnut } from "react-chartjs-2";
 import {
   Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
   ArcElement,
   Tooltip,
   Legend,
@@ -14,7 +11,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "../i18n/language";
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Tooltip, Legend);
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 const elegantPalette = [
   "#2563eb",
@@ -207,45 +204,6 @@ export function DashboardVisual({
     },
   };
 
-  const barChartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: true,
-        position: "bottom" as const,
-        labels: { color: isDark ? "#e2e8f0" : "#334155", font: { size: 13, weight: 600 } },
-      },
-      tooltip: {
-        enabled: true,
-        backgroundColor: "#0f172a",
-        titleColor: "#f8fafc",
-        bodyColor: "#e2e8f0",
-        borderColor: "#1e293b",
-        borderWidth: 1,
-        padding: 10,
-        caretSize: 8,
-        displayColors: true,
-        boxPadding: 6,
-      },
-    },
-    interaction: { mode: "nearest" as const, intersect: false },
-    animation: {
-      duration: 1500,
-      easing: "easeInOutBack",
-    },
-    scales: {
-      x: {
-        ticks: { color: isDark ? "#cbd5e1" : "#475569", font: { weight: 600 }, autoSkip: false, maxRotation: 45 },
-        grid: { color: isDark ? "rgba(100,116,139,0.35)" : "#e2e8f0" },
-      },
-      y: {
-        ticks: { color: isDark ? "#cbd5e1" : "#475569", font: { weight: 600 } },
-        grid: { color: isDark ? "rgba(100,116,139,0.35)" : "#e2e8f0" },
-      },
-    },
-  };
-
   const doughnutOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -332,18 +290,28 @@ export function DashboardVisual({
               </button>
             ))}
           </div>
-          <div className="w-full h-[300px] sm:h-[360px] lg:h-[380px] flex items-center justify-center">
-            {tab === "council" && <Bar data={chartData.council} options={barChartOptions} />}
-            {tab === "department" && <Bar data={chartData.department} options={barChartOptions} />}
-            {tab === "pastorate" && <Bar data={chartData.pastorate} options={barChartOptions} />}
-            {tab === "homePastorate" && <Bar data={chartData.homePastorate} options={barChartOptions} />}
-            {tab === "qualification" && <Bar data={chartData.qualification} options={barChartOptions} />}
-            {tab === "level" && <Bar data={chartData.level} options={barChartOptions} />}
-            {tab === "pgug" && (
-              <div className="w-full max-w-[420px] h-full">
-                <Doughnut data={chartData.pgug} options={doughnutOptions} />
+          <div className="w-full flex flex-col items-center justify-center">
+            <div className="w-full h-[300px] sm:h-[360px] lg:h-[380px] flex items-center justify-center">
+              <div className="w-full max-w-[520px] h-full">
+                <Doughnut data={activeChart} options={pieOptions} />
               </div>
-            )}
+            </div>
+            <div className="w-full mt-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {activeChart.labels.map((label, idx) => (
+                  <div key={`${label}-${idx}`} className="flex items-center justify-between rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span
+                        className="h-3 w-3 rounded-full shrink-0"
+                        style={{ backgroundColor: activeChart.datasets[0]?.backgroundColor?.[idx] || "#94a3b8" }}
+                      />
+                      <span className="text-sm font-medium text-slate-700 dark:text-slate-200 truncate">{label}</span>
+                    </div>
+                    <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">{activeChart.datasets[0]?.data?.[idx] ?? 0}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </motion.div>
       </motion.div>
