@@ -1,6 +1,13 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { ELEMENTARY_TET_PASS_MARK, SHOW_ADDRESS, SHOW_MEMBER_ID, SHOW_PINCODE } from "../config/features";
+import {
+  compareClergyOrdinationCandidates,
+  compareElementarySchoolCandidates,
+  compareElementarySchoolSeniorityCandidates,
+  compareHighSchoolCandidates,
+  compareHighSchoolSeniorityCandidates,
+} from "../config/seniorityRules";
 
 type SchoolType = "high" | "elementary" | "clergy";
 
@@ -33,6 +40,77 @@ function getPincodeColumn(): PdfColumn[] {
   return SHOW_PINCODE
     ? [{ key: "pincode", title: "Pincode", align: "center", minWidth: 14, weight: 1, getValue: (c) => c.pincode || "-" }]
     : [];
+}
+
+function normalizePassingLabel(value: any) {
+  if (value === undefined || value === null) return "";
+  const raw = String(value).trim();
+  if (!raw) return "";
+
+  const monthYear = raw.match(/^([A-Za-z]+\.?)\s*[-./]?\s*(\d{2,4})$/);
+  if (monthYear) {
+    const month = monthYear[1];
+    const yRaw = Number(monthYear[2]);
+    const year =
+      monthYear[2].length === 2 ? (yRaw <= 30 ? 2000 + yRaw : 1900 + yRaw) : yRaw;
+    return `${month} ${year}`;
+  }
+
+  const onlyYear = raw.match(/^(\d{2,4})$/);
+  if (onlyYear) {
+    const yRaw = Number(onlyYear[1]);
+    const year =
+      onlyYear[1].length === 2 ? (yRaw <= 30 ? 2000 + yRaw : 1900 + yRaw) : yRaw;
+    return String(year);
+  }
+
+  return raw;
+}
+
+function extractPassingYear(value: any): number | null {
+  const raw = normalizePassingLabel(value);
+  if (!raw) return null;
+  const fourDigit = raw.match(/\b(19|20)\d{2}\b/);
+  if (fourDigit) return Number(fourDigit[0]);
+  const twoDigit = raw.match(/\b(\d{2})\b/);
+  if (!twoDigit) return null;
+  const yy = Number(twoDigit[1]);
+  return yy <= 30 ? 2000 + yy : 1900 + yy;
+}
+
+function candidateKey(candidate: any) {
+  return [
+    candidate.id ?? "",
+    candidate.memberId ?? "",
+    candidate.name ?? "",
+    candidate.dateOfBirth ?? "",
+    candidate.yearOfPassing ?? "",
+    candidate.yearOfRegistering ?? "",
+    candidate.category ?? "",
+    candidate.department ?? "",
+    candidate.pastorate ?? "",
+    candidate.homePastorate ?? "",
+  ].join("|");
+}
+
+function buildRankMap(candidates: any[], schoolType: SchoolType, mode: "seniority" | "appointment") {
+  const list = [...candidates];
+  const compare =
+    schoolType === "high"
+      ? mode === "appointment"
+        ? (a: any, b: any) => compareHighSchoolCandidates(a, b, extractPassingYear)
+        : (a: any, b: any) => compareHighSchoolSeniorityCandidates(a, b, extractPassingYear)
+      : schoolType === "elementary"
+      ? mode === "appointment"
+        ? (a: any, b: any) => compareElementarySchoolCandidates(a, b, extractPassingYear)
+        : (a: any, b: any) => compareElementarySchoolSeniorityCandidates(a, b, extractPassingYear)
+      : (a: any, b: any) => compareClergyOrdinationCandidates(a, b, extractPassingYear);
+  list.sort(compare);
+  const map = new Map<string, number>();
+  list.forEach((candidate, idx) => {
+    map.set(candidateKey(candidate), idx + 1);
+  });
+  return map;
 }
 
 function formatDateForPdf(value: any) {
@@ -250,10 +328,10 @@ async function loadLogoDataUrl(): Promise<string | null> {
 function buildPdfFileName(schoolType: SchoolType, filters: Record<string, string[]>, sortMode: "seniority" | "appointment" = "seniority", searchQuery = "") {
   const base =
     schoolType === "high"
-      ? "high-school-seniority"
+      ? "high-school-priority"
       : schoolType === "elementary"
-      ? "elementary-school-seniority"
-      : "clergy-ordination-seniority";
+      ? "elementary-school-priority"
+      : "clergy-ordination-priority";
   const filterParts = Object.entries(filters || {})
     .filter(([, values]) => Array.isArray(values) && values.length > 0)
     .flatMap(([key, values]) => {
@@ -288,9 +366,9 @@ export async function downloadCandidatesPDF(
   doc.setFontSize(16);
   const title =
     schoolType === "high"
-      ? `High/Higher Secondary School ${sortMode === "appointment" ? "Appointment" : "Priority"} List`
+      ? "High/Higher Secondary School Priority List"
       : schoolType === "elementary"
-      ? `Elementry/Middle School ${sortMode === "appointment" ? "Appointment" : "Priority"} List`
+      ? "Elementry/Middle School Priority List"
       : "Clergy Ordination Priority List";
 
   if (logoDataUrl) {
@@ -330,9 +408,28 @@ export async function downloadCandidatesPDF(
       : schoolType === "elementary"
       ? getElementaryColumns()
       : getClergyColumns();
-  const columns = pickVisibleColumns(allColumns, candidates);
+  let columns = pickVisibleColumns(allColumns, candidates);
+  let rowsSource = candidates;
+
+  const wantsDualRank = Boolean(searchQuery && searchQuery.trim());
+  if (wantsDualRank) {
+    const seniorityMap = buildRankMap(candidates, schoolType, "seniority");
+    const appointmentMap = buildRankMap(candidates, schoolType, "appointment");
+    rowsSource = candidates.map((candidate) => ({
+      ...candidate,
+      _seniorityRank: seniorityMap.get(candidateKey(candidate)) ?? "",
+      _appointmentRank: appointmentMap.get(candidateKey(candidate)) ?? "",
+    }));
+
+    const rankColumns: PdfColumn[] = [
+      { key: "seniorityRank", title: "Seniority Rank", align: "center", minWidth: 16, weight: 1.1, keepAlways: true, getValue: (c) => c._seniorityRank ?? "" },
+      { key: "appointmentRank", title: "Appointment Rank", align: "center", minWidth: 18, weight: 1.2, keepAlways: true, getValue: (c) => c._appointmentRank ?? "" },
+    ];
+    columns = [...rankColumns, ...columns.filter((col) => col.key !== "rank")];
+  }
+
   const headers = [columns.map((col) => col.title)];
-  const rows = candidates.map((candidate) => columns.map((col) => col.getValue(candidate)));
+  const rows = rowsSource.map((candidate) => columns.map((col) => col.getValue(candidate)));
   const columnStyles = buildColumnStyles(doc, columns);
 
 
