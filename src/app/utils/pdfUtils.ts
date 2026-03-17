@@ -358,7 +358,8 @@ export async function downloadCandidatesPDF(
   filters: Record<string, string[]>,
   schoolType: SchoolType = "high",
   sortMode: "seniority" | "appointment" = "seniority",
-  searchQuery = ""
+  searchQuery = "",
+  rankBaseCandidates: any[] = []
 ) {
   const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
   const logoDataUrl = await loadLogoDataUrl();
@@ -387,7 +388,7 @@ export async function downloadCandidatesPDF(
     .filter(([, v]) => v && v.length)
     .map(([k, v]) => `${k}: ${v.join(", ")}`)
     .join(" | ");
-  const sortText = `Sorted by: ${sortMode === "appointment" ? "Appointment" : "Seniority"}`;
+  const sortText = `Sorted by: ${sortMode === "appointment" ? "Appointing Order" : "Seniority"}`;
   const searchText = searchQuery ? `Search: ${searchQuery}` : "";
   const metaText = [filterText ? `Filters: ${filterText}` : "", sortText, searchText]
     .filter(Boolean)
@@ -413,8 +414,9 @@ export async function downloadCandidatesPDF(
 
   const wantsDualRank = Boolean(searchQuery && searchQuery.trim());
   if (wantsDualRank) {
-    const seniorityMap = buildRankMap(candidates, schoolType, "seniority");
-    const appointmentMap = buildRankMap(candidates, schoolType, "appointment");
+    const rankSource = rankBaseCandidates.length ? rankBaseCandidates : candidates;
+    const seniorityMap = buildRankMap(rankSource, schoolType, "seniority");
+    const appointmentMap = buildRankMap(rankSource, schoolType, "appointment");
     rowsSource = candidates.map((candidate) => ({
       ...candidate,
       _seniorityRank: seniorityMap.get(candidateKey(candidate)) ?? "",
@@ -535,7 +537,7 @@ export async function downloadAppointmentsReportPDF(
     .map(([k, v]) => `${k}: ${v.join(", ")}`)
     .join(" | ");
   const searchText = searchQuery ? `Search: ${searchQuery}` : "";
-  const sortText = `Sorted by: ${sortMode === "appointment" ? "Appointment" : "Seniority"}`;
+  const sortText = `Sorted by: ${sortMode === "appointment" ? "Appointing Order" : "Seniority"}`;
   const metaText = [sortText, filterText, searchText].filter(Boolean).join(" | ");
 
   if (metaText) {

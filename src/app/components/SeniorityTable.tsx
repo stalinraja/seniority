@@ -11,6 +11,7 @@ import { Badge } from "./ui/badge";
 import { ChevronDown } from "lucide-react";
 import { useLanguage } from "../i18n/language";
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { ELEMENTARY_TET_PASS_MARK, HIGH_SCHOOL_TET_PASS_MARK, SHOW_ADDRESS, SHOW_MEMBER_ID, SHOW_PINCODE } from "../config/features";
 
 interface SeniorityTableProps {
@@ -58,6 +59,9 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
 
   const [sortMenuOpen, setSortMenuOpen] = useState(false);
   const sortWrapRef = useRef<HTMLDivElement | null>(null);
+  const sortButtonRef = useRef<HTMLButtonElement | null>(null);
+  const sortMenuRef = useRef<HTMLDivElement | null>(null);
+  const [sortMenuPosition, setSortMenuPosition] = useState<{ left: number; top: number } | null>(null);
 
   useEffect(() => {
     if (!sortMenuOpen) return;
@@ -65,6 +69,7 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
       const target = event.target as Node | null;
       if (!target) return;
       if (sortWrapRef.current?.contains(target)) return;
+      if (sortMenuRef.current?.contains(target)) return;
       setSortMenuOpen(false);
     };
     document.addEventListener("mousedown", handleOutside);
@@ -72,6 +77,22 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
     return () => {
       document.removeEventListener("mousedown", handleOutside);
       document.removeEventListener("touchstart", handleOutside);
+    };
+  }, [sortMenuOpen]);
+
+  useEffect(() => {
+    if (!sortMenuOpen) return;
+    const updateMenuPosition = () => {
+      const rect = sortButtonRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      setSortMenuPosition({ left: rect.left, top: rect.bottom + 6 });
+    };
+    updateMenuPosition();
+    window.addEventListener("scroll", updateMenuPosition, true);
+    window.addEventListener("resize", updateMenuPosition);
+    return () => {
+      window.removeEventListener("scroll", updateMenuPosition, true);
+      window.removeEventListener("resize", updateMenuPosition);
     };
   }, [sortMenuOpen]);
 
@@ -83,16 +104,18 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
           <div ref={sortWrapRef} className="relative">
             <button
               type="button"
+              ref={sortButtonRef}
               className="h-6 rounded border border-blue-200 bg-blue-50 px-2 text-[10px] font-semibold text-blue-700 shadow-sm dark:border-blue-500/40 dark:bg-blue-950/40 dark:text-blue-200 flex items-center gap-1.5"
               onClick={() => setSortMenuOpen((v) => !v)}
             >
               <span>{t("Sort by", "வரிசைப்படுத்து")}</span>
               <ChevronDown className="h-3 w-3 text-blue-600/70 shrink-0" />
             </button>
-            {sortMenuOpen ? (
+            {sortMenuOpen && sortMenuPosition ? createPortal(
               <div
-                className="left-0 top-full mt-1 z-50 w-44 rounded-lg border border-slate-200 bg-white shadow-xl dark:border-slate-700 dark:bg-slate-900 divide-y divide-slate-200 dark:divide-slate-700 flex flex-col"
-                style={{ position: "absolute" }}
+                ref={sortMenuRef}
+                className="z-[9999] w-44 rounded-lg border border-slate-200 bg-white shadow-xl dark:border-slate-700 dark:bg-slate-900 divide-y divide-slate-200 dark:divide-slate-700 flex flex-col"
+                style={{ position: "fixed", left: sortMenuPosition.left, top: sortMenuPosition.top }}
               >
                 <button
                   type="button"
@@ -108,7 +131,8 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                 >
                   {t("Appointment", "நியமனம்")}
                 </button>
-              </div>
+              </div>,
+              document.body
             ) : null}
           </div>
         ) : null}

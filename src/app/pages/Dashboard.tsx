@@ -657,7 +657,7 @@ export function Dashboard() {
 
   const dashboardKey = useMemo(() => schoolType, [schoolType]);
 
-  const filteredCandidates = useMemo(() => {
+  const rankedCandidates = useMemo(() => {
     let rows = [...currentCandidates];
 
     const activeFilterKeys =
@@ -693,15 +693,18 @@ export function Dashboard() {
       });
     }
 
-    const ranked =
-      schoolType === "high"
-        ? rankHighSchool(rows, sortMode)
-        : schoolType === "elementary"
-        ? rankElementarySchool(rows, sortMode)
-        : rankClergyOrdination(rows);
+    return schoolType === "high"
+      ? rankHighSchool(rows, sortMode)
+      : schoolType === "elementary"
+      ? rankElementarySchool(rows, sortMode)
+      : rankClergyOrdination(rows);
+  }, [currentCandidates, filters, schoolType, sortMode]);
 
-    return searchQuery.trim() ? searchCandidatesGeneric(ranked, searchQuery) : ranked;
-  }, [currentCandidates, filters, searchQuery, schoolType, sortMode]);
+  const filteredCandidates = useMemo(() => {
+    return searchQuery.trim()
+      ? searchCandidatesGeneric(rankedCandidates, searchQuery)
+      : rankedCandidates;
+  }, [rankedCandidates, searchQuery]);
 
   const appointmentRows = useMemo(() => {
     const ranked =
@@ -738,7 +741,7 @@ export function Dashboard() {
     try {
       setDownloadingPdf(true);
       const mod = await import("../utils/pdfUtils");
-      await mod.downloadCandidatesPDF(filteredCandidates, filters as any, schoolType, sortMode, searchQuery);
+      await mod.downloadCandidatesPDF(filteredCandidates, filters as any, schoolType, sortMode, searchQuery, rankedCandidates);
     } finally {
       setDownloadingPdf(false);
     }
