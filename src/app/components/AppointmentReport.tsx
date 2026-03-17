@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "./ui/table";
 import { useLanguage } from "../i18n/language";
+import { SHOW_ADDRESS, SHOW_MEMBER_ID, SHOW_PINCODE } from "../config/features";
 
 type SchoolType = "high" | "elementary" | "clergy";
 
@@ -37,7 +38,11 @@ export function AppointmentReport({
   const { t } = useLanguage();
   const isHigh = schoolType === "high";
   const isElementary = schoolType === "elementary";
-  const emptyColSpan = isHigh ? 17 : isElementary ? 15 : 11;
+  const emptyColSpan = isHigh
+    ? 15 + (SHOW_MEMBER_ID ? 1 : 0) + (SHOW_ADDRESS ? 1 : 0) + (SHOW_PINCODE ? 1 : 0)
+    : isElementary
+    ? 15 + (SHOW_MEMBER_ID ? 1 : 0)
+    : 11 + (SHOW_MEMBER_ID ? 1 : 0);
 
   return (
     <section className="glass-panel border border-gray-200 rounded-lg p-3 sm:p-4">
@@ -63,7 +68,7 @@ export function AppointmentReport({
           <TableHeader>
             <TableRow className="bg-gray-50">
               <TableHead>{t("Rank", "வரிசை")}</TableHead>
-              <TableHead>{t("Member ID", "உறுப்பினர் ஐடி")}</TableHead>
+              {SHOW_MEMBER_ID ? <TableHead>{t("Member ID", "உறுப்பினர் ஐடி")}</TableHead> : null}
               <TableHead>{t("Name", "பெயர்")}</TableHead>
               <TableHead>{t("Date of Birth", "பிறந்த தேதி")}</TableHead>
               {isHigh || isElementary ? <TableHead>{t("Year of Passing", "தேர்ச்சி ஆண்டு")}</TableHead> : null}
@@ -76,8 +81,8 @@ export function AppointmentReport({
               {!isHigh && !isElementary ? <TableHead>{t("Year of Passing", "தேர்ச்சி ஆண்டு")}</TableHead> : null}
               {!isHigh && !isElementary ? <TableHead>{t("Years of Experience", "பணியாண்டுகள்")}</TableHead> : null}
               <TableHead>{t("Qualification", "தகுதி")}</TableHead>
-              {isHigh ? <TableHead>{t("Address", "முகவரி")}</TableHead> : null}
-              {isHigh ? <TableHead>{t("Pincode", "அஞ்சல் குறியீடு")}</TableHead> : null}
+              {isHigh && SHOW_ADDRESS ? <TableHead>{t("Address", "முகவரி")}</TableHead> : null}
+              {isHigh && SHOW_PINCODE ? <TableHead>{t("Pincode", "அஞ்சல் குறியீடு")}</TableHead> : null}
               {isHigh || isElementary ? <TableHead>{t("Pastorate", "பாஸ்டரேட்")}</TableHead> : null}
               {isHigh || isElementary ? <TableHead>{t("Council", "கவுன்சில்")}</TableHead> : null}
               {!isHigh && !isElementary ? <TableHead>{t("Home Pastorate", "சொந்த பாஸ்டரேட்")}</TableHead> : null}
@@ -103,7 +108,7 @@ export function AppointmentReport({
     <span className="font-semibold text-gray-900">{row.rank ?? ""}</span>
   </div>
 </TableCell>
-                  <TableCell>{row.memberId || ""}</TableCell>
+                  {SHOW_MEMBER_ID ? <TableCell>{row.memberId || ""}</TableCell> : null}
                   <TableCell>{row.name || ""}</TableCell>
                   <TableCell>{formatDateWithAge(row.dateOfBirth)}</TableCell>
                   {isHigh || isElementary ? <TableCell>{row.yearOfPassing ?? ""}</TableCell> : null}
@@ -116,8 +121,8 @@ export function AppointmentReport({
                   {!isHigh && !isElementary ? <TableCell>{row.yearOfPassing ?? ""}</TableCell> : null}
                   {!isHigh && !isElementary ? <TableCell>{row.yearsOfExperience ?? ""}</TableCell> : null}
                   <TableCell>{row.qualification || ""}</TableCell>
-                  {isHigh ? <TableCell>{row.address || "-"}</TableCell> : null}
-                  {isHigh ? <TableCell>{row.pincode || "-"}</TableCell> : null}
+                  {isHigh && SHOW_ADDRESS ? <TableCell>{row.address || "-"}</TableCell> : null}
+                  {isHigh && SHOW_PINCODE ? <TableCell>{row.pincode || "-"}</TableCell> : null}
                   {isHigh || isElementary ? <TableCell>{row.pastorate || ""}</TableCell> : null}
                   {isHigh || isElementary ? <TableCell>{row.council || ""}</TableCell> : null}
                   {!isHigh && !isElementary ? <TableCell>{row.homePastorate || ""}</TableCell> : null}

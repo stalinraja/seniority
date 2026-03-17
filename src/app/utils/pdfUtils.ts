@@ -1,6 +1,6 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import { ELEMENTARY_TET_PASS_MARK, SHOW_MEMBER_ID } from "../config/features";
+import { ELEMENTARY_TET_PASS_MARK, SHOW_ADDRESS, SHOW_MEMBER_ID, SHOW_PINCODE } from "../config/features";
 
 type SchoolType = "high" | "elementary" | "clergy";
 
@@ -16,6 +16,24 @@ type PdfColumn = {
 };
 
 type AppointmentSchoolType = SchoolType;
+
+function getMemberIdColumn(): PdfColumn[] {
+  return SHOW_MEMBER_ID
+    ? [{ key: "memberId", title: "Member ID", minWidth: 16, weight: 1.4, keepAlways: true, getValue: (c) => c.memberId || "" }]
+    : [];
+}
+
+function getAddressColumn(): PdfColumn[] {
+  return SHOW_ADDRESS
+    ? [{ key: "address", title: "Address", minWidth: 32, weight: 2.4, wrap: true, getValue: (c) => c.address || "-" }]
+    : [];
+}
+
+function getPincodeColumn(): PdfColumn[] {
+  return SHOW_PINCODE
+    ? [{ key: "pincode", title: "Pincode", align: "center", minWidth: 14, weight: 1, getValue: (c) => c.pincode || "-" }]
+    : [];
+}
 
 function formatDateForPdf(value: any) {
   const date = value instanceof Date ? value : new Date(value);
@@ -63,7 +81,7 @@ function hasMeaningfulValue(value: string | number) {
 function getHighColumns(): PdfColumn[] {
   return [
     { key: "rank", title: "Rank", align: "center", minWidth: 10, weight: 1, keepAlways: true, getValue: (c) => c.rank ?? "" },
-    { key: "memberId", title: "Member ID", minWidth: 16, weight: 1.4, keepAlways: true, getValue: (c) => c.memberId || "" },
+    ...getMemberIdColumn(),
     { key: "name", title: "Name", minWidth: 32, weight: 2.4, keepAlways: true, wrap: true, getValue: (c) => c.name || "" },
     { key: "dateOfBirth", title: "Date of Birth", align: "center", minWidth: 20, weight: 1.6, keepAlways: true, getValue: (c) => formatDateForPdf(c.dateOfBirth) },
     { key: "category", title: "Category", align: "center", minWidth: 18, weight: 1.2, keepAlways: true, getValue: (c) => c.category || "" },
@@ -72,7 +90,8 @@ function getHighColumns(): PdfColumn[] {
     { key: "yearOfPassing", title: "Year of Passing", align: "center", minWidth: 18, weight: 1.2, getValue: (c) => c.yearOfPassing || "" },
     { key: "yearOfRegistering", title: "Year of Registering", align: "center", minWidth: 18, weight: 1.2, getValue: (c) => c.yearOfRegistering ?? "" },
     { key: "tet", title: "TET Qualified", align: "center", minWidth: 24, weight: 2, getValue: (c) => getTetDisplay(c) },
-    { key: "pincode", title: "Pincode", align: "center", minWidth: 14, weight: 1, getValue: (c) => c.pincode || "-" },
+    ...getAddressColumn(),
+    ...getPincodeColumn(),
     { key: "pastorate", title: "Pastorate", minWidth: 22, weight: 1.6, wrap: true, getValue: (c) => c.pastorate || "-" },
     { key: "council", title: "Council", minWidth: 20, weight: 1.5, wrap: true, getValue: (c) => c.council || "-" },
   ];
@@ -81,7 +100,7 @@ function getHighColumns(): PdfColumn[] {
 function getElementaryColumns(): PdfColumn[] {
   return [
     { key: "rank", title: "Rank", align: "center", minWidth: 10, weight: 1, keepAlways: true, getValue: (c) => c.rank ?? "" },
-    { key: "memberId", title: "Member ID", minWidth: 16, weight: 1.4, keepAlways: true, getValue: (c) => c.memberId || "" },
+    ...getMemberIdColumn(),
     { key: "name", title: "Name", minWidth: 30, weight: 2.3, keepAlways: true, wrap: true, getValue: (c) => c.name || "" },
     { key: "dateOfBirth", title: "Date of Birth", align: "center", minWidth: 20, weight: 1.5, keepAlways: true, getValue: (c) => formatDateForPdf(c.dateOfBirth) },
     { key: "yearOfPassing", title: "Year of Passing", align: "center", minWidth: 18, weight: 1.2, getValue: (c) => c.yearOfPassing ?? "" },
@@ -98,7 +117,7 @@ function getElementaryColumns(): PdfColumn[] {
 function getClergyColumns(): PdfColumn[] {
   return [
     { key: "rank", title: "Rank", align: "center", minWidth: 12, weight: 1, keepAlways: true, getValue: (c) => c.rank ?? "" },
-    { key: "memberId", title: "Member ID", minWidth: 18, weight: 1.4, keepAlways: true, getValue: (c) => c.memberId || "" },
+    ...getMemberIdColumn(),
     { key: "name", title: "Name", minWidth: 38, weight: 2.4, keepAlways: true, wrap: true, getValue: (c) => c.name || "" },
     { key: "dateOfBirth", title: "Date of Birth", align: "center", minWidth: 22, weight: 1.4, keepAlways: true, getValue: (c) => formatDateForPdf(c.dateOfBirth) },
     { key: "yearOfPassing", title: "Year of Passing", align: "center", minWidth: 22, weight: 1.2, keepAlways: true, getValue: (c) => c.yearOfPassing ?? "" },
@@ -111,7 +130,7 @@ function getClergyColumns(): PdfColumn[] {
 function getAppointmentColumns(schoolType: AppointmentSchoolType): PdfColumn[] {
   const commonStart: PdfColumn[] = [
     { key: "rank", title: "Rank", align: "center", minWidth: 10, weight: 1, keepAlways: true, getValue: (c) => c.rank ?? "" },
-    { key: "memberId", title: "Member ID", minWidth: 16, weight: 1.4, keepAlways: true, getValue: (c) => c.memberId || "" },
+    ...getMemberIdColumn(),
     { key: "name", title: "Name", minWidth: 30, weight: 2.2, keepAlways: true, wrap: true, getValue: (c) => c.name || "" },
     { key: "dateOfBirth", title: "Date of Birth", align: "center", minWidth: 20, weight: 1.3, keepAlways: true, getValue: (c) => formatDateForPdf(c.dateOfBirth) },
   ];
@@ -131,8 +150,8 @@ function getAppointmentColumns(schoolType: AppointmentSchoolType): PdfColumn[] {
       { key: "category", title: "Category", align: "center", minWidth: 16, weight: 1.1, getValue: (c) => c.category || "" },
       { key: "tet", title: "TET Qualified", align: "center", minWidth: 18, weight: 1.2, getValue: (c) => getTetDisplay(c) },
       { key: "qualification", title: "Qualification", minWidth: 30, weight: 2.2, wrap: true, getValue: (c) => splitQualifications(c.qualification) },
-      { key: "address", title: "Address", minWidth: 32, weight: 2.4, wrap: true, getValue: (c) => c.address || "-" },
-      { key: "pincode", title: "Pincode", align: "center", minWidth: 13, weight: 1, getValue: (c) => c.pincode || "-" },
+      ...getAddressColumn(),
+      ...getPincodeColumn(),
       { key: "pastorate", title: "Pastorate", minWidth: 20, weight: 1.5, wrap: true, getValue: (c) => c.pastorate || "" },
       { key: "council", title: "Council", minWidth: 18, weight: 1.4, wrap: true, getValue: (c) => c.council || "" },
       ...commonEnd,

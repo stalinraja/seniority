@@ -11,7 +11,7 @@ import { Badge } from "./ui/badge";
 import { ChevronDown } from "lucide-react";
 import { useLanguage } from "../i18n/language";
 import { useEffect, useRef, useState } from "react";
-import { ELEMENTARY_TET_PASS_MARK, HIGH_SCHOOL_TET_PASS_MARK, SHOW_MEMBER_ID } from "../config/features";
+import { ELEMENTARY_TET_PASS_MARK, HIGH_SCHOOL_TET_PASS_MARK, SHOW_ADDRESS, SHOW_MEMBER_ID, SHOW_PINCODE } from "../config/features";
 
 interface SeniorityTableProps {
   rows: any[];
@@ -51,6 +51,10 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
   const { t } = useLanguage();
   const highSchool = schoolType === "high";
   const clergy = schoolType === "clergy";
+
+  const highColSpan = 11 + (SHOW_MEMBER_ID ? 1 : 0) + (SHOW_ADDRESS ? 1 : 0) + (SHOW_PINCODE ? 1 : 0);
+  const elementaryColSpan = 11 + (SHOW_MEMBER_ID ? 1 : 0);
+  const clergyColSpan = 7 + (SHOW_MEMBER_ID ? 1 : 0);
 
   const [sortMenuOpen, setSortMenuOpen] = useState(false);
   const sortWrapRef = useRef<HTMLDivElement | null>(null);
@@ -133,8 +137,8 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
               <TableHead className="font-semibold">{t("Year of Passing", "தேர்ச்சி ஆண்டு")}</TableHead>
               <TableHead className="font-semibold">{t("Year of Registering", "பதிவு ஆண்டு")}</TableHead>
               <TableHead className="font-semibold">{t("TET Qualified", "TET தகுதி")}</TableHead>
-              <TableHead className="font-semibold">{t("Address", "முகவரி")}</TableHead>
-              <TableHead className="font-semibold">{t("Pincode", "அஞ்சல் குறியீடு")}</TableHead>
+              {SHOW_ADDRESS ? <TableHead className="font-semibold">{t("Address", "முகவரி")}</TableHead> : null}
+              {SHOW_PINCODE ? <TableHead className="font-semibold">{t("Pincode", "அஞ்சல் குறியீடு")}</TableHead> : null}
               <TableHead className="font-semibold">{t("Pastorate", "பாஸ்டரேட்")}</TableHead>
               <TableHead className="font-semibold">{t("Council", "கவுன்சில்")}</TableHead>
             </>
@@ -172,7 +176,7 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
             {rows.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={highSchool ? 14 : clergy ? 8 : 12}
+                  colSpan={highSchool ? highColSpan : clergy ? clergyColSpan : elementaryColSpan}
                   className="text-center py-12 text-gray-500"
                 >
                   {t("No candidates found matching your criteria", "உங்கள் நிபந்தனைகளுக்கு ஏற்ப விண்ணப்பதாரர்கள் இல்லை")}
@@ -253,8 +257,8 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                           <span className="text-gray-500">-</span>
                         )}
                       </TableCell>
-                      <TableCell className="text-gray-700 table-responsive-cell">{candidate.address || "-"}</TableCell>
-                      <TableCell className="text-gray-700">{candidate.pincode || "-"}</TableCell>
+                      {SHOW_ADDRESS ? <TableCell className="text-gray-700 table-responsive-cell">{candidate.address || "-"}</TableCell> : null}
+                      {SHOW_PINCODE ? <TableCell className="text-gray-700">{candidate.pincode || "-"}</TableCell> : null}
                       <TableCell className="text-gray-700 table-responsive-cell">{candidate.pastorate || "-"}</TableCell>
                       <TableCell className="text-gray-700 table-responsive-cell">{candidate.council || "-"}</TableCell>
                     </>
