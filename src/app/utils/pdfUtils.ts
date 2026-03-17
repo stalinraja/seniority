@@ -277,7 +277,7 @@ export async function downloadCandidatesPDF(
   if (logoDataUrl) {
     doc.addImage(logoDataUrl, "PNG", 8, 6, 16, 16);
   }
-  doc.text("CSI Thoothukudi Nazareth Diocese", 28, 13);
+  doc.text("CSI Thoothukudi-Nazareth DIocese", 28, 13);
   doc.setFontSize(12);
   doc.setFont("helvetica", "normal");
   doc.text(title, 28, 20);

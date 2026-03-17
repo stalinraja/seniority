@@ -223,39 +223,47 @@ export function getRankingRulesDisplay(language: "en" | "ta" = "en") {
   const high =
     language === "ta"
       ? [
-          "மூப்பு வரிசை (TET முன்னுரிமை இல்லை): பதிவு ஆண்டு -> தேர்ச்சி ஆண்டு (மாதம் இருந்தால் முன்னுரிமை) -> வயது மூப்பு -> அதிக TET மதிப்பெண்.",
-          `நியமன வரிசை: UG TET (${HIGH_SCHOOL_TET_PASS_MARK}+) பெற்றவர்கள் முன்னுரிமை.`,
-          "நியமன சமநிலை வரிசை: பதிவு ஆண்டு -> தேர்ச்சி ஆண்டு (மாதம் இருந்தால் முன்னுரிமை) -> வயது -> அதிக TET மதிப்பெண்.",
+          "இது முதுகலை (PG) மற்றும் இளங்கலை (UG) என இரண்டு பிரிவுகளுக்கும் பொருந்தும். இளங்கலை ஆசிரியர்களுக்கு TET தேர்ச்சி கட்டாயம்.",
+          "மூப்பு வரிசை: பதிவு செய்த தேதி முதலில்.",
+          "ஒரே ஆண்டில் பதிவு செய்திருந்தால், முதலில் தேர்ச்சி பெற்றவர் (மாதம்/ஆண்டு) முன்னுரிமை.",
+          "இன்னும் சமமானால், வயதில் மூத்தவர் முன்னுரிமை.",
+          "இன்னும் சமமானால், TET மதிப்பெண் அதிகம் பெற்றவர் முன்னுரிமை.",
+          "நியமன முன்னுரிமை: TET தேர்ச்சி பெற்றவர்கள் முதலில்.",
+          "TET தேர்ச்சி பெற்றவர்கள் பலரானால், மேற்கண்ட மூப்பு வரிசை பயன்படுத்தப்படும்.",
         ]
       : [
-          "Seniority view (default):",
-          "Earlier registration year comes first.",
-          "If the year is the same, earlier passing month/year comes first when available.",
+          "Applies to both PG and UG categories. For UG candidates, TET qualification is mandatory.",
+          "Seniority order: earlier registration date/year comes first.",
+          "If registration year is the same, earlier passing month/year comes first.",
           "If still tied, older age comes first.",
           "If still tied, higher TET score comes first.",
-          "Appointment view: TET‑qualified candidates are prioritized.",
-          "Appointment tie‑breaks use the same order as above.",
+          "Appointment priority: TET‑qualified candidates always come first.",
+          "If multiple TET‑qualified, the same seniority order is used.",
         ];
 
   const elementary =
     language === "ta"
       ? [
-          "மூப்பு பார்வை (இயல்புநிலை):",
-          "பதிவு செய்த ஆண்டு முன்னுரிமை.",
-          "ஒரே ஆண்டு என்றால், தேர்ச்சி ஆண்டு/மாதம் இருந்தால் அதற்கு முன்னுரிமை.",
-          "இன்னும் சமமானால், வயது.",
-          "இன்னும் சமமானால், TET மதிப்பெண்.",
-          "நியமன பார்வை: TET தகுதி பெற்றவர்கள் முன்னுரிமை.",
-          "நியமன சமநிலை: மேலுள்ள வரிசையே பயன்படுத்தப்படும்.",
+          "இந்த தரவரிசைப் பட்டியல் பாஸ்டரேட் (Pastorate) அளவில் பராமரிக்கப்படுகிறது.",
+          "பாஸ்டரேட் காலியிடங்களுக்கு பாஸ்டரேட் தரவரிசை பயன்படுத்தப்படும்.",
+          "கவுன்சில் தரவரிசை அனைத்து பாஸ்டரேட்களின் கூட்டுத் தரவரிசையாகவும், மறைமாவட்ட தரவரிசை அனைத்து கவுன்சில்களின் கூட்டுத் தரவரிசையாகவும் அமையும்.",
+          "மூப்பு வரிசை: பதிவு செய்த தேதி முதலில்.",
+          "ஒரே ஆண்டில் பதிவு செய்திருந்தால், முதலில் தேர்ச்சி பெற்றவர் (மாதம்/ஆண்டு) முன்னுரிமை.",
+          "இன்னும் சமமானால், வயதில் மூத்தவர் முன்னுரிமை.",
+          "இன்னும் சமமானால், TET மதிப்பெண் அதிகம் பெற்றவர் முன்னுரிமை.",
+          "நியமன முன்னுரிமை: TET தேர்ச்சி பெற்றவர்கள் முதலில்.",
+          "TET தேர்ச்சி பெற்றவர்கள் பலரானால், மேற்கண்ட மூப்பு வரிசை பயன்படுத்தப்படும்.",
         ]
       : [
-          "Seniority view (default):",
-          "Earlier registration year comes first.",
-          "If the year is the same, earlier passing month/year comes first when available.",
+          "Rankings are maintained at the Pastorate level.",
+          "Vacancies at a Pastorate use the Pastorate ranking.",
+          "Council ranking is cumulative of all Pastorates; Diocese ranking is cumulative of all Councils.",
+          "Seniority order: earlier registration date/year comes first.",
+          "If registration year is the same, earlier passing month/year comes first.",
           "If still tied, older age comes first.",
-          "If still tied, higher TET mark comes first.",
-          "Appointment view: TET‑qualified candidates are prioritized.",
-          "Appointment tie‑breaks use the same order as above.",
+          "If still tied, higher TET score comes first.",
+          "Appointment priority: TET‑qualified candidates always come first.",
+          "If multiple TET‑qualified, the same seniority order is used.",
         ];
 
   const clergy =
@@ -268,7 +276,7 @@ export function getRankingRulesDisplay(language: "en" | "ta" = "en") {
         ]
       : [
           "Priority 1: Earlier Year of Ordination (Year of Passing).",
-          "If the year is the same and month is available, earlier month gets priority.",
+          "If the year is the same, earlier month gets priority when available.",
           "Priority 2: Higher Years of Experience.",
           "Priority 3: Older Age (Date of Birth).",
         ];

@@ -8,7 +8,7 @@ import {
   TableRow,
 } from "./ui/table";
 import { Badge } from "./ui/badge";
-import { Award, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { useLanguage } from "../i18n/language";
 import { useEffect, useRef, useState } from "react";
 import { ELEMENTARY_TET_PASS_MARK, HIGH_SCHOOL_TET_PASS_MARK, SHOW_MEMBER_ID } from "../config/features";
@@ -197,7 +197,6 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                     <>
                       <TableCell>
                         <div className={`flex items-center gap-2 ${sortingPulse ? "animate-pulse" : ""}`}>
-                          {candidate.rank === 1 && <Award className="w-4 h-4 text-yellow-500" />}
                           <span className="font-semibold text-gray-900">{candidate.rank}</span>
                         </div>
                       </TableCell>
@@ -263,7 +262,6 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                     <>
                       <TableCell>
                         <div className={`flex items-center gap-2 ${sortingPulse ? "animate-pulse" : ""}`}>
-                          {candidate.rank === 1 && <Award className="w-4 h-4 text-yellow-500" />}
                           <span className="font-semibold text-gray-900">{candidate.rank}</span>
                         </div>
                       </TableCell>
@@ -287,7 +285,6 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                     <>
                       <TableCell>
                         <div className={`flex items-center gap-2 ${sortingPulse ? "animate-pulse" : ""}`}>
-                          {candidate.rank === 1 && <Award className="w-4 h-4 text-yellow-500" />}
                           <span className="font-semibold text-gray-900">{candidate.rank}</span>
                         </div>
                       </TableCell>

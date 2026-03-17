@@ -1,5 +1,6 @@
 import { differenceInYears, format } from "date-fns";
 import { Button } from "./ui/button";
+import { Award } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -96,7 +97,12 @@ export function AppointmentReport({
             ) : (
               rows.map((row, idx) => (
                 <TableRow key={`${row.id || row.memberId || "appointment"}-${idx}`}>
-                  <TableCell>{row.rank ?? ""}</TableCell>
+                  <TableCell>
+  <div className="flex items-center gap-2">
+    {row.rank === 1 ? <Award className="w-4 h-4 text-yellow-500" /> : null}
+    <span className="font-semibold text-gray-900">{row.rank ?? ""}</span>
+  </div>
+</TableCell>
                   <TableCell>{row.memberId || ""}</TableCell>
                   <TableCell>{row.name || ""}</TableCell>
                   <TableCell>{formatDateWithAge(row.dateOfBirth)}</TableCell>

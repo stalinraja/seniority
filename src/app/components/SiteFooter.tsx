@@ -8,7 +8,7 @@ export function SiteFooter() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-5 text-center text-sm">
         <p className="text-slate-700">
           {t(
-            "All rights reserved to CSI Thoothukudi Nazareth Diocese.",
+            "All rights reserved to CSI Thoothukudi-Nazareth DIocese.",
             "அனைத்து உரிமைகளும் CSI தூத்துக்குடி நாசரேத் மறைமாவட்டத்திற்கு உடைமையாகும்."
           )}
         </p>

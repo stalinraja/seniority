@@ -772,7 +772,7 @@ export function Dashboard() {
         <div className="fixed inset-0 z-[2147483646] flex items-center justify-center bg-white dark:bg-slate-950">
           <img
             src="/diocese-logo.png"
-            alt="CSI Thoothukudi Nazareth Diocese logo"
+            alt="CSI Thoothukudi-Nazareth DIocese logo"
             className="w-28 h-28 sm:w-36 sm:h-36 object-contain animate-pulse"
             loading="eager"
             decoding="async"
