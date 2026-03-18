@@ -653,6 +653,33 @@ export function Dashboard() {
     }));
   };
 
+  const handleCandidateDoubleClick = (candidate: any) => {
+    const nextFilters: Record<string, string[]> = {};
+    const addFilter = (key: string, value: any) => {
+      const normalized = normalizeText(value);
+      if (normalized) nextFilters[key] = [normalized];
+    };
+
+    if (schoolType === "high") {
+      addFilter("department", candidate.department);
+      addFilter("category", candidate.category);
+      addFilter("pastorate", candidate.pastorate);
+      addFilter("council", candidate.council);
+    } else if (schoolType === "elementary") {
+      addFilter("council", candidate.council);
+      addFilter("pastorate", candidate.pastorate);
+      addFilter("category", candidate.category);
+      addFilter("level", candidate.level);
+    } else {
+      addFilter("homePastorate", candidate.homePastorate);
+      addFilter("qualification", candidate.qualification);
+    }
+
+    setFilters(nextFilters);
+    const searchValue = normalizeText(candidate.memberId || candidate.name || "");
+    setSearchQuery(searchValue);
+  };
+
   const handleClearAllFilters = () => setFilters({});
 
   const dashboardKey = useMemo(() => schoolType, [schoolType]);
@@ -949,6 +976,7 @@ export function Dashboard() {
                 sortMode={sortMode}
                 onSortModeChange={setSortMode}
                 sortingPulse={sortingPulse}
+                onRowDoubleClick={handleCandidateDoubleClick}
               />
               {filteredCandidates.length > PAGE_SIZE && (
                 <div className="mt-4 flex flex-wrap items-center justify-between gap-3">

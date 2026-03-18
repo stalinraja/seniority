@@ -98,7 +98,7 @@ export function DropdownFilter({
         >
           <span className="truncate">
             {selectedItems.length
-              ? t(`${selectedItems.length} selected`, `${selectedItems.length} தேர்வு செய்யப்பட்டது`)
+              ? selectedItems[0]
               : t(`Select ${title}`, `${title} தேர்வு செய்க`)}
           </span>
           <ChevronDown className="w-4 h-4 text-slate-400" />

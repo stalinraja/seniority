@@ -20,6 +20,7 @@ interface SeniorityTableProps {
   sortMode?: "seniority" | "appointment";
   onSortModeChange?: (mode: "seniority" | "appointment") => void;
   sortingPulse?: boolean;
+  onRowDoubleClick?: (candidate: any) => void;
 }
 
 function formatDateWithAge(value: any) {
@@ -48,7 +49,7 @@ function elementaryCategoryClass(category: string) {
   return "bg-slate-50 text-slate-700 border-slate-200";
 }
 
-export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, sortingPulse }: SeniorityTableProps) {
+export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, sortingPulse, onRowDoubleClick }: SeniorityTableProps) {
   const { t } = useLanguage();
   const highSchool = schoolType === "high";
   const clergy = schoolType === "clergy";
@@ -219,7 +220,8 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                     candidate.yearOfRegistering || "",
                     String(index),
                   ].join("|")}
-                  className="optimized-row hover:bg-slate-100/70 dark:hover:bg-slate-800/70"
+                  onDoubleClick={() => onRowDoubleClick?.(candidate)}
+                  className={`optimized-row hover:bg-slate-100/70 dark:hover:bg-slate-800/70 ${onRowDoubleClick ? 'cursor-pointer' : ''}`}
                 >
                   {highSchool ? (
                     <>
