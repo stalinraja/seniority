@@ -9,7 +9,6 @@ import {
   compareHighSchoolSeniorityCandidates,
 } from "../config/seniorityRules";
 
-type AppointmentSchoolType = "high" | "elementary" | "clergy";
 type SchoolType = "high" | "elementary" | "clergy";
 
 type PdfColumn = {
@@ -89,11 +88,12 @@ function formatDateForPdf(value: any) {
 }
 
 function splitQualifications(value: string) {
-  return String(value || "")
-    .split("-")
-    .map((q) => q.trim())
-    .filter(Boolean)
-    .join(" | ");
+  return String(value || "").split("-").map((q) => q.trim()).filter(Boolean).join(" | ");
+}
+
+function getElementaryTetDisplay(candidate: any) {
+  if (candidate.tetCompletion === null || candidate.tetCompletion === undefined) return "-";
+  return `${candidate.tetCompletion}%${Number(candidate.tetCompletion) >= ELEMENTARY_TET_PASS_MARK ? " (Yes)" : " (No)"}`;
 }
 
 function getTetDisplay(candidate: any) {
@@ -101,15 +101,7 @@ function getTetDisplay(candidate: any) {
   if (Number.isFinite(candidate.tetScore)) {
     return `${candidate.tetScore}${Number.isFinite(candidate.tetYear) ? ` (${candidate.tetYear})` : ""}`;
   }
-  if (candidate.tetRaw) return candidate.tetRaw;
-  if (candidate.tetQualified === true) return "Yes";
-  if (candidate.tetQualified === false) return "No";
   return "-";
-}
-
-function getElementaryTetDisplay(candidate: any) {
-  if (candidate.tetCompletion === null || candidate.tetCompletion === undefined) return "-";
-  return `${candidate.tetCompletion}%${Number(candidate.tetCompletion) >= ELEMENTARY_TET_PASS_MARK ? " (Yes)" : " (No)"}`;
 }
 
 function hasMeaningfulValue(value: string | number) {
@@ -128,10 +120,8 @@ function getHighColumns(): PdfColumn[] {
     { key: "name", title: "Name", minWidth: 32, weight: 2.4, keepAlways: true, wrap: true, getValue: (c) => c.name || "" },
     { key: "dateOfBirth", title: "Date of Birth", align: "center", minWidth: 20, weight: 1.6, keepAlways: true, getValue: (c) => formatDateForPdf(c.dateOfBirth) },
     { key: "category", title: "Category", align: "center", minWidth: 18, weight: 1.2, keepAlways: true, getValue: (c) => c.category || "" },
-    { key: "department", title: "Department", minWidth: 22, weight: 1.6, getValue: (c) => c.department || "" },
     { key: "qualification", title: "Qualification", minWidth: 34, weight: 2.5, wrap: true, getValue: (c) => splitQualifications(c.qualification) },
-    { key: "yearOfPassing", title: "Year of Passing", align: "center", minWidth: 18, weight: 1.2, getValue: (c) => c.yearOfPassing || "" },
-    { key: "yearOfRegistering", title: "Year of Registering", align: "center", minWidth: 18, weight: 1.2, getValue: (c) => c.yearOfRegistering ?? "" },
+    { key: "yearOfPassing", title: "Passing Yr", align: "center", minWidth: 15, weight: 1, getValue: (c) => c.yearOfPassing || "" },
     ...getAddressColumn(),
     ...getPincodeColumn(),
     { key: "pastorate", title: "Pastorate", minWidth: 22, weight: 1.6, wrap: true, getValue: (c) => c.pastorate || "-" },
@@ -144,15 +134,10 @@ function getElementaryColumns(): PdfColumn[] {
     { key: "rank", title: "Rank", align: "center", minWidth: 10, weight: 1, keepAlways: true, getValue: (c) => c.rank ?? "" },
     ...getMemberIdColumn(),
     { key: "name", title: "Name", minWidth: 30, weight: 2.3, keepAlways: true, wrap: true, getValue: (c) => c.name || "" },
-    { key: "dateOfBirth", title: "Date of Birth", align: "center", minWidth: 20, weight: 1.5, keepAlways: true, getValue: (c) => formatDateForPdf(c.dateOfBirth) },
-    { key: "yearOfPassing", title: "Year of Passing", align: "center", minWidth: 18, weight: 1.2, getValue: (c) => c.yearOfPassing ?? "" },
-    { key: "yearOfRegistering", title: "Year of Registering", align: "center", minWidth: 18, weight: 1.2, getValue: (c) => c.yearOfRegistering ?? "" },
+    { key: "dateOfBirth", title: "DOB", align: "center", minWidth: 18, weight: 1.5, keepAlways: true, getValue: (c) => formatDateForPdf(c.dateOfBirth) },
     { key: "qualification", title: "Qualification", minWidth: 36, weight: 2.6, wrap: true, getValue: (c) => splitQualifications(c.qualification) },
-    { key: "tet", title: "TET Qualification", align: "center", minWidth: 24, weight: 1.7, getValue: (c) => getElementaryTetDisplay(c) },
-    { key: "category", title: "Category", align: "center", minWidth: 18, weight: 1.2, keepAlways: true, getValue: (c) => c.category || "" },
-    { key: "level", title: "Level", align: "center", minWidth: 16, weight: 1.2, getValue: (c) => c.level || "" },
+    { key: "tet", title: "TET %", align: "center", minWidth: 20, weight: 1.7, getValue: (c) => getElementaryTetDisplay(c) },
     { key: "pastorate", title: "Pastorate", minWidth: 22, weight: 1.6, wrap: true, getValue: (c) => c.pastorate || "" },
-    { key: "council", title: "Council", minWidth: 20, weight: 1.5, wrap: true, getValue: (c) => c.council || "" },
   ];
 }
 
@@ -161,81 +146,45 @@ function getClergyColumns(): PdfColumn[] {
     { key: "rank", title: "Rank", align: "center", minWidth: 12, weight: 1, keepAlways: true, getValue: (c) => c.rank ?? "" },
     ...getMemberIdColumn(),
     { key: "name", title: "Name", minWidth: 38, weight: 2.4, keepAlways: true, wrap: true, getValue: (c) => c.name || "" },
-    { key: "dateOfBirth", title: "Date of Birth", align: "center", minWidth: 22, weight: 1.4, keepAlways: true, getValue: (c) => formatDateForPdf(c.dateOfBirth) },
-    { key: "yearOfPassing", title: "Year of Passing", align: "center", minWidth: 22, weight: 1.2, keepAlways: true, getValue: (c) => c.yearOfPassing ?? "" },
-    { key: "yearsOfExperience", title: "Years of Experience", align: "center", minWidth: 24, weight: 1.3, keepAlways: true, getValue: (c) => c.yearsOfExperience ?? "" },
-    { key: "qualification", title: "Qualification", minWidth: 40, weight: 2.6, wrap: true, getValue: (c) => splitQualifications(c.qualification) },
+    { key: "dateOfBirth", title: "DOB", align: "center", minWidth: 22, weight: 1.4, keepAlways: true, getValue: (c) => formatDateForPdf(c.dateOfBirth) },
+    { key: "yearsOfExperience", title: "Exp", align: "center", minWidth: 15, weight: 1.3, keepAlways: true, getValue: (c) => c.yearsOfExperience ?? "" },
     { key: "homePastorate", title: "Home Pastorate", minWidth: 30, weight: 2, keepAlways: true, wrap: true, getValue: (c) => c.homePastorate || "" },
   ];
 }
 
-// --- PDF GENERATION LOGIC ---
-
-function pickVisibleColumns(columns: PdfColumn[], candidates: any[]) {
-  return columns.filter((column) => {
-    if (column.keepAlways) return true;
-    return candidates.some((candidate) => hasMeaningfulValue(column.getValue?.(candidate)));
-  });
-}
-
-function getHeaderMinWidth(doc: jsPDF, title: string) {
-  const prevSize = doc.getFontSize();
-  doc.setFontSize(8);
-  const width = doc.getTextWidth(title) + 6;
-  doc.setFontSize(prevSize);
-  return Math.ceil(width);
-}
+// --- LAYOUT LOGIC ---
 
 function buildColumnStyles(doc: jsPDF, columns: PdfColumn[]) {
-  const contentWidth = doc.internal.pageSize.getWidth() - 12; // 6 left + 6 right margin
-  const effectiveMinWidths = columns.map((col) => Math.max(col.minWidth, getHeaderMinWidth(doc, col.title)));
-  const minSum = effectiveMinWidths.reduce((sum, w) => sum + w, 0);
-  const widths: number[] = [];
-
-  if (minSum > contentWidth) {
-    const scale = contentWidth / minSum;
-    effectiveMinWidths.forEach((w) => widths.push(Number((w * scale).toFixed(2))));
-  } else {
-    const extra = contentWidth - minSum;
-    const weightSum = columns.reduce((sum, col) => sum + col.weight, 0) || 1;
-    columns.forEach((col, idx) => {
-      const width = effectiveMinWidths[idx] + (extra * col.weight) / weightSum;
-      widths.push(Number(width.toFixed(2)));
-    });
-  }
+  const contentWidth = doc.internal.pageSize.getWidth() - 20; // 10mm margins
+  const minSum = columns.reduce((sum, col) => sum + col.minWidth, 0);
+  const scale = contentWidth / minSum;
 
   return Object.fromEntries(
     columns.map((col, idx) => [
       idx,
-      { cellWidth: widths[idx], halign: col.align || "left", overflow: col.wrap ? "linebreak" : "hidden" },
+      { 
+        cellWidth: col.minWidth * (scale < 1 ? scale : 1.1), // Ensure they fit
+        halign: col.align || "left", 
+        overflow: col.wrap ? "linebreak" : "hidden" 
+      },
     ])
   );
 }
 
-function slugifyPart(value: string) {
-  return String(value || "").toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-}
-
 async function loadLogoDataUrl(): Promise<string | null> {
   try {
-    const baseUrl = (import.meta as any).env?.BASE_URL || "/";
-    const res = await fetch(`${baseUrl}diocese-logo.png`);
+    const res = await fetch("/diocese-logo.png");
     if (!res.ok) return null;
     const blob = await res.blob();
     return await new Promise((resolve) => {
       const reader = new FileReader();
-      reader.onloadend = () => resolve(typeof reader.result === "string" ? reader.result : null);
-      reader.onerror = () => resolve(null);
+      reader.onloadend = () => resolve(reader.result as string);
       reader.readAsDataURL(blob);
     });
   } catch { return null; }
 }
 
-function buildPdfFileName(schoolType: SchoolType, filters: Record<string, string[]>, sortMode: string, searchQuery: string) {
-  const base = schoolType === "high" ? "high-school" : schoolType === "elementary" ? "elementary" : "clergy";
-  const datePart = new Date().toISOString().slice(0, 10);
-  return `${base}-${sortMode}-${datePart}.pdf`;
-}
+// --- MAIN DOWNLOAD FUNCTION ---
 
 export async function downloadCandidatesPDF(
   candidates: any[],
@@ -247,70 +196,82 @@ export async function downloadCandidatesPDF(
 ) {
   const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
   const logoDataUrl = await loadLogoDataUrl();
-  
-  const title = schoolType === "high" ? "High School Priority List" : schoolType === "elementary" ? "Elementary School Priority List" : "Clergy Priority List";
+  const printedAt = new Date().toLocaleString("en-GB", { dateStyle: 'medium', timeStyle: 'short' });
 
-  // Header
+  // 1. HEADER
   doc.setFont("helvetica", "bold");
   doc.setFontSize(16);
-  if (logoDataUrl) doc.addImage(logoDataUrl, "PNG", 8, 6, 16, 16);
-  doc.text("CSI Thoothukudi-Nazareth Diocese", 28, 13);
-  doc.setFontSize(12);
-  doc.setFont("helvetica", "normal");
-  doc.text(title, 28, 20);
+  if (logoDataUrl) doc.addImage(logoDataUrl, "PNG", 10, 8, 15, 15);
+  doc.text("CSI Thoothukudi-Nazareth Diocese", 28, 15);
+  
+  doc.setFontSize(11);
+  const title = schoolType === "high" ? "High/Higher Secondary Priority List" : schoolType === "elementary" ? "Elementary/Middle Priority List" : "Clergy Priority List";
+  doc.text(title, 28, 21);
 
+  // 2. METADATA (Filters & Search)
   let startY = 28;
-  const metaText = `Sorted by: ${sortMode === "appointment" ? "Appointing Order" : "Seniority"} ${searchQuery ? `| Search: ${searchQuery}` : ""}`;
-  
   doc.setFontSize(9);
-  doc.text(metaText, 8, startY);
-  startY += 6;
-
-  const allColumns = schoolType === "high" ? getHighColumns() : schoolType === "elementary" ? getElementaryColumns() : getClergyColumns();
+  doc.setFont("helvetica", "normal");
   
-  let columns = pickVisibleColumns(allColumns, candidates);
+  const filterText = Object.entries(filters || {}).filter(([_, v]) => v.length).map(([k, v]) => `${k}: ${v.join(", ")}`).join(" | ");
+  const metaLines = [
+    filterText ? `Filters: ${filterText}` : "Filters: All",
+    `Sorted by: ${sortMode.toUpperCase()} ${searchQuery ? `| Search: "${searchQuery}"` : ""}`
+  ];
+
+  metaLines.forEach(line => {
+    doc.text(line, 10, startY);
+    startY += 4.5;
+  });
+
+  // 3. COLUMNS & ROWS
+  const allColumns = schoolType === "high" ? getHighColumns() : schoolType === "elementary" ? getElementaryColumns() : getClergyColumns();
+  let columns = allColumns.filter(col => col.keepAlways || candidates.some(c => hasMeaningfulValue(col.getValue?.(c))));
   let rowsSource = candidates;
 
-  // Dual Rank logic for Search
   if (searchQuery && searchQuery.trim()) {
     const rankSource = rankBaseCandidates.length ? rankBaseCandidates : candidates;
     const sMap = buildRankMap(rankSource, schoolType, "seniority");
     const aMap = buildRankMap(rankSource, schoolType, "appointment");
-    
     rowsSource = candidates.map(c => ({
       ...c,
       _sRank: sMap.get(candidateKey(c)) || "",
       _aRank: aMap.get(candidateKey(c)) || ""
     }));
-
     columns = [
-      { key: "sRank", title: "Seniority Rank", align: "center", minWidth: 16, weight: 1, getValue: (c) => c._sRank },
-      { key: "aRank", title: "Appt Rank", align: "center", minWidth: 16, weight: 1, getValue: (c) => c._aRank },
+      { key: "sRank", title: "S.Rank", align: "center", minWidth: 14, weight: 1, getValue: (c) => c._sRank },
+      { key: "aRank", title: "A.Rank", align: "center", minWidth: 14, weight: 1, getValue: (c) => c._aRank },
       ...columns.filter(col => col.key !== "rank")
     ];
   }
 
   const rows = rowsSource.map((c) => columns.map((col) => col.getValue?.(c) ?? ""));
 
+  // 4. TABLE GENERATION
   autoTable(doc, {
-    head: [columns.map((col) => col.title)],
+    head: [columns.map(col => col.title)],
     body: rows,
-    startY,
+    startY: startY + 2,
     theme: "grid",
-    styles: { font: "helvetica", fontSize: 7.2, cellPadding: 1.8 },
-    headStyles: { fillColor: [37, 99, 235], textColor: [255, 255, 255] },
+    styles: { font: "helvetica", fontSize: 7.2, cellPadding: 1.5 },
+    headStyles: { fillColor: [37, 99, 235], textColor: 255, halign: 'center' },
     columnStyles: buildColumnStyles(doc, columns),
+    margin: { left: 10, right: 10, bottom: 15 },
     didDrawPage: (data) => {
+      // Watermark
       if (logoDataUrl) {
         doc.saveGraphicsState();
-        doc.setGState(new (doc as any).GState({ opacity: 0.05 }));
-        doc.addImage(logoDataUrl, "PNG", 100, 60, 60, 60);
+        (doc as any).setGState(new (doc as any).GState({ opacity: 0.05 }));
+        doc.addImage(logoDataUrl, "PNG", doc.internal.pageSize.getWidth()/2 - 35, doc.internal.pageSize.getHeight()/2 - 35, 70, 70);
         doc.restoreGraphicsState();
       }
+      // Footer
       doc.setFontSize(8);
-      doc.text(`Page ${data.pageNumber}`, doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() - 10);
+      doc.setTextColor(100);
+      doc.text(`Printed: ${printedAt}`, 10, doc.internal.pageSize.getHeight() - 8);
+      doc.text(`Page ${data.pageNumber} of ${doc.getNumberOfPages()}`, doc.internal.pageSize.getWidth() - 10, doc.internal.pageSize.getHeight() - 8, { align: "right" });
     }
   });
 
-  doc.save(buildPdfFileName(schoolType, filters, sortMode, searchQuery));
+  doc.save(`${schoolType}-list-${new Date().toISOString().slice(0, 10)}.pdf`);
 }
