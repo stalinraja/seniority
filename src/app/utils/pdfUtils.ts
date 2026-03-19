@@ -19,25 +19,6 @@ type PdfColumn = {
   weight: number;
   keepAlways?: boolean;
   wrap?: boolean;
-    },
-    theme: "grid",
-    styles: {
-      font: "helvetica",
-      fontSize: 7,
-      cellPadding: 1.6,
-      valign: "middle",
-      lineColor: [30, 41, 59],
-      lineWidth: 0.35,
-      textColor: [15, 23, 42],
-      overflow: "linebreak",
-    },
-    headStyles: {
-      fillColor: [79, 70, 229],
-      textColor: [255, 255, 255],
-      halign: "center",
-      fontStyle: "bold",
-      fontSize: 7.3,
-      cellPadding: 1.9,
       lineColor: [15, 23, 42],
       lineWidth: 0.45,
       overflow: "hidden",
