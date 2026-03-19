@@ -223,48 +223,42 @@ export function getRankingRulesDisplay(language: "en" | "ta" = "en") {
   const high =
     language === "ta"
       ? [
-                    "தரவரிசை: பதிவு செய்த தேதி முதலில்.",
-          "ஒரே ஆண்டில் பதிவு செய்திருந்தால், முதலில் தேர்ச்சி பெற்றவர் (மாதம்/ஆண்டு) முன்னுரிமை.",
-          "இன்னும் சமமானால், முன்னதாக பிறந்தவர் முன்னுரிமை.",
-          "இன்னும் சமமானால், TET மதிப்பெண் அதிகம் பெற்றவர் முன்னுரிமை.",
-          "நியமன முன்னுரிமை: TET தேர்ச்சி பெற்றவர்கள் முதலில்.",
-          "TET தேர்ச்சி பெற்றால், மேற்கண்ட தரவரிசை பயன்படுத்தப்படும்.",
+          "மூப்பு: பதிவு செய்த ஆண்டு முதலில்.",
+          "ஒரே ஆண்டு என்றால், தேர்ச்சி மாதம்/ஆண்டு முன்னுரிமை.",
+          "இன்னும் சமமானால், வயதில் மூத்தவர் முன்னுரிமை.",
+          "இன்னும் சமமானால், TET மதிப்பெண் (UG) முன்னுரிமை.",
+          "நியமன பார்வை: செல்லுபடியாகும் TET (UG) உள்ளவர்கள் முன்னுரிமை.",
+          "PG விண்ணப்பதாரர்கள் மூப்பு வரிசையையே பின்பற்றுவர்.",
         ]
       : [
-                    "Ranking order: earlier registration date/year comes first.",
+          "Seniority: earlier registration year comes first.",
           "If registration year is the same, earlier passing month/year comes first.",
-          "If still tied, born earlier comes first.",
-          "If still tied, higher TET score comes first.",
-          "Appointment priority: TET‑qualified candidates always come first.",
-          "If TET Qualified, the same ranking order is used.",
+          "If still tied, older age (earlier DOB) comes first.",
+          "If still tied, higher TET score comes first (UG).",
+          "Appointment view: UG candidates with valid TET are prioritized over UG without TET.",
+          "PG candidates follow the same seniority tie-breaks.",
         ];
 
-  const elementary =
+  const elementary =const elementary =
     language === "ta"
       ? [
-          "இந்த தரவரிசைப் பட்டியல் பாஸ்டரேட் (Pastorate) அளவில் பராமரிக்கப்படுகிறது.",
-          "பாஸ்டரேட் காலியிடங்களுக்கு பாஸ்டரேட் தரவரிசை பயன்படுத்தப்படும்.",
-          "கவுன்சில் தரவரிசை அனைத்து பாஸ்டரேட்களின் கூட்டுத் தரவரிசையாகவும், மறைமாவட்ட தரவரிசை அனைத்து கவுன்சில்களின் கூட்டுத் தரவரிசையாகவும் அமையும்.",
-          "தரவரிசை: பதிவு செய்த தேதி முதலில்.",
-          "ஒரே ஆண்டில் பதிவு செய்திருந்தால், முதலில் தேர்ச்சி பெற்றவர் (மாதம்/ஆண்டு) முன்னுரிமை.",
-          "இன்னும் சமமானால், முன்னதாக பிறந்தவர் முன்னுரிமை.",
-          "இன்னும் சமமானால், TET மதிப்பெண் அதிகம் பெற்றவர் முன்னுரிமை.",
-          "நியமன முன்னுரிமை: TET தேர்ச்சி பெற்றவர்கள் முதலில்.",
-          "TET தேர்ச்சி பெற்றால், மேற்கண்ட தரவரிசை பயன்படுத்தப்படும்.",
+          "மூப்பு: பதிவு செய்த ஆண்டு முதலில்.",
+          "ஒரே ஆண்டு என்றால், தேர்ச்சி மாதம்/ஆண்டு முன்னுரிமை.",
+          "இன்னும் சமமானால், வயதில் மூத்தவர் முன்னுரிமை.",
+          "இன்னும் சமமானால், TET % அதிகம் முன்னுரிமை.",
+          "நியமன பார்வை: TET % தேர்ச்சி பெற்றவர்கள் முன்னுரிமை.",
+          "சமநிலை விதிகள் மாறாது.",
         ]
       : [
-          "Rankings are maintained at the Pastorate level.",
-          "Vacancies at a Pastorate use the Pastorate ranking.",
-          "Council ranking is cumulative of all Pastorates; Diocese ranking is cumulative of all Councils.",
-          "Ranking order: earlier registration date/year comes first.",
+          "Seniority: earlier registration year comes first.",
           "If registration year is the same, earlier passing month/year comes first.",
-          "If still tied, born earlier comes first.",
-          "If still tied, higher TET score comes first.",
-          "Appointment priority: TET‑qualified candidates always come first.",
-          "If TET Qualified, the same ranking order is used.",
+          "If still tied, older age comes first.",
+          "If still tied, higher TET % comes first.",
+          "Appointment view: TET % at or above the pass mark is prioritized.",
+          "Tie-break order remains the same.",
         ];
 
-  const clergy =
+  const clergy =const clergy =
     language === "ta"
       ? [
           "நிலை 1: முதலில் Ordination (Year of Passing) பெற்றவர் முன்னுரிமை.",

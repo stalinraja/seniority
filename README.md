@@ -40,6 +40,26 @@ Optional local JSON cache sync script uses:
 - `GOOGLE_SHEET_CSV_URL`
 - `SCHOOL_VACANCY_CSV_URL`
 
+
+## Current UI Status
+
+- Apply page is disabled by default (`APPLY_SECTION_ENABLED = false`).
+- Download buttons are controlled via feature flags:
+  - `DOWNLOAD_PDF_ENABLED`
+  - `APPOINTMENT_REPORT_DOWNLOAD_ENABLED`
+- Appointment marking uses the `Appointed` field, but the Yes/No column is not shown in the UI or PDFs.
+
+## Priority Rules (Summary)
+
+- High/Higher Secondary
+  - Seniority: earlier registration year -> earlier passing month/year -> older age -> higher TET score (UG).
+  - Appointment view: UG candidates with valid TET are prioritized; PG follows the same seniority order.
+- Elementary/Middle
+  - Seniority: earlier registration year -> earlier passing month/year -> older age -> higher TET %.
+  - Appointment view: TET % at/above the pass mark is prioritized; tie-break order remains the same.
+- Clergy
+  - Earlier year of passing -> more years of experience -> older age.
+
 ## Build & deploy
 
 - Build: `npm run build`

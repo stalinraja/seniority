@@ -4,6 +4,7 @@ import {
   CLERGY_SECTION_ENABLED,
   HIGH_SCHOOL_SECTION_ENABLED,
   MIDDLE_SCHOOL_SECTION_ENABLED,
+  APPLY_SECTION_ENABLED,
 } from "../config/features";
 
 export function AppGuidelines() {
@@ -17,13 +18,36 @@ export function AppGuidelines() {
         <ol className="list-decimal list-inside space-y-1">
           <li>
             {t(
-              "Choose the priority type (High/Higher Secondary School or Elementry/Middle School) from the top selector.",
-              "மேலுள்ள தேர்வில் இருந்து மூப்பு வகையை (உயர்நிலை/மேல்நிலை அல்லது தொடக்க/நடுநிலை) தேர்வு செய்யவும்."
+              "Choose the priority type (High/Higher Secondary, Elementry/Middle, or Clergy) from the top selector.",
+              "மேலுள்ள தேர்வில் இருந்து மூப்பு வகையை (உயர்நிலை/மேல்நிலை, தொடக்க/நடுநிலை, அல்லது குருத்துவம்) தேர்வு செய்யவும்."
             )}
           </li>
-          <li>{t("Use Filters to narrow the list, Search to find candidates quickly, and Sort By to switch between Seniority and Appointment views.", "பட்டியலை குறைக்க வடிகட்டிகளை பயன்படுத்தவும்; விண்ணப்பதாரரை விரைவாக கண்டுபிடிக்க தேடலை பயன்படுத்தவும்; மூப்பு மற்றும் நியமன பார்வையை மாற்ற Sort By பயன்படுத்தவும்.")}</li>
-          <li>{t("Use Dashboard for visual summary and Download PDF for reports.", "காட்சி சுருக்கத்திற்கு டாஷ்போர்டை பயன்படுத்தவும்; அறிக்கைக்கு PDF பதிவிறக்கம் செய்யவும்.")}</li>
-          <li>{t("Use Apply page to download the required school application form and view vacancies.", "தேவையான பள்ளி விண்ணப்பப் படிவத்தை பதிவிறக்கம் செய்யவும்; காலிப்பணியிடங்களை பார்க்கவும் விண்ணப்பப் பக்கத்தை பயன்படுத்தவும்.")}</li>
+          <li>
+            {t(
+              "Use Filters and Search to narrow the list; use Sort By to switch between Seniority and Appointment views.",
+              "பட்டியலை குறைக்க வடிகட்டிகள் மற்றும் தேடலை பயன்படுத்தவும்; மூப்பு/நியமன பார்வையை மாற்ற Sort By பயன்படுத்தவும்."
+            )}
+          </li>
+          <li>
+            {t(
+              "Use Show Appointments to view appointed candidates and download the appointment report.",
+              "நியமனமானவர்களைப் பார்க்க Show Appointments பயன்படுத்தவும்; நியமன அறிக்கையை பதிவிறக்கவும்."
+            )}
+          </li>
+          <li>
+            {t(
+              "Use Dashboard for visual summary and Download PDF for the filtered list.",
+              "காட்சி சுருக்கத்திற்கு டாஷ்போர்டை பயன்படுத்தவும்; வடிகட்டிய பட்டியலுக்கு PDF பதிவிறக்கம் செய்யவும்."
+            )}
+          </li>
+          {APPLY_SECTION_ENABLED ? (
+            <li>
+              {t(
+                "Use Apply page to download the required school application form and view vacancies.",
+                "தேவையான பள்ளி விண்ணப்பப் படிவத்தை பதிவிறக்கம் செய்யவும்; காலிப்பணியிடங்களை பார்க்கவும் விண்ணப்பப் பக்கத்தை பயன்படுத்தவும்."
+              )}
+            </li>
+          ) : null}
         </ol>
         <div className="mt-4 grid grid-cols-1 lg:grid-cols-3 gap-3">
           {HIGH_SCHOOL_SECTION_ENABLED ? (

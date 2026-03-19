@@ -1,6 +1,6 @@
 # CSI TND Seniority Portal - Guidelines
 
-_Last updated: 2026-03-16_
+_Last updated: 2026-03-20_
 
 ## 1) Purpose
 This portal manages and displays:
@@ -23,7 +23,7 @@ Supports bilingual UI (English/Tamil), filters, search, ranking, dashboard chart
 
 ### Pages
 - `/` Dashboard (seniority + filters + charts + appointment report)
-- `/apply` Form downloads + vacancy map/dashboard
+- `/apply` Form downloads + vacancy map (only when `APPLY_SECTION_ENABLED = true`)
 
 ## 3) Data Loading
 
@@ -53,48 +53,44 @@ File: `src/app/config/features.ts`
 - `HIGH_SCHOOL_SECTION_ENABLED`
 - `MIDDLE_SCHOOL_SECTION_ENABLED`
 - `CLERGY_SECTION_ENABLED`
+- `DOWNLOAD_PDF_ENABLED`
+- `APPOINTMENT_REPORT_DOWNLOAD_ENABLED`
 
 ## 5) Dashboard Flow
 1. Select category tab: High / Elementary / Clergy.
-2. Search + filter rows.
-3. Use actions:
-   - `Dashboard` (charts)
-   - `Download PDF` (filtered seniority)
-   - `Appointment Made` (panel above filters)
-4. In appointment panel:
-   - shows appointed candidates only (`Appointed = Yes/Y/True/1`)
-   - includes `Appointed`, `Appointed Date`, `Compassion if any`, location
-   - location is school/institute for High+Elementary, pastorate for Clergy
-5. `Download Report` exports appointment report PDF.
+2. Use Filters + Search; use Sort By to switch between Seniority and Appointment views.
+3. Use actions (if enabled):
+   - `Open Dashboard` (charts)
+   - `Download PDF` (filtered list)
+   - `Show Appointments`
+4. Appointment view:
+   - shows appointed candidates only (based on `Appointed` field)
+   - displays `Appointment Date`, `Vacancy Institute/Pastorate`, `Based on`
+   - no `Appointment Made (Yes/No)` column is shown
+5. `Download Appointment Report` exports appointed candidates only with the same appointment columns.
 
-## 6) Ranking Rules (Simple)
-
-## 6) Ranking Rules (Updated)
-
-## 6) Ranking Rules (Updated)
-
-There are **two sort modes** for High and Elementary:
-- **Seniority** (default)
-- **Appointment** (TET‑qualified candidates are prioritized)
+## 6) Ranking Rules (Current)
 
 ### English (Simple Explanation)
 1. High/Higher Secondary
 - **Seniority view (default):**
   - Earlier registration year comes first.
-  - If the year is the same, earlier passing month/year comes first when available.
+  - If the year is the same, earlier passing month/year comes first.
   - If still tied, older age comes first.
-  - If still tied, higher TET score comes first.
-- **Appointment view:** TET‑qualified candidates are prioritized.
-  - Tie‑breaks follow the same order as above.
+  - If still tied, higher TET score comes first (UG).
+- **Appointment view:**
+  - UG candidates with valid TET are prioritized over UG without TET.
+  - PG candidates follow the same seniority tie-break order.
 
 2. Elementary/Middle
 - **Seniority view (default):**
   - Earlier registration year comes first.
-  - If the year is the same, earlier passing month/year comes first when available.
+  - If the year is the same, earlier passing month/year comes first.
   - If still tied, older age comes first.
-  - If still tied, higher TET mark comes first.
-- **Appointment view:** TET‑qualified candidates are prioritized.
-  - Tie‑breaks follow the same order as above.
+  - If still tied, higher TET % comes first.
+- **Appointment view:**
+  - TET % at/above the pass mark is prioritized.
+  - Tie‑break order remains the same.
 
 3. Clergy
 - Earlier year of passing comes first (month prioritized when available).
@@ -104,27 +100,32 @@ There are **two sort modes** for High and Elementary:
 ### தமிழ் (எளிய விளக்கம்)
 1. உயர்நிலை/மேல்நிலை
 - **மூப்பு பார்வை (இயல்புநிலை):**
-  - 1) பதிவு செய்த ஆண்டு முன்னுரிமை.
-  - 2) ஒரே ஆண்டு என்றால், தேர்ச்சி ஆண்டு/மாதம் இருந்தால் அதற்கு முன்னுரிமை.
-  - 3) இன்னும் சமமானால், வயது மூப்பு.
-  - 4) இன்னும் சமமானால், TET மதிப்பெண்.
-- **நியமன பார்வை:** TET தகுதி பெற்றவர்கள் முன்னுரிமை.
-  - சமநிலை: மேலுள்ள வரிசையே பயன்படுத்தப்படும்.
+  - பதிவு செய்த ஆண்டு முன்னுரிமை.
+  - ஒரே ஆண்டு என்றால், தேர்ச்சி மாதம்/ஆண்டு முன்னுரிமை.
+  - இன்னும் சமமானால், வயது மூப்பு.
+  - இன்னும் சமமானால், TET மதிப்பெண் (UG) முன்னுரிமை.
+- **நியமன பார்வை:**
+  - செல்லுபடியாகும் TET (UG) உள்ளவர்கள் முதலில்.
+  - PG விண்ணப்பதாரர்கள் மூப்பு வரிசையையே பின்பற்றுவர்.
 
 2. தொடக்க/நடுநிலை
 - **மூப்பு பார்வை (இயல்புநிலை):**
   - பதிவு செய்த ஆண்டு முன்னுரிமை.
-  - ஒரே ஆண்டு என்றால், தேர்ச்சி ஆண்டு/மாதம் இருந்தால் அதற்கு முன்னுரிமை.
-  - இன்னும் சமமானால், வயது.
-  - இன்னும் சமமானால், TET மதிப்பெண்.
-- **நியமன பார்வை:** TET தகுதி பெற்றவர்கள் முன்னுரிமை.
-  - சமநிலை: மேலுள்ள வரிசையே பயன்படுத்தப்படும்.
+  - ஒரே ஆண்டு என்றால், தேர்ச்சி மாதம்/ஆண்டு முன்னுரிமை.
+  - இன்னும் சமமானால், வயது மூப்பு.
+  - இன்னும் சமமானால், TET % அதிகம் முன்னுரிமை.
+- **நியமன பார்வை:**
+  - TET % தேர்ச்சி பெற்றவர்கள் முன்னுரிமை.
+  - சமநிலை விதிகள் மாறாது.
 
 3. குருத்துவம்
 - தேர்ச்சி ஆண்டு முன்னுரிமை (மாதம் இருந்தால் முன்னுரிமை).
 - அடுத்தது பணி அனுபவம்.
 - அடுத்தது வயது மூப்பு.
+
 ## 7) Sheet Columns (Appointment Fields)
+
+Note: `Appointed` is used to mark candidates but is not displayed in the UI or PDFs.
 
 ### High School
 Add at end:
@@ -194,7 +195,7 @@ Do not upload:
 5. Deploy.
 6. Verify:
    - `/`
-   - `/apply`
+   - `/apply` (only if enabled)
    - `/?appointments=1`
 
 Note: `vercel.json` handles SPA route rewrites to `index.html`.
