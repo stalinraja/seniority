@@ -453,7 +453,7 @@ export async function downloadCandidatesPDF(
     head: headers,
     body: rows,
     startY,
-    headStyles: { overflow: "linebreak", cellWidth: "wrap" },
+    // headStyles: { overflow: "linebreak", cellWidth: "wrap" }, // Removed duplicate headStyles
     didDrawPage: (data) => {
       const totalPages = doc.getNumberOfPages();
       const pageNumber = data.pageNumber;
@@ -497,6 +497,7 @@ export async function downloadCandidatesPDF(
       lineColor: [15, 23, 42],
       lineWidth: 0.45,
       overflow: "hidden",
+      // cellWidth: "wrap", // If you want cellWidth, add it here, but not in a duplicate headStyles
     },
     bodyStyles: {
       fontStyle: "normal",
@@ -522,51 +523,17 @@ function buildAppointmentReportFileName(schoolType: AppointmentSchoolType) {
 
 export async function downloadAppointmentsReportPDF(
   appointmentRows: any[],
-  schoolType: AppointmentSchoolType
-) {
-  const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
-  const logoDataUrl = await loadLogoDataUrl();
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(13);
-  doc.text(
-    schoolType === "high"
-      ? "High/Higher Secondary Appointment Report"
-      : schoolType === "elementary"
-      ? "Elementary/Middle School Appointment Report"
-      : "Clergy Appointment Report",
-    8,
-    14
-  );
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(9);
-  doc.text(`Total Appointments: ${appointmentRows.length}`, 8, 19);
 
   const columns = getAppointmentColumns(schoolType);
   const headers = [columns.map((col) => col.title)];
   const rows = appointmentRows.map((candidate) => columns.map((col) => col.getValue(candidate)));
   const columnStyles = buildColumnStyles(doc, columns);
 
-
-  const filterText = Object.entries(filters || {})
-    .filter(([, v]) => v && v.length)
-    .map(([k, v]) => `${k}: ${v.join(", ")}`)
-    .join(" | ");
-  const searchText = searchQuery ? `Search: ${searchQuery}` : "";
-  const sortText = `Sorted by: ${sortMode === "appointment" ? "Appointing Order" : "Seniority"}`;
-  const metaText = [sortText, filterText, searchText].filter(Boolean).join(" | ");
-
-  if (metaText) {
-    const wrapped = doc.splitTextToSize(metaText, 285);
-    doc.text(wrapped, 8, startY);
-    startY += wrapped.length * 4 + 2;
-  }
-
   autoTable(doc, {
     head: headers,
     body: rows,
     startY: 23,
-    headStyles: { overflow: "linebreak", cellWidth: "wrap" },
-    didDrawPage: (data) => {
+    didDrawPage: (data: any) => {
       const totalPages = doc.getNumberOfPages();
       const pageNumber = data.pageNumber;
       const pageWidth = doc.internal.pageSize.getWidth();
@@ -585,7 +552,6 @@ export async function downloadAppointmentsReportPDF(
 
       doc.setFontSize(8);
       doc.setFont("helvetica", "normal");
-      doc.text(`Printed: ${printedAt.toLocaleString()}`, 8, pageHeight - 6);
       doc.text(`Page ${pageNumber} of ${totalPages}`, pageWidth - 8, pageHeight - 6, { align: "right" });
     },
     theme: "grid",
@@ -609,6 +575,26 @@ export async function downloadAppointmentsReportPDF(
       lineColor: [15, 23, 42],
       lineWidth: 0.45,
       overflow: "hidden",
+      // cellWidth: "wrap", // If you want cellWidth, add it here, but not in a duplicate headStyles
+    },
+    bodyStyles: {
+      fontStyle: "normal",
+    },
+    margin: { left: 6, right: 6, top: 6, bottom: 8 },
+    tableWidth: "auto",
+    columnStyles,
+  });
+    headStyles: {
+      fillColor: [79, 70, 229],
+      textColor: [255, 255, 255],
+      halign: "center",
+      fontStyle: "bold",
+      fontSize: 7.3,
+      cellPadding: 1.9,
+      lineColor: [15, 23, 42],
+      lineWidth: 0.45,
+      overflow: "hidden",
+      // cellWidth: "wrap", // If you want cellWidth, add it here, but not in a duplicate headStyles
     },
     margin: { left: 6, right: 6, top: 6, bottom: 8 },
     tableWidth: "auto",
