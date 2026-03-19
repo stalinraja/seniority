@@ -80,7 +80,7 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
   const highSchool = schoolType === "high";
   const clergy = schoolType === "clergy";
 
-  const appointmentColSpan = showAppointments ? 3 : 0;
+  const appointmentColSpan = showAppointments ? 4 : 0;
   const highColSpan = 11 + appointmentColSpan + (SHOW_MEMBER_ID ? 1 : 0) + (SHOW_ADDRESS ? 1 : 0) + (SHOW_PINCODE ? 1 : 0);
   const elementaryColSpan = 11 + appointmentColSpan + (SHOW_MEMBER_ID ? 1 : 0);
   const clergyColSpan = 7 + appointmentColSpan + (SHOW_MEMBER_ID ? 1 : 0);
@@ -198,6 +198,7 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                 <TableHead className="font-semibold">{t("Appointment Made", "நியமனம் செய்யப்பட்டது")}</TableHead>
                 <TableHead className="font-semibold">{t("Appointment Date", "நியமன தேதி")}</TableHead>
                 <TableHead className="font-semibold">{t("Vacancy Institute", "காலியிடம் நிறுவனம்")}</TableHead>
+                <TableHead className="font-semibold">{t("Based on", "அடிப்படையில்")}</TableHead>
               </>
             ) : null}
             </>
@@ -216,6 +217,7 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                 <TableHead className="font-semibold">{t("Appointment Made", "நியமனம் செய்யப்பட்டது")}</TableHead>
                 <TableHead className="font-semibold">{t("Appointment Date", "நியமன தேதி")}</TableHead>
                 <TableHead className="font-semibold">{t("Vacancy Institute", "காலியிடம் நிறுவனம்")}</TableHead>
+                <TableHead className="font-semibold">{t("Based on", "அடிப்படையில்")}</TableHead>
               </>
             ) : null}
             </>
@@ -238,6 +240,7 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                 <TableHead className="font-semibold">{t("Appointment Made", "நியமனம் செய்யப்பட்டது")}</TableHead>
                 <TableHead className="font-semibold">{t("Appointment Date", "நியமன தேதி")}</TableHead>
                 <TableHead className="font-semibold">{t("Vacancy Institute", "காலியிடம் நிறுவனம்")}</TableHead>
+                <TableHead className="font-semibold">{t("Based on", "அடிப்படையில்")}</TableHead>
               </>
             ) : null}
             </>
@@ -352,6 +355,7 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                         <TableCell className="text-gray-700">{appointmentLabel}</TableCell>
                         <TableCell className="text-gray-700">{candidate.appointedDate ? formatDateOnly(candidate.appointedDate) : "-"}</TableCell>
                         <TableCell className="text-gray-700 table-responsive-cell">{candidate.appointedLocation || candidate.appointedSchool || candidate.institution || "-"}</TableCell>
+                        <TableCell className="text-gray-700">{candidate.compassionReason || "-"}</TableCell>
                       </>
                     ) : null}
                     </>
@@ -383,6 +387,7 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                         <TableCell className="text-gray-700">{appointmentLabel}</TableCell>
                         <TableCell className="text-gray-700">{candidate.appointedDate ? formatDateOnly(candidate.appointedDate) : "-"}</TableCell>
                         <TableCell className="text-gray-700 table-responsive-cell">{candidate.appointedLocation || candidate.appointedSchool || candidate.institution || "-"}</TableCell>
+                        <TableCell className="text-gray-700">{candidate.compassionReason || "-"}</TableCell>
                       </>
                     ) : null}
                     </>
@@ -438,6 +443,7 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                         <TableCell className="text-gray-700">{appointmentLabel}</TableCell>
                         <TableCell className="text-gray-700">{candidate.appointedDate ? formatDateOnly(candidate.appointedDate) : "-"}</TableCell>
                         <TableCell className="text-gray-700 table-responsive-cell">{candidate.appointedLocation || candidate.appointedSchool || candidate.institution || "-"}</TableCell>
+                        <TableCell className="text-gray-700">{candidate.compassionReason || "-"}</TableCell>
                       </>
                     ) : null}
                     </>

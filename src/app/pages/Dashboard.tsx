@@ -39,7 +39,8 @@ function normalizeFilterKey(value: any) {
 
 function isYesValue(value: any) {
   const normalized = normalizeText(value).toLowerCase();
-  return normalized === "yes" || normalized === "y" || normalized === "true" || normalized === "1";
+  const stripped = normalized.replace(/[^a-z0-9]/g, "");
+  return stripped === "yes" || stripped === "y" || stripped === "true" || stripped === "1";
 }
 
 function parseDate(value: any) {
@@ -214,6 +215,9 @@ function getAppointmentFields(row: Record<string, any>, schoolType: SchoolType) 
       "Compassion Based Reason",
       "Compassion if any",
       "Reason",
+      "Based on",
+      "Based On",
+      "Basedon",
     ])
   );
 
@@ -534,6 +538,7 @@ export function Dashboard() {
   const [downloadingReport, setDownloadingReport] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [lastSyncAttempt, setLastSyncAttempt] = useState<Date | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const lastDataHashRef = useRef<string>("");
   const availableSchoolTypes = useMemo<SchoolType[]>(() => {
@@ -571,6 +576,7 @@ export function Dashboard() {
 
       fetchGoogleSheetData()
         .then((data) => {
+          setLastSyncAttempt(new Date());
           const highRows = Array.isArray(data?.highSchool)
             ? data.highSchool
             : Array.isArray(data)
@@ -604,6 +610,7 @@ export function Dashboard() {
           if (initial) setInitialLoadDone(true);
         })
         .catch(() => {
+          setLastSyncAttempt(new Date());
           const hasData =
             highSchoolCandidates.length > 0 || elementaryCandidates.length > 0 || clergyCandidates.length > 0;
           if (!hasData || initial) {
@@ -952,9 +959,11 @@ export function Dashboard() {
                   {t("Loading...", "ஏற்றப்படுகிறது...")}
                 </span>
               )}
-              {lastUpdated && !loading && (
+              {(lastSyncAttempt || lastUpdated) && !loading && (
                 <span className="text-xs text-gray-500">
-                  {t("Last updated", "கடைசியாக புதுப்பிக்கப்பட்டது")}: {lastUpdated.toLocaleTimeString()}
+                  {lastSyncAttempt ? `${t("Last sync", "கடைசியாக ஒத்திசைவு")}: ${lastSyncAttempt.toLocaleString()}` : ""}
+                  {lastSyncAttempt && lastUpdated ? " - " : ""}
+                  {lastUpdated ? `${t("Last updated", "கடைசியாக புதுப்பிக்கப்பட்டது")}: ${lastUpdated.toLocaleString()}` : ""}
                 </span>
               )}
             </div>
