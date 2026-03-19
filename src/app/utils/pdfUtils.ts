@@ -19,30 +19,6 @@ type PdfColumn = {
   weight: number;
   keepAlways?: boolean;
   wrap?: boolean;
-      lineColor: [15, 23, 42],
-      lineWidth: 0.45,
-      overflow: "hidden",
-      // cellWidth: "wrap", // If you want cellWidth, add it here, but not in a duplicate headStyles
-    },
-    bodyStyles: {
-      fontStyle: "normal",
-    },
-    margin: { left: 6, right: 6, top: 6, bottom: 8 },
-    tableWidth: "auto",
-    columnStyles,
-  });
-
-  doc.save(buildAppointmentReportFileName(schoolType));
-    candidate.memberId ?? "",
-    candidate.name ?? "",
-    candidate.dateOfBirth ?? "",
-    candidate.yearOfPassing ?? "",
-    candidate.yearOfRegistering ?? "",
-    candidate.category ?? "",
-    candidate.department ?? "",
-    candidate.pastorate ?? "",
-    candidate.homePastorate ?? "",
-  ].join("|");
 }
 
 function buildRankMap(candidates: any[], schoolType: SchoolType, mode: "seniority" | "appointment") {
