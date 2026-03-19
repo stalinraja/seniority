@@ -205,7 +205,7 @@ function getAppointmentFields(row: Record<string, any>, schoolType: SchoolType) 
     getLooseValue(row, ["appointed", "Appointed", "Appointment", "Appointment Made", "Appointed?"]) ||
     "";
   const appointedDate = normalizeText(
-    getLooseValue(row, ["appointedDate", "Appointed Date", "Apointed Date", "Date of Appointment"])
+    getLooseValue(row, ["appointedDate", "Appointed Date", "Apointed Date", "Date of Appointment", "Appointment Date"])
   );
   const compassionReason = normalizeText(
     getLooseValue(row, [
@@ -237,6 +237,10 @@ function getAppointmentFields(row: Record<string, any>, schoolType: SchoolType) 
           "School",
           "Institute",
           "Institution",
+          "Vacancy Institute",
+          "Vacancy Institution",
+          "Vacncy institute",
+          "Vacncy Institute",
         ])
   );
 
@@ -514,9 +518,7 @@ export function Dashboard() {
   const PAGE_SIZE = 20;
   const [schoolType, setSchoolType] = useState<SchoolType>("high");
   const [showDashboard, setShowDashboard] = useState(false);
-  const [showAppointments, setShowAppointments] = useState(
-    APPOINTMENT_REPORT_ENABLED && searchParams.get("appointments") === "1"
-  );
+  const [showAppointments, setShowAppointments] = useState(false);
   const [sortMode, setSortMode] = useState<SortMode>("seniority");
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState<Record<string, string[]>>({});
@@ -552,9 +554,6 @@ export function Dashboard() {
     if (!APPOINTMENT_REPORT_ENABLED) {
       setShowAppointments(false);
       return;
-    }
-    if (searchParams.get("appointments") === "1") {
-      setShowAppointments(true);
     }
   }, [searchParams]);
 
@@ -787,19 +786,14 @@ export function Dashboard() {
   }, [rankedCandidates, searchQuery]);
 
   const appointmentRows = useMemo(() => {
-    const ranked =
-      schoolType === "high"
-        ? rankHighSchool(currentCandidates, "appointment", true)
-        : schoolType === "elementary"
-        ? rankElementarySchool(currentCandidates, "appointment", true)
-        : rankClergyOrdination(currentCandidates, true);
-    return ranked
+    if (!showAppointments) return [];
+    return filteredCandidates
       .filter((row) => row.appointed === true)
       .map((row) => ({
         ...row,
         appointmentNumber: appointmentRankMap.get(getCandidateKey(row)) ?? null,
       }));
-  }, [currentCandidates, schoolType, appointmentRankMap]);
+  }, [filteredCandidates, showAppointments, appointmentRankMap]);
 
   const totalPages = Math.max(1, Math.ceil(filteredCandidates.length / PAGE_SIZE));
 

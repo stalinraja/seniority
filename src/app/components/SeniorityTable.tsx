@@ -33,9 +33,28 @@ function formatDateWithAge(value: any) {
 }
 
 function formatDateOnly(value: any) {
-  const date = value instanceof Date ? value : new Date(value);
-  if (Number.isNaN(date.getTime())) return "";
-  return format(date, "dd/MM/yyyy");
+  if (!value) return "";
+  if (value instanceof Date) {
+    return Number.isNaN(value.getTime()) ? "" : format(value, "dd/MM/yyyy");
+  }
+
+  const raw = String(value).trim();
+  if (!raw) return "";
+
+  const compact = raw.replace(/\s+/g, "");
+  const normalized = compact.replace(/[./-]+/g, ".");
+  const match = normalized.match(/^(\d{1,2})\.(\d{1,2})\.(\d{2,4})$/);
+  if (match) {
+    const day = Number(match[1]);
+    const month = Number(match[2]);
+    const yearRaw = Number(match[3]);
+    const year = String(match[3]).length == 2 ? (yearRaw <= 30 ? 2000 + yearRaw : 1900 + yearRaw) : yearRaw;
+    const date = new Date(year, month - 1, day);
+    return Number.isNaN(date.getTime()) ? "" : format(date, "dd/MM/yyyy");
+  }
+
+  const parsed = new Date(raw);
+  return Number.isNaN(parsed.getTime()) ? "" : format(parsed, "dd/MM/yyyy");
 }
 
 function splitQualifications(value: string) {
