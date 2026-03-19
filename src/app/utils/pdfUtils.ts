@@ -164,14 +164,37 @@ function getClergyColumns(): PdfColumn[] {
 
 function getAppointmentColumns(): PdfColumn[] {
   return [
-    { key: "appointed", title: "Appointment Made", align: "center", minWidth: 18, weight: 1.2, getValue: (c) => (c.appointed ? "Yes" : "No") },
-    { key: "appointedDate", title: "Appointment Date", align: "center", minWidth: 20, weight: 1.4, getValue: (c) => (c.appointedDate ? formatDateForPdf(c.appointedDate) : "-") },
-    { key: "appointedLocation", title: "Vacancy Institute", minWidth: 28, weight: 2, wrap: true, getValue: (c) => c.appointedLocation || c.appointedSchool || c.institution || "-" },
-    { key: "compassionReason", title: "Based on", minWidth: 22, weight: 1.8, wrap: true, getValue: (c) => c.compassionReason || "-" },
+    { key: "appointedDate", title: "Appointment Date", align: "center", minWidth: 20, weight: 1.4, keepAlways: true, getValue: (c) => (c.appointedDate ? formatDateForPdf(c.appointedDate) : "-") },
+    { key: "appointedLocation", title: "Vacancy Institute", minWidth: 28, weight: 2, keepAlways: true, wrap: true, getValue: (c) => c.appointedLocation || c.appointedSchool || c.institution || "-" },
+    { key: "compassionReason", title: "Based on", minWidth: 22, weight: 1.8, keepAlways: true, wrap: true, getValue: (c) => c.compassionReason || "-" },
   ];
 }
 
 // --- LAYOUT LOGIC ---
+function applyPdfFooterAndWatermark(doc: jsPDF, logoDataUrl: string | null, printedAt: string) {
+  const totalPages = doc.getNumberOfPages();
+  for (let i = 1; i <= totalPages; i += 1) {
+    doc.setPage(i);
+    if (logoDataUrl) {
+      doc.saveGraphicsState();
+      (doc as any).setGState(new (doc as any).GState({ opacity: 0.05 }));
+      doc.addImage(
+        logoDataUrl,
+        "PNG",
+        doc.internal.pageSize.getWidth() / 2 - 35,
+        doc.internal.pageSize.getHeight() / 2 - 35,
+        70,
+        70
+      );
+      doc.restoreGraphicsState();
+    }
+    doc.setFontSize(8);
+    doc.setTextColor(100);
+    doc.text(`Printed: ${printedAt}`, 10, doc.internal.pageSize.getHeight() - 8);
+    doc.text(`Page ${i} of ${totalPages}`, doc.internal.pageSize.getWidth() - 10, doc.internal.pageSize.getHeight() - 8, { align: "right" });
+  }
+}
+
 
 function buildColumnStyles(doc: jsPDF, columns: PdfColumn[]) {
   const contentWidth = doc.internal.pageSize.getWidth() - 20; // 10mm margins
@@ -245,7 +268,7 @@ export async function downloadCandidatesPDF(
 
   // 3. COLUMNS & ROWS
   const allColumns = schoolType === "high" ? getHighColumns() : schoolType === "elementary" ? getElementaryColumns() : getClergyColumns();
-  let columns = [...allColumns];
+  let columns = allColumns.filter(col => col.keepAlways || candidates.some(c => hasMeaningfulValue(col.getValue?.(c))));
   let rowsSource = candidates;
 
   if (searchQuery && searchQuery.trim()) {
@@ -275,22 +298,10 @@ export async function downloadCandidatesPDF(
     styles: { font: "helvetica", fontSize: 7.2, cellPadding: 1.5 },
     headStyles: { fillColor: [37, 99, 235], textColor: 255, halign: 'center' },
     columnStyles: buildColumnStyles(doc, columns),
-    margin: { left: 10, right: 10, bottom: 15 },
-    didDrawPage: (data) => {
-      // Watermark
-      if (logoDataUrl) {
-        doc.saveGraphicsState();
-        (doc as any).setGState(new (doc as any).GState({ opacity: 0.05 }));
-        doc.addImage(logoDataUrl, "PNG", doc.internal.pageSize.getWidth()/2 - 35, doc.internal.pageSize.getHeight()/2 - 35, 70, 70);
-        doc.restoreGraphicsState();
-      }
-      // Footer
-      doc.setFontSize(8);
-      doc.setTextColor(100);
-      doc.text(`Printed: ${printedAt}`, 10, doc.internal.pageSize.getHeight() - 8);
-      doc.text(`Page ${data.pageNumber} of ${doc.getNumberOfPages()}`, doc.internal.pageSize.getWidth() - 10, doc.internal.pageSize.getHeight() - 8, { align: "right" });
-    }
+    margin: { left: 10, right: 10, bottom: 15 }
   });
+
+  applyPdfFooterAndWatermark(doc, logoDataUrl, printedAt);
 
   doc.save(`${schoolType}-list-${new Date().toISOString().slice(0, 10)}.pdf`);
 }
@@ -329,7 +340,7 @@ export async function downloadAppointmentsReportPDF(
 
   const baseColumns =
     schoolType === "high" ? getHighColumns() : schoolType === "elementary" ? getElementaryColumns() : getClergyColumns();
-  const columns = [...baseColumns, ...getAppointmentColumns()];
+  const columns = [...baseColumns, ...getAppointmentColumns()].filter((col) => col.keepAlways || onlyAppointments.some((c) => hasMeaningfulValue(col.getValue?.(c))));
   const rows = onlyAppointments.map((c) => columns.map((col) => col.getValue?.(c) ?? ""));
 
   autoTable(doc, {
@@ -341,19 +352,9 @@ export async function downloadAppointmentsReportPDF(
     headStyles: { fillColor: [16, 185, 129], textColor: 255, halign: "center" },
     columnStyles: buildColumnStyles(doc, columns),
     margin: { left: 10, right: 10, bottom: 15 },
-    didDrawPage: (data) => {
-      if (logoDataUrl) {
-        doc.saveGraphicsState();
-        (doc as any).setGState(new (doc as any).GState({ opacity: 0.05 }));
-        doc.addImage(logoDataUrl, "PNG", doc.internal.pageSize.getWidth() / 2 - 35, doc.internal.pageSize.getHeight() / 2 - 35, 70, 70);
-        doc.restoreGraphicsState();
-      }
-      doc.setFontSize(8);
-      doc.setTextColor(100);
-      doc.text(`Printed: ${printedAt}`, 10, doc.internal.pageSize.getHeight() - 8);
-      doc.text(`Page ${data.pageNumber} of ${doc.getNumberOfPages()}`, doc.internal.pageSize.getWidth() - 10, doc.internal.pageSize.getHeight() - 8, { align: "right" });
-    },
   });
+
+  applyPdfFooterAndWatermark(doc, logoDataUrl, printedAt);
 
   doc.save(`appointments-${schoolType}-${new Date().toISOString().slice(0, 10)}.pdf`);
 }

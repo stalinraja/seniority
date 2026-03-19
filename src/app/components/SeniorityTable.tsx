@@ -84,7 +84,7 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
   const longPressFiredRef = useRef(false);
   const lastTapRef = useRef(0);
 
-  const appointmentColSpan = showAppointments ? 4 : 0;
+  const appointmentColSpan = showAppointments ? 3 : 0;
   const highColSpan = 11 + appointmentColSpan + (SHOW_MEMBER_ID ? 1 : 0) + (SHOW_ADDRESS ? 1 : 0) + (SHOW_PINCODE ? 1 : 0);
   const elementaryColSpan = 11 + appointmentColSpan + (SHOW_MEMBER_ID ? 1 : 0);
   const clergyColSpan = 7 + appointmentColSpan + (SHOW_MEMBER_ID ? 1 : 0);
@@ -244,7 +244,6 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
               <TableHead className="font-semibold">{t("Council", "கவுன்சில்")}</TableHead>
               {showAppointments ? (
               <>
-                <TableHead className="font-semibold">{t("Appointment Made", "நியமனம் செய்யப்பட்டது")}</TableHead>
                 <TableHead className="font-semibold">{t("Appointment Date", "நியமன தேதி")}</TableHead>
                 <TableHead className="font-semibold">{t("Vacancy Institute", "காலியிடம் நிறுவனம்")}</TableHead>
                 <TableHead className="font-semibold">{t("Based on", "அடிப்படையில்")}</TableHead>
@@ -263,7 +262,6 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
               <TableHead className="font-semibold">{t("Home Pastorate", "சொந்த பாஸ்டரேட்")}</TableHead>
               {showAppointments ? (
               <>
-                <TableHead className="font-semibold">{t("Appointment Made", "நியமனம் செய்யப்பட்டது")}</TableHead>
                 <TableHead className="font-semibold">{t("Appointment Date", "நியமன தேதி")}</TableHead>
                 <TableHead className="font-semibold">{t("Vacancy Institute", "காலியிடம் நிறுவனம்")}</TableHead>
                 <TableHead className="font-semibold">{t("Based on", "அடிப்படையில்")}</TableHead>
@@ -286,7 +284,6 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
               <TableHead className="font-semibold">{t("Council", "கவுன்சில்")}</TableHead>
               {showAppointments ? (
               <>
-                <TableHead className="font-semibold">{t("Appointment Made", "நியமனம் செய்யப்பட்டது")}</TableHead>
                 <TableHead className="font-semibold">{t("Appointment Date", "நியமன தேதி")}</TableHead>
                 <TableHead className="font-semibold">{t("Vacancy Institute", "காலியிடம் நிறுவனம்")}</TableHead>
                 <TableHead className="font-semibold">{t("Based on", "அடிப்படையில்")}</TableHead>
@@ -312,7 +309,6 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                 const isAppointed = candidate.appointed === true;
                 const rankValue = isAppointed && !showAppointments ? "" : candidate.rank;
                 const appointmentNumber = showAppointments ? candidate.appointmentNumber : null;
-                const appointmentLabel = showAppointments ? (isAppointed ? t("Yes", "ஆம்") : t("No", "இல்லை")) : "";
                 const appointedBadge = showAppointments && isAppointed && appointmentNumber ? (
                   <span className="inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 border border-emerald-200">
                     {appointmentNumber}
@@ -405,7 +401,6 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                       <TableCell className="text-gray-700 table-responsive-cell">{candidate.council || "-"}</TableCell>
                       {showAppointments ? (
                       <>
-                        <TableCell className="text-gray-700">{appointmentLabel}</TableCell>
                         <TableCell className="text-gray-700">{candidate.appointedDate ? formatDateOnly(candidate.appointedDate) : "-"}</TableCell>
                         <TableCell className="text-gray-700 table-responsive-cell">{candidate.appointedLocation || candidate.appointedSchool || candidate.institution || "-"}</TableCell>
                         <TableCell className="text-gray-700">{candidate.compassionReason || "-"}</TableCell>
@@ -437,7 +432,6 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                       <TableCell className="text-gray-700 table-responsive-cell">{candidate.homePastorate || ""}</TableCell>
                       {showAppointments ? (
                       <>
-                        <TableCell className="text-gray-700">{appointmentLabel}</TableCell>
                         <TableCell className="text-gray-700">{candidate.appointedDate ? formatDateOnly(candidate.appointedDate) : "-"}</TableCell>
                         <TableCell className="text-gray-700 table-responsive-cell">{candidate.appointedLocation || candidate.appointedSchool || candidate.institution || "-"}</TableCell>
                         <TableCell className="text-gray-700">{candidate.compassionReason || "-"}</TableCell>
@@ -493,7 +487,6 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                       <TableCell className="text-gray-700 table-responsive-cell">{candidate.council || ""}</TableCell>
                       {showAppointments ? (
                       <>
-                        <TableCell className="text-gray-700">{appointmentLabel}</TableCell>
                         <TableCell className="text-gray-700">{candidate.appointedDate ? formatDateOnly(candidate.appointedDate) : "-"}</TableCell>
                         <TableCell className="text-gray-700 table-responsive-cell">{candidate.appointedLocation || candidate.appointedSchool || candidate.institution || "-"}</TableCell>
                         <TableCell className="text-gray-700">{candidate.compassionReason || "-"}</TableCell>
