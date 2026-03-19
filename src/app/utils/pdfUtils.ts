@@ -19,68 +19,68 @@ type PdfColumn = {
   weight: number;
   keepAlways?: boolean;
   wrap?: boolean;
-  getValue: (candidate: any) => string | number;
-};
+  const columns = getAppointmentColumns(schoolType);
+  const headers = [columns.map((col) => col.title)];
+  const rows = appointmentRows.map((candidate) => columns.map((col) => col.getValue(candidate)));
+  const columnStyles = buildColumnStyles(doc, columns);
 
-type AppointmentSchoolType = SchoolType;
+  autoTable(doc, {
+    head: headers,
+    body: rows,
+    startY: 23,
+    didDrawPage: (data: any) => {
+      const totalPages = doc.getNumberOfPages();
+      const pageNumber = data.pageNumber;
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
 
-function getMemberIdColumn(): PdfColumn[] {
-  return SHOW_MEMBER_ID
-    ? [{ key: "memberId", title: "Member ID", minWidth: 16, weight: 1.4, keepAlways: true, getValue: (c) => c.memberId || "" }]
-    : [];
-}
+      if (logoDataUrl) {
+        const GState = (doc as any).GState;
+        if (GState && (doc as any).setGState) {
+          (doc as any).setGState(new GState({ opacity: 0.06 }));
+        }
+        doc.addImage(logoDataUrl, "PNG", pageWidth / 2 - 30, pageHeight / 2 - 30, 60, 60);
+        if (GState && (doc as any).setGState) {
+          (doc as any).setGState(new GState({ opacity: 1 }));
+        }
+      }
 
-function getAddressColumn(): PdfColumn[] {
-  return SHOW_ADDRESS
-    ? [{ key: "address", title: "Address", minWidth: 32, weight: 2.4, wrap: true, getValue: (c) => c.address || "-" }]
-    : [];
-}
+      doc.setFontSize(8);
+      doc.setFont("helvetica", "normal");
+      doc.text(`Page ${pageNumber} of ${totalPages}`, pageWidth - 8, pageHeight - 6, { align: "right" });
+    },
+    theme: "grid",
+    styles: {
+      font: "helvetica",
+      fontSize: 7,
+      cellPadding: 1.6,
+      valign: "middle",
+      lineColor: [30, 41, 59],
+      lineWidth: 0.35,
+      textColor: [15, 23, 42],
+      overflow: "linebreak",
+    },
+    headStyles: {
+      fillColor: [79, 70, 229],
+      textColor: [255, 255, 255],
+      halign: "center",
+      fontStyle: "bold",
+      fontSize: 7.3,
+      cellPadding: 1.9,
+      lineColor: [15, 23, 42],
+      lineWidth: 0.45,
+      overflow: "hidden",
+      // cellWidth: "wrap", // If you want cellWidth, add it here, but not in a duplicate headStyles
+    },
+    bodyStyles: {
+      fontStyle: "normal",
+    },
+    margin: { left: 6, right: 6, top: 6, bottom: 8 },
+    tableWidth: "auto",
+    columnStyles,
+  });
 
-function getPincodeColumn(): PdfColumn[] {
-  return SHOW_PINCODE
-    ? [{ key: "pincode", title: "Pincode", align: "center", minWidth: 14, weight: 1, getValue: (c) => c.pincode || "-" }]
-    : [];
-}
-
-function normalizePassingLabel(value: any) {
-  if (value === undefined || value === null) return "";
-  const raw = String(value).trim();
-  if (!raw) return "";
-
-  const monthYear = raw.match(/^([A-Za-z]+\.?)\s*[-./]?\s*(\d{2,4})$/);
-  if (monthYear) {
-    const month = monthYear[1];
-    const yRaw = Number(monthYear[2]);
-    const year =
-      monthYear[2].length === 2 ? (yRaw <= 30 ? 2000 + yRaw : 1900 + yRaw) : yRaw;
-    return `${month} ${year}`;
-  }
-
-  const onlyYear = raw.match(/^(\d{2,4})$/);
-  if (onlyYear) {
-    const yRaw = Number(onlyYear[1]);
-    const year =
-      onlyYear[1].length === 2 ? (yRaw <= 30 ? 2000 + yRaw : 1900 + yRaw) : yRaw;
-    return String(year);
-  }
-
-  return raw;
-}
-
-function extractPassingYear(value: any): number | null {
-  const raw = normalizePassingLabel(value);
-  if (!raw) return null;
-  const fourDigit = raw.match(/\b(19|20)\d{2}\b/);
-  if (fourDigit) return Number(fourDigit[0]);
-  const twoDigit = raw.match(/\b(\d{2})\b/);
-  if (!twoDigit) return null;
-  const yy = Number(twoDigit[1]);
-  return yy <= 30 ? 2000 + yy : 1900 + yy;
-}
-
-function candidateKey(candidate: any) {
-  return [
-    candidate.id ?? "",
+  doc.save(buildAppointmentReportFileName(schoolType));
     candidate.memberId ?? "",
     candidate.name ?? "",
     candidate.dateOfBirth ?? "",
