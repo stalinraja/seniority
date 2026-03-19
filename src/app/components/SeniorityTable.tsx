@@ -80,6 +80,10 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
   const highSchool = schoolType === "high";
   const clergy = schoolType === "clergy";
 
+  const longPressTimerRef = useRef<number | null>(null);
+  const longPressFiredRef = useRef(false);
+  const lastTapRef = useRef(0);
+
   const appointmentColSpan = showAppointments ? 4 : 0;
   const highColSpan = 11 + appointmentColSpan + (SHOW_MEMBER_ID ? 1 : 0) + (SHOW_ADDRESS ? 1 : 0) + (SHOW_PINCODE ? 1 : 0);
   const elementaryColSpan = 11 + appointmentColSpan + (SHOW_MEMBER_ID ? 1 : 0);
@@ -123,6 +127,51 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
       window.removeEventListener("resize", updateMenuPosition);
     };
   }, [sortMenuOpen]);
+
+  const clearLongPress = () => {
+    if (longPressTimerRef.current) {
+      window.clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
+  };
+
+  const triggerRowAction = (candidate: any) => {
+    onRowDoubleClick?.(candidate);
+  };
+
+  const handlePointerDown = (event: any, candidate: any) => {
+    if (!onRowDoubleClick) return;
+    if (event.pointerType !== "touch") return;
+    longPressFiredRef.current = false;
+    clearLongPress();
+    longPressTimerRef.current = window.setTimeout(() => {
+      longPressFiredRef.current = true;
+      triggerRowAction(candidate);
+    }, 550);
+  };
+
+  const handlePointerUp = (event: any, candidate: any) => {
+    if (!onRowDoubleClick) return;
+    if (event.pointerType !== "touch") return;
+    clearLongPress();
+    if (longPressFiredRef.current) {
+      longPressFiredRef.current = false;
+      return;
+    }
+    const now = Date.now();
+    if (now - lastTapRef.current < 300) {
+      lastTapRef.current = 0;
+      triggerRowAction(candidate);
+      return;
+    }
+    lastTapRef.current = now;
+  };
+
+  const handlePointerCancel = (event: any) => {
+    if (event.pointerType !== "touch") return;
+    clearLongPress();
+    longPressFiredRef.current = false;
+  };
 
   const rankHeader = (
     <TableHead className="w-32 font-semibold h-10 align-middle">
@@ -283,6 +332,10 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                     String(index),
                   ].join("|")}
                   onDoubleClick={() => onRowDoubleClick?.(candidate)}
+                  onPointerDown={(e) => handlePointerDown(e, candidate)}
+                  onPointerUp={(e) => handlePointerUp(e, candidate)}
+                  onPointerCancel={handlePointerCancel}
+                  onPointerLeave={handlePointerCancel}
                   className={rowClassName}
                 >
                   {highSchool ? (

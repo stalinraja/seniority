@@ -10,3 +10,5 @@ export const ELEMENTARY_TET_PASS_MARK = 40;
 export const SHOW_MEMBER_ID = false;
 export const SHOW_ADDRESS = false;
 export const SHOW_PINCODE = false;
+export const DOWNLOAD_PDF_ENABLED = true;
+export const APPOINTMENT_REPORT_DOWNLOAD_ENABLED = true;

@@ -129,7 +129,13 @@ export function DropdownFilter({
                       type="radio"
                       name={`filter-${title}`}
                       checked={selectedItems[0] === item}
-                      onChange={(e) => onChange(item, e.target.checked)}
+                      onChange={(e) => {
+                        onChange(item, e.target.checked);
+                        if (e.target.checked) {
+                          setOpen(false);
+                          setSearch("");
+                        }
+                      }}
                       className="peer sr-only"
                     />
                     <span className="h-4 w-4 rounded-full border border-slate-300 bg-white shadow-sm transition peer-checked:border-blue-600 peer-checked:bg-blue-600 peer-focus-visible:ring-2 peer-focus-visible:ring-blue-500" />

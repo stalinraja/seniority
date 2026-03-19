@@ -120,8 +120,11 @@ function getHighColumns(): PdfColumn[] {
     { key: "name", title: "Name", minWidth: 32, weight: 2.4, keepAlways: true, wrap: true, getValue: (c) => c.name || "" },
     { key: "dateOfBirth", title: "Date of Birth", align: "center", minWidth: 20, weight: 1.6, keepAlways: true, getValue: (c) => formatDateForPdf(c.dateOfBirth) },
     { key: "category", title: "Category", align: "center", minWidth: 18, weight: 1.2, keepAlways: true, getValue: (c) => c.category || "" },
+    { key: "department", title: "Department", minWidth: 20, weight: 1.5, wrap: true, getValue: (c) => c.department || "" },
     { key: "qualification", title: "Qualification", minWidth: 34, weight: 2.5, wrap: true, getValue: (c) => splitQualifications(c.qualification) },
-    { key: "yearOfPassing", title: "Passing Yr", align: "center", minWidth: 15, weight: 1, getValue: (c) => c.yearOfPassing || "" },
+    { key: "yearOfPassing", title: "Year of Passing", align: "center", minWidth: 16, weight: 1, getValue: (c) => c.yearOfPassing || "" },
+    { key: "yearOfRegistering", title: "Year of Registering", align: "center", minWidth: 18, weight: 1, getValue: (c) => c.yearOfRegistering || "" },
+    { key: "tet", title: "TET Qualified", align: "center", minWidth: 20, weight: 1.6, getValue: (c) => getTetDisplay(c) },
     ...getAddressColumn(),
     ...getPincodeColumn(),
     { key: "pastorate", title: "Pastorate", minWidth: 22, weight: 1.6, wrap: true, getValue: (c) => c.pastorate || "-" },
@@ -135,9 +138,14 @@ function getElementaryColumns(): PdfColumn[] {
     ...getMemberIdColumn(),
     { key: "name", title: "Name", minWidth: 30, weight: 2.3, keepAlways: true, wrap: true, getValue: (c) => c.name || "" },
     { key: "dateOfBirth", title: "DOB", align: "center", minWidth: 18, weight: 1.5, keepAlways: true, getValue: (c) => formatDateForPdf(c.dateOfBirth) },
+    { key: "yearOfPassing", title: "Year of Passing", align: "center", minWidth: 16, weight: 1, getValue: (c) => c.yearOfPassing ?? "" },
+    { key: "yearOfRegistering", title: "Year of Registering", align: "center", minWidth: 18, weight: 1, getValue: (c) => c.yearOfRegistering ?? "" },
     { key: "qualification", title: "Qualification", minWidth: 36, weight: 2.6, wrap: true, getValue: (c) => splitQualifications(c.qualification) },
     { key: "tet", title: "TET %", align: "center", minWidth: 20, weight: 1.7, getValue: (c) => getElementaryTetDisplay(c) },
+    { key: "category", title: "Category", align: "center", minWidth: 16, weight: 1.2, getValue: (c) => c.category || "" },
+    { key: "level", title: "Level", align: "center", minWidth: 14, weight: 1.1, getValue: (c) => c.level || "" },
     { key: "pastorate", title: "Pastorate", minWidth: 22, weight: 1.6, wrap: true, getValue: (c) => c.pastorate || "" },
+    { key: "council", title: "Council", minWidth: 20, weight: 1.5, wrap: true, getValue: (c) => c.council || "" },
   ];
 }
 
@@ -147,8 +155,19 @@ function getClergyColumns(): PdfColumn[] {
     ...getMemberIdColumn(),
     { key: "name", title: "Name", minWidth: 38, weight: 2.4, keepAlways: true, wrap: true, getValue: (c) => c.name || "" },
     { key: "dateOfBirth", title: "DOB", align: "center", minWidth: 22, weight: 1.4, keepAlways: true, getValue: (c) => formatDateForPdf(c.dateOfBirth) },
-    { key: "yearsOfExperience", title: "Exp", align: "center", minWidth: 15, weight: 1.3, keepAlways: true, getValue: (c) => c.yearsOfExperience ?? "" },
+    { key: "yearOfPassing", title: "Year of Passing", align: "center", minWidth: 18, weight: 1.2, keepAlways: true, getValue: (c) => c.yearOfPassing ?? "" },
+    { key: "yearsOfExperience", title: "Years of Experience", align: "center", minWidth: 18, weight: 1.3, keepAlways: true, getValue: (c) => c.yearsOfExperience ?? "" },
+    { key: "qualification", title: "Qualification", minWidth: 28, weight: 2, keepAlways: true, wrap: true, getValue: (c) => splitQualifications(c.qualification) },
     { key: "homePastorate", title: "Home Pastorate", minWidth: 30, weight: 2, keepAlways: true, wrap: true, getValue: (c) => c.homePastorate || "" },
+  ];
+}
+
+function getAppointmentColumns(): PdfColumn[] {
+  return [
+    { key: "appointed", title: "Appointment Made", align: "center", minWidth: 18, weight: 1.2, getValue: (c) => (c.appointed ? "Yes" : "No") },
+    { key: "appointedDate", title: "Appointment Date", align: "center", minWidth: 20, weight: 1.4, getValue: (c) => (c.appointedDate ? formatDateForPdf(c.appointedDate) : "-") },
+    { key: "appointedLocation", title: "Vacancy Institute", minWidth: 28, weight: 2, wrap: true, getValue: (c) => c.appointedLocation || c.appointedSchool || c.institution || "-" },
+    { key: "compassionReason", title: "Based on", minWidth: 22, weight: 1.8, wrap: true, getValue: (c) => c.compassionReason || "-" },
   ];
 }
 
@@ -226,7 +245,7 @@ export async function downloadCandidatesPDF(
 
   // 3. COLUMNS & ROWS
   const allColumns = schoolType === "high" ? getHighColumns() : schoolType === "elementary" ? getElementaryColumns() : getClergyColumns();
-  let columns = allColumns.filter(col => col.keepAlways || candidates.some(c => hasMeaningfulValue(col.getValue?.(c))));
+  let columns = [...allColumns];
   let rowsSource = candidates;
 
   if (searchQuery && searchQuery.trim()) {
@@ -274,4 +293,67 @@ export async function downloadCandidatesPDF(
   });
 
   doc.save(`${schoolType}-list-${new Date().toISOString().slice(0, 10)}.pdf`);
+}
+
+export async function downloadAppointmentsReportPDF(
+  candidates: any[],
+  schoolType: SchoolType = "high",
+  searchQuery = ""
+) {
+  const onlyAppointments = candidates.filter((c) => c.appointed === true);
+  const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+  const logoDataUrl = await loadLogoDataUrl();
+  const printedAt = new Date().toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" });
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(16);
+  if (logoDataUrl) doc.addImage(logoDataUrl, "PNG", 10, 8, 15, 15);
+  doc.text("CSI Thoothukudi-Nazareth Diocese", 28, 15);
+
+  doc.setFontSize(11);
+  const title = "Appointments Made Report";
+  doc.text(title, 28, 21);
+
+  let startY = 28;
+  doc.setFontSize(9);
+  doc.setFont("helvetica", "normal");
+  const metaLines = [
+    `Total appointments: ${onlyAppointments.length}`,
+    searchQuery ? `Search: "${searchQuery}"` : "",
+  ].filter(Boolean);
+
+  metaLines.forEach((line) => {
+    doc.text(line, 10, startY);
+    startY += 4.5;
+  });
+
+  const baseColumns =
+    schoolType === "high" ? getHighColumns() : schoolType === "elementary" ? getElementaryColumns() : getClergyColumns();
+  const columns = [...baseColumns, ...getAppointmentColumns()];
+  const rows = onlyAppointments.map((c) => columns.map((col) => col.getValue?.(c) ?? ""));
+
+  autoTable(doc, {
+    head: [columns.map((col) => col.title)],
+    body: rows,
+    startY: startY + 2,
+    theme: "grid",
+    styles: { font: "helvetica", fontSize: 7.2, cellPadding: 1.5 },
+    headStyles: { fillColor: [16, 185, 129], textColor: 255, halign: "center" },
+    columnStyles: buildColumnStyles(doc, columns),
+    margin: { left: 10, right: 10, bottom: 15 },
+    didDrawPage: (data) => {
+      if (logoDataUrl) {
+        doc.saveGraphicsState();
+        (doc as any).setGState(new (doc as any).GState({ opacity: 0.05 }));
+        doc.addImage(logoDataUrl, "PNG", doc.internal.pageSize.getWidth() / 2 - 35, doc.internal.pageSize.getHeight() / 2 - 35, 70, 70);
+        doc.restoreGraphicsState();
+      }
+      doc.setFontSize(8);
+      doc.setTextColor(100);
+      doc.text(`Printed: ${printedAt}`, 10, doc.internal.pageSize.getHeight() - 8);
+      doc.text(`Page ${data.pageNumber} of ${doc.getNumberOfPages()}`, doc.internal.pageSize.getWidth() - 10, doc.internal.pageSize.getHeight() - 8, { align: "right" });
+    },
+  });
+
+  doc.save(`appointments-${schoolType}-${new Date().toISOString().slice(0, 10)}.pdf`);
 }

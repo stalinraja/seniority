@@ -21,6 +21,8 @@ import {
   HIGH_SCHOOL_TET_PASS_MARK,
   HIGH_SCHOOL_SECTION_ENABLED,
   MIDDLE_SCHOOL_SECTION_ENABLED,
+  DOWNLOAD_PDF_ENABLED,
+  APPOINTMENT_REPORT_DOWNLOAD_ENABLED,
 } from "../config/features";
 
 type SchoolType = "high" | "elementary" | "clergy";
@@ -849,7 +851,7 @@ export function Dashboard() {
     try {
       setDownloadingReport(true);
       const mod = await import("../utils/pdfUtils");
-      await mod.downloadAppointmentsReportPDF(appointmentRows, schoolType);
+      await mod.downloadAppointmentsReportPDF(appointmentRows, schoolType, searchQuery);
     } finally {
       setDownloadingReport(false);
     }
@@ -990,15 +992,17 @@ export function Dashboard() {
                 />
               </div>
               <div className="flex flex-wrap items-center gap-2">
-                <Button
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
-                  onClick={handleDownloadPdf}
-                  disabled={downloadingPdf || filteredCandidates.length === 0}
-                >
-                  {downloadingPdf
-                    ? t("Preparing PDF...", "PDF தயாராகிறது...")
-                    : t("Download PDF", "PDF பதிவிறக்கம்")}
-                </Button>
+                {DOWNLOAD_PDF_ENABLED ? (
+                  <Button
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                    onClick={handleDownloadPdf}
+                    disabled={downloadingPdf || filteredCandidates.length === 0}
+                  >
+                    {downloadingPdf
+                      ? t("Preparing PDF...", "PDF தயாராகிறது...")
+                      : t("Download PDF", "PDF பதிவிறக்கம்")}
+                  </Button>
+                ) : null}
                 <Button
                   variant="outline"
                   onClick={() => setShowDashboard(true)}
@@ -1013,7 +1017,7 @@ export function Dashboard() {
                         ? t("Hide Appointments", "நியமனங்களை மறை")
                         : t("Show Appointments", "நியமனங்களை காண்பி")}
                     </Button>
-                    {showAppointments ? (
+                    {showAppointments && APPOINTMENT_REPORT_DOWNLOAD_ENABLED ? (
                       <Button variant="outline" onClick={handleDownloadAppointmentsReport} disabled={downloadingReport || appointmentRows.length === 0}>
                         {downloadingReport
                           ? t("Preparing Report...", "அறிக்கை தயாராகிறது...")
