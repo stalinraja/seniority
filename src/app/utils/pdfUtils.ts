@@ -369,8 +369,6 @@ function buildPdfFileName(schoolType: SchoolType, filters: Record<string, string
 
 export async function downloadCandidatesPDF(
   candidates: any[],
-  schoolType: AppointmentSchoolType
-) {
   filters: Record<string, string[]>,
   schoolType: SchoolType = "high",
   sortMode: "seniority" | "appointment" = "seniority",
