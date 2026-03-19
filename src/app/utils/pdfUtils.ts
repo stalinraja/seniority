@@ -19,31 +19,6 @@ type PdfColumn = {
   weight: number;
   keepAlways?: boolean;
   wrap?: boolean;
-  const columns = getAppointmentColumns(schoolType);
-  const headers = [columns.map((col) => col.title)];
-  const rows = appointmentRows.map((candidate) => columns.map((col) => col.getValue(candidate)));
-  const columnStyles = buildColumnStyles(doc, columns);
-
-  autoTable(doc, {
-    head: headers,
-    body: rows,
-    startY: 23,
-    didDrawPage: (data: any) => {
-      const totalPages = doc.getNumberOfPages();
-      const pageNumber = data.pageNumber;
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getHeight();
-
-      if (logoDataUrl) {
-        const GState = (doc as any).GState;
-        if (GState && (doc as any).setGState) {
-          (doc as any).setGState(new GState({ opacity: 0.06 }));
-        }
-        doc.addImage(logoDataUrl, "PNG", pageWidth / 2 - 30, pageHeight / 2 - 30, 60, 60);
-        if (GState && (doc as any).setGState) {
-          (doc as any).setGState(new GState({ opacity: 1 }));
-        }
-      }
 
       doc.setFontSize(8);
       doc.setFont("helvetica", "normal");
