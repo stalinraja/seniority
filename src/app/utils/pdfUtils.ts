@@ -19,10 +19,6 @@ type PdfColumn = {
   weight: number;
   keepAlways?: boolean;
   wrap?: boolean;
-
-      doc.setFontSize(8);
-      doc.setFont("helvetica", "normal");
-      doc.text(`Page ${pageNumber} of ${totalPages}`, pageWidth - 8, pageHeight - 6, { align: "right" });
     },
     theme: "grid",
     styles: {
@@ -142,7 +138,6 @@ function getHighColumns(): PdfColumn[] {
     { key: "qualification", title: "Qualification", minWidth: 34, weight: 2.5, wrap: true, getValue: (c) => splitQualifications(c.qualification) },
     { key: "yearOfPassing", title: "Year of Passing", align: "center", minWidth: 18, weight: 1.2, getValue: (c) => c.yearOfPassing || "" },
     { key: "yearOfRegistering", title: "Year of Registering", align: "center", minWidth: 18, weight: 1.2, getValue: (c) => c.yearOfRegistering ?? "" },
-    { key: "tet", title: "TET Qualified", align: "center", minWidth: 24, weight: 2, getValue: (c) => getTetDisplay(c) },
     ...getAddressColumn(),
     ...getPincodeColumn(),
     { key: "pastorate", title: "Pastorate", minWidth: 22, weight: 1.6, wrap: true, getValue: (c) => c.pastorate || "-" },
