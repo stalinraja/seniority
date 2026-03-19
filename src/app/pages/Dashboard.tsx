@@ -2,7 +2,6 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import { SearchBar } from "../components/SearchBar";
 import { FilterSidebar, FilterGroup } from "../components/FilterSidebar";
 import { SeniorityTable } from "../components/SeniorityTable";
-import { AppointmentReport } from "../components/AppointmentReport";
 import { fetchGoogleSheetData } from "../utils/fetchGoogleSheetData";
 import { searchCandidatesGeneric } from "../utils/helpers";
 import { Button } from "../components/ui/button";
@@ -416,22 +415,59 @@ function mapClergyOrdination(rows: any[]) {
     .filter((c) => c.name !== "Unnamed" && c.dateOfBirth && c.yearOfPassing !== null);
 }
 
-function rankHighSchool(rows: any[], mode: SortMode) {
-  return [...rows]
-    .sort((a, b) => (mode === "seniority" ? compareHighSchoolSeniorityCandidates(a, b, extractPassingYear) : compareHighSchoolCandidates(a, b, extractPassingYear)))
-    .map((c, idx) => ({ ...c, rank: idx + 1 }));
+function assignRanksIncludingAppointments(rows: any[]) {
+  return rows.map((c, idx) => ({ ...c, rank: idx + 1 }));
 }
 
-function rankElementarySchool(rows: any[], mode: SortMode) {
-  return [...rows]
-    .sort((a, b) => (mode === "seniority" ? compareElementarySchoolSeniorityCandidates(a, b, extractPassingYear) : compareElementarySchoolCandidates(a, b, extractPassingYear)))
-    .map((c, idx) => ({ ...c, rank: idx + 1 }));
+function assignRanksSkippingAppointments(rows: any[]) {
+  let rank = 0;
+  return rows.map((c) => {
+    if (c.appointed) return { ...c, rank: null };
+    rank += 1;
+    return { ...c, rank };
+  });
 }
 
-function rankClergyOrdination(rows: any[]) {
-  return [...rows]
-    .sort((a, b) => compareClergyOrdinationCandidates(a, b, extractPassingYear))
-    .map((c, idx) => ({ ...c, rank: idx + 1 }));
+function rankHighSchool(rows: any[], mode: SortMode, includeAppointments: boolean) {
+  const sorted = [...rows].sort((a, b) => (mode === "seniority" ? compareHighSchoolSeniorityCandidates(a, b, extractPassingYear) : compareHighSchoolCandidates(a, b, extractPassingYear)));
+  return includeAppointments ? assignRanksIncludingAppointments(sorted) : assignRanksSkippingAppointments(sorted);
+}
+
+function rankElementarySchool(rows: any[], mode: SortMode, includeAppointments: boolean) {
+  const sorted = [...rows].sort((a, b) => (mode === "seniority" ? compareElementarySchoolSeniorityCandidates(a, b, extractPassingYear) : compareElementarySchoolCandidates(a, b, extractPassingYear)));
+  return includeAppointments ? assignRanksIncludingAppointments(sorted) : assignRanksSkippingAppointments(sorted);
+}
+
+function rankClergyOrdination(rows: any[], includeAppointments: boolean) {
+  const sorted = [...rows].sort((a, b) => compareClergyOrdinationCandidates(a, b, extractPassingYear));
+  return includeAppointments ? assignRanksIncludingAppointments(sorted) : assignRanksSkippingAppointments(sorted);
+}
+
+function getCandidateKey(candidate: any) {
+  const dob = candidate.dateOfBirth instanceof Date ? candidate.dateOfBirth.toISOString() : String(candidate.dateOfBirth || "");
+  return [candidate.id || "", candidate.memberId || "", candidate.name || "", dob].join("|");
+}
+
+function getAppointmentSortValue(value: any) {
+  const date = parseDate(value);
+  return date ? date.getTime() : Number.MAX_SAFE_INTEGER;
+}
+
+function buildAppointmentRankMap(rows: any[]) {
+  const appointed = rows.filter((row) => row.appointed === true);
+  appointed.sort((a, b) => {
+    const diff = getAppointmentSortValue(a.appointedDate) - getAppointmentSortValue(b.appointedDate);
+    if (diff !== 0) return diff;
+    const nameDiff = String(a.name || "").localeCompare(String(b.name || ""));
+    if (nameDiff !== 0) return nameDiff;
+    return String(a.memberId || "").localeCompare(String(b.memberId || ""));
+  });
+
+  const map = new Map<string, number>();
+  appointed.forEach((row, idx) => {
+    map.set(getCandidateKey(row), idx + 1);
+  });
+  return map;
 }
 
 function buildFilterItems(rows: any[], key: string) {
@@ -684,6 +720,9 @@ export function Dashboard() {
 
   const dashboardKey = useMemo(() => schoolType, [schoolType]);
 
+  const appointmentRankMap = useMemo(() => buildAppointmentRankMap(currentCandidates), [currentCandidates]);
+
+
   const rankedCandidates = useMemo(() => {
     let rows = [...currentCandidates];
 
@@ -720,12 +759,26 @@ export function Dashboard() {
       });
     }
 
-    return schoolType === "high"
-      ? rankHighSchool(rows, sortMode)
+    const includeAppointments = showAppointments;
+    if (!includeAppointments) {
+      rows = rows.filter((candidate) => candidate.appointed !== true);
+    }
+
+    const ranked = schoolType === "high"
+      ? rankHighSchool(rows, sortMode, includeAppointments)
       : schoolType === "elementary"
-      ? rankElementarySchool(rows, sortMode)
-      : rankClergyOrdination(rows);
-  }, [currentCandidates, filters, schoolType, sortMode]);
+      ? rankElementarySchool(rows, sortMode, includeAppointments)
+      : rankClergyOrdination(rows, includeAppointments);
+
+    if (!includeAppointments) return ranked;
+    if (appointmentRankMap.size === 0) return ranked;
+
+    return ranked.map((candidate) => {
+      if (!candidate.appointed) return { ...candidate, appointmentNumber: null };
+      return { ...candidate, appointmentNumber: appointmentRankMap.get(getCandidateKey(candidate)) ?? null };
+    });
+  }, [currentCandidates, filters, schoolType, sortMode, showAppointments, appointmentRankMap]);
+
 
   const filteredCandidates = useMemo(() => {
     return searchQuery.trim()
@@ -736,12 +789,17 @@ export function Dashboard() {
   const appointmentRows = useMemo(() => {
     const ranked =
       schoolType === "high"
-        ? rankHighSchool(currentCandidates, "appointment")
+        ? rankHighSchool(currentCandidates, "appointment", true)
         : schoolType === "elementary"
-        ? rankElementarySchool(currentCandidates, "appointment")
-        : rankClergyOrdination(currentCandidates);
-    return ranked.filter((row) => row.appointed === true);
-  }, [currentCandidates, schoolType]);
+        ? rankElementarySchool(currentCandidates, "appointment", true)
+        : rankClergyOrdination(currentCandidates, true);
+    return ranked
+      .filter((row) => row.appointed === true)
+      .map((row) => ({
+        ...row,
+        appointmentNumber: appointmentRankMap.get(getCandidateKey(row)) ?? null,
+      }));
+  }, [currentCandidates, schoolType, appointmentRankMap]);
 
   const totalPages = Math.max(1, Math.ceil(filteredCandidates.length / PAGE_SIZE));
 
@@ -946,26 +1004,24 @@ export function Dashboard() {
                   {t("Open Dashboard", "டாஷ்போர்டை திற")}
                 </Button>
                 {APPOINTMENT_REPORT_ENABLED ? (
-                  <Button variant="outline" onClick={handleToggleAppointments}>
-                    {showAppointments
-                      ? t("Hide Appointments", "நியமனங்களை மறை")
-                      : t("Show Appointments", "நியமனங்களை காண்பி")}
-                  </Button>
+                  <>
+                    <Button variant="outline" onClick={handleToggleAppointments}>
+                      {showAppointments
+                        ? t("Hide Appointments", "நியமனங்களை மறை")
+                        : t("Show Appointments", "நியமனங்களை காண்பி")}
+                    </Button>
+                    {showAppointments ? (
+                      <Button variant="outline" onClick={handleDownloadAppointmentsReport} disabled={downloadingReport || appointmentRows.length === 0}>
+                        {downloadingReport
+                          ? t("Preparing Report...", "அறிக்கை தயாராகிறது...")
+                          : t("Download Appointment Report", "நியமன அறிக்கையை பதிவிறக்கு")}
+                      </Button>
+                    ) : null}
+                  </>
                 ) : null}
               </div>
             </div>
           </div>
-
-          {showAppointments && (
-            <div className="mb-4">
-              <AppointmentReport
-                rows={appointmentRows}
-                schoolType={schoolType}
-                onDownload={handleDownloadAppointmentsReport}
-                downloading={downloadingReport}
-              />
-            </div>
-          )}
 
 
           {!loading && !error && (
@@ -977,6 +1033,7 @@ export function Dashboard() {
                 onSortModeChange={setSortMode}
                 sortingPulse={sortingPulse}
                 onRowDoubleClick={handleCandidateDoubleClick}
+                showAppointments={showAppointments}
               />
               {filteredCandidates.length > PAGE_SIZE && (
                 <div className="mt-4 flex flex-wrap items-center justify-between gap-3">

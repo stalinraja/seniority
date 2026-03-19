@@ -21,6 +21,7 @@ interface SeniorityTableProps {
   onSortModeChange?: (mode: "seniority" | "appointment") => void;
   sortingPulse?: boolean;
   onRowDoubleClick?: (candidate: any) => void;
+  showAppointments?: boolean;
 }
 
 function formatDateWithAge(value: any) {
@@ -29,6 +30,12 @@ function formatDateWithAge(value: any) {
   const age = differenceInYears(new Date(), date);
   const ageText = Number.isFinite(age) && age >= 0 ? ` (${age})` : "";
   return `${format(date, "dd MMM yyyy")}${ageText}`;
+}
+
+function formatDateOnly(value: any) {
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  return format(date, "dd/MM/yyyy");
 }
 
 function splitQualifications(value: string) {
@@ -49,14 +56,15 @@ function elementaryCategoryClass(category: string) {
   return "bg-slate-50 text-slate-700 border-slate-200";
 }
 
-export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, sortingPulse, onRowDoubleClick }: SeniorityTableProps) {
+export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, sortingPulse, onRowDoubleClick, showAppointments = false }: SeniorityTableProps) {
   const { t } = useLanguage();
   const highSchool = schoolType === "high";
   const clergy = schoolType === "clergy";
 
-  const highColSpan = 11 + (SHOW_MEMBER_ID ? 1 : 0) + (SHOW_ADDRESS ? 1 : 0) + (SHOW_PINCODE ? 1 : 0);
-  const elementaryColSpan = 11 + (SHOW_MEMBER_ID ? 1 : 0);
-  const clergyColSpan = 7 + (SHOW_MEMBER_ID ? 1 : 0);
+  const appointmentColSpan = showAppointments ? 3 : 0;
+  const highColSpan = 11 + appointmentColSpan + (SHOW_MEMBER_ID ? 1 : 0) + (SHOW_ADDRESS ? 1 : 0) + (SHOW_PINCODE ? 1 : 0);
+  const elementaryColSpan = 11 + appointmentColSpan + (SHOW_MEMBER_ID ? 1 : 0);
+  const clergyColSpan = 7 + appointmentColSpan + (SHOW_MEMBER_ID ? 1 : 0);
 
   const [sortMenuOpen, setSortMenuOpen] = useState(false);
   const sortWrapRef = useRef<HTMLDivElement | null>(null);
@@ -166,6 +174,13 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
               {SHOW_PINCODE ? <TableHead className="font-semibold">{t("Pincode", "அஞ்சல் குறியீடு")}</TableHead> : null}
               <TableHead className="font-semibold">{t("Pastorate", "பாஸ்டரேட்")}</TableHead>
               <TableHead className="font-semibold">{t("Council", "கவுன்சில்")}</TableHead>
+              {showAppointments ? (
+              <>
+                <TableHead className="font-semibold">{t("Appointment Made", "நியமனம் செய்யப்பட்டது")}</TableHead>
+                <TableHead className="font-semibold">{t("Appointment Date", "நியமன தேதி")}</TableHead>
+                <TableHead className="font-semibold">{t("Vacancy Institute", "காலியிடம் நிறுவனம்")}</TableHead>
+              </>
+            ) : null}
             </>
           ) : clergy ? (
             <>
@@ -177,6 +192,13 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
               <TableHead className="font-semibold">{t("Years of Experience", "பணியாண்டுகள்")}</TableHead>
               <TableHead className="font-semibold">{t("Qualification", "தகுதி")}</TableHead>
               <TableHead className="font-semibold">{t("Home Pastorate", "சொந்த பாஸ்டரேட்")}</TableHead>
+              {showAppointments ? (
+              <>
+                <TableHead className="font-semibold">{t("Appointment Made", "நியமனம் செய்யப்பட்டது")}</TableHead>
+                <TableHead className="font-semibold">{t("Appointment Date", "நியமன தேதி")}</TableHead>
+                <TableHead className="font-semibold">{t("Vacancy Institute", "காலியிடம் நிறுவனம்")}</TableHead>
+              </>
+            ) : null}
             </>
           ) : (
             <>
@@ -192,6 +214,13 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
               <TableHead className="font-semibold">{t("Level", "நிலை")}</TableHead>
               <TableHead className="font-semibold">{t("Pastorate", "பாஸ்டரேட்")}</TableHead>
               <TableHead className="font-semibold">{t("Council", "கவுன்சில்")}</TableHead>
+              {showAppointments ? (
+              <>
+                <TableHead className="font-semibold">{t("Appointment Made", "நியமனம் செய்யப்பட்டது")}</TableHead>
+                <TableHead className="font-semibold">{t("Appointment Date", "நியமன தேதி")}</TableHead>
+                <TableHead className="font-semibold">{t("Vacancy Institute", "காலியிடம் நிறுவனம்")}</TableHead>
+              </>
+            ) : null}
             </>
           )}
         </TableRow>
@@ -208,8 +237,19 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                 </TableCell>
               </TableRow>
             ) : (
-              rows.map((candidate, index) => (
-                <TableRow
+              rows.map((candidate, index) => {
+                const isAppointed = candidate.appointed === true;
+                const rankValue = isAppointed && !showAppointments ? "" : candidate.rank;
+                const appointmentNumber = showAppointments ? candidate.appointmentNumber : null;
+                const appointmentLabel = showAppointments ? (isAppointed ? t("Yes", "ஆம்") : t("No", "இல்லை")) : "";
+                const appointedBadge = showAppointments && isAppointed && appointmentNumber ? (
+                  <span className="inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 border border-emerald-200">
+                    {appointmentNumber}
+                  </span>
+                ) : null;
+                const rowClassName = `optimized-row ${showAppointments && isAppointed ? "bg-emerald-50/70 dark:bg-emerald-900/20 hover:bg-emerald-100/80 dark:hover:bg-emerald-900/30" : "hover:bg-slate-100/70 dark:hover:bg-slate-800/70"} ${onRowDoubleClick ? "cursor-pointer" : ""}`;
+                return (
+                  <TableRow
                   key={[
                     schoolType,
                     candidate.id || "",
@@ -221,13 +261,14 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                     String(index),
                   ].join("|")}
                   onDoubleClick={() => onRowDoubleClick?.(candidate)}
-                  className={`optimized-row hover:bg-slate-100/70 dark:hover:bg-slate-800/70 ${onRowDoubleClick ? 'cursor-pointer' : ''}`}
+                  className={rowClassName}
                 >
                   {highSchool ? (
                     <>
                       <TableCell>
                         <div className={`flex items-center gap-2 ${sortingPulse ? "animate-pulse" : ""}`}>
-                          <span className="font-semibold text-gray-900">{candidate.rank}</span>
+                          <span className="font-semibold text-gray-900">{rankValue}</span>
+                          {appointedBadge}
                         </div>
                       </TableCell>
                       {SHOW_MEMBER_ID ? <TableCell>{candidate.memberId || ""}</TableCell> : null}
@@ -287,12 +328,20 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                       {SHOW_PINCODE ? <TableCell className="text-gray-700">{candidate.pincode || "-"}</TableCell> : null}
                       <TableCell className="text-gray-700 table-responsive-cell">{candidate.pastorate || "-"}</TableCell>
                       <TableCell className="text-gray-700 table-responsive-cell">{candidate.council || "-"}</TableCell>
+                      {showAppointments ? (
+                      <>
+                        <TableCell className="text-gray-700">{appointmentLabel}</TableCell>
+                        <TableCell className="text-gray-700">{candidate.appointedDate ? formatDateOnly(candidate.appointedDate) : "-"}</TableCell>
+                        <TableCell className="text-gray-700 table-responsive-cell">{candidate.appointedLocation || candidate.appointedSchool || candidate.institution || "-"}</TableCell>
+                      </>
+                    ) : null}
                     </>
                   ) : clergy ? (
                     <>
                       <TableCell>
                         <div className={`flex items-center gap-2 ${sortingPulse ? "animate-pulse" : ""}`}>
-                          <span className="font-semibold text-gray-900">{candidate.rank}</span>
+                          <span className="font-semibold text-gray-900">{rankValue}</span>
+                          {appointedBadge}
                         </div>
                       </TableCell>
                       {SHOW_MEMBER_ID ? <TableCell>{candidate.memberId || ""}</TableCell> : null}
@@ -310,12 +359,20 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                         </div>
                       </TableCell>
                       <TableCell className="text-gray-700 table-responsive-cell">{candidate.homePastorate || ""}</TableCell>
+                      {showAppointments ? (
+                      <>
+                        <TableCell className="text-gray-700">{appointmentLabel}</TableCell>
+                        <TableCell className="text-gray-700">{candidate.appointedDate ? formatDateOnly(candidate.appointedDate) : "-"}</TableCell>
+                        <TableCell className="text-gray-700 table-responsive-cell">{candidate.appointedLocation || candidate.appointedSchool || candidate.institution || "-"}</TableCell>
+                      </>
+                    ) : null}
                     </>
                   ) : (
                     <>
                       <TableCell>
                         <div className={`flex items-center gap-2 ${sortingPulse ? "animate-pulse" : ""}`}>
-                          <span className="font-semibold text-gray-900">{candidate.rank}</span>
+                          <span className="font-semibold text-gray-900">{rankValue}</span>
+                          {appointedBadge}
                         </div>
                       </TableCell>
                       {SHOW_MEMBER_ID ? <TableCell>{candidate.memberId || ""}</TableCell> : null}
@@ -357,10 +414,18 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                       <TableCell className="text-gray-700">{candidate.level || ""}</TableCell>
                       <TableCell className="text-gray-700 table-responsive-cell">{candidate.pastorate || ""}</TableCell>
                       <TableCell className="text-gray-700 table-responsive-cell">{candidate.council || ""}</TableCell>
+                      {showAppointments ? (
+                      <>
+                        <TableCell className="text-gray-700">{appointmentLabel}</TableCell>
+                        <TableCell className="text-gray-700">{candidate.appointedDate ? formatDateOnly(candidate.appointedDate) : "-"}</TableCell>
+                        <TableCell className="text-gray-700 table-responsive-cell">{candidate.appointedLocation || candidate.appointedSchool || candidate.institution || "-"}</TableCell>
+                      </>
+                    ) : null}
                     </>
                   )}
                 </TableRow>
-              ))
+              );
+            })
             )}
           </TableBody>
       </Table>
