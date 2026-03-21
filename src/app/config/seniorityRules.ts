@@ -239,7 +239,7 @@ export function getRankingRulesDisplay(language: "en" | "ta" = "en") {
           "PG candidates follow the same seniority tie-breaks.",
         ];
 
-  const elementary =const elementary =
+  const elementary =
     language === "ta"
       ? [
           "மூப்பு: பதிவு செய்த ஆண்டு முதலில்.",
