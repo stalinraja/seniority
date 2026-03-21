@@ -258,7 +258,7 @@ export function getRankingRulesDisplay(language: "en" | "ta" = "en") {
           "Tie-break order remains the same.",
         ];
 
-  const clergy =const clergy =
+  const clergy =
     language === "ta"
       ? [
           "நிலை 1: முதலில் Ordination (Year of Passing) பெற்றவர் முன்னுரிமை.",
