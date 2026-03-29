@@ -680,11 +680,17 @@ export function Dashboard() {
   const showSplash = splashVisible;
 
   const filterGroups: FilterGroup[] = useMemo(() => {
+    const selectedCouncil = (filters.council || [])[0];
+    const councilFilteredCandidates = selectedCouncil
+      ? currentCandidates.filter((c) => normalizeFilterKey(c.council) === normalizeFilterKey(selectedCouncil))
+      : currentCandidates;
+    const pastorateSource = councilFilteredCandidates;
+
     if (schoolType === "high") {
       return [
         { key: "department", title: t("Department", "துறை"), items: buildFilterItems(currentCandidates, "department") },
         { key: "category", title: t("Category", "வகை"), items: buildFilterItems(currentCandidates, "category") },
-        { key: "pastorate", title: t("Pastorate", "பாஸ்டரேட்"), items: buildFilterItems(currentCandidates, "pastorate") },
+        { key: "pastorate", title: t("Pastorate", "பாஸ்டரேட்"), items: buildFilterItems(pastorateSource, "pastorate") },
         { key: "council", title: t("Council", "கவுன்சில்"), items: buildFilterItems(currentCandidates, "council") },
       ];
     }
@@ -696,11 +702,11 @@ export function Dashboard() {
     }
     return [
       { key: "council", title: t("Council", "கவுன்சில்"), items: buildFilterItems(currentCandidates, "council") },
-      { key: "pastorate", title: t("Pastorate", "பாஸ்டரேட்"), items: buildFilterItems(currentCandidates, "pastorate") },
+      { key: "pastorate", title: t("Pastorate", "பாஸ்டரேட்"), items: buildFilterItems(pastorateSource, "pastorate") },
       { key: "category", title: t("Category", "வகை"), items: buildFilterItems(currentCandidates, "category") },
       { key: "subject", title: t("Subject", "பாடம்"), items: buildFilterItems(currentCandidates, "subject") },
     ];
-  }, [schoolType, currentCandidates, t]);
+  }, [schoolType, currentCandidates, filters, t]);
 
   const handleFilterChange = (category: string, value: string, checked: boolean) => {
     setFilters((prev) => ({

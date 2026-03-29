@@ -83,14 +83,10 @@ File: `src/app/config/features.ts`
   - PG candidates follow the same seniority tie-break order.
 
 2. Elementary/Middle
-- **Seniority view (default):**
-  - Pastorate → Council → Diocese level order.
-  - Earlier registration year comes first.
-  - If the year is the same, earlier qualification completion comes first.
-  - If still tied, older age comes first.
-- **Appointment view:**
-  - Only candidates who have passed TET are considered.
-  - Same tie-break order as seniority.
+- Appointments shall be made based on seniority in the following order: Pastorate Level → Council Level → Diocese Level.
+- Candidates who have registered earlier shall be given priority.
+- In case of candidates registered in the same year: a) The candidate who completed the required qualification earlier shall be given priority. b) If still equal, the candidate senior in age (as per date of birth) shall be given priority.
+- Only candidates who have passed the TET (Teacher Eligibility Test) shall be considered for appointment.
 
 3. Clergy
 - Earlier year of passing comes first (month prioritized when available).
@@ -109,14 +105,10 @@ File: `src/app/config/features.ts`
   - PG விண்ணப்பதாரர்கள் மூப்பு வரிசையையே பின்பற்றுவர்.
 
 2. தொடக்க/நடுநிலை
-- **மூப்பு பார்வை (இயல்புநிலை):**
-  - பாஸ்டரேட் → கவுன்சில் → மறைமாவட்டம் வரிசை.
-  - பதிவு செய்த ஆண்டு முன்னுரிமை.
-  - ஒரே ஆண்டு என்றால், தகுதி முடித்த காலம் முன்னுரிமை.
-  - இன்னும் சமமானால், வயதில் மூத்தவர் முன்னுரிமை.
-- **நியமன பார்வை:**
-  - TET தேர்ச்சி பெற்றவர்கள் மட்டுமே பரிசீலிக்கப்படுவர்.
-  - மூப்பு வரிசையையே பின்பற்றுவர்.
+- நியமனங்கள் மூப்பு வரிசையில் நடைபெறும்: பாஸ்டரேட் நிலை → கவுன்சில் நிலை → மறைமாவட்ட நிலை.
+- முன்னதாக பதிவு செய்தவர் முன்னுரிமை.
+- ஒரே ஆண்டில் பதிவு செய்தால்: (a) தகுதி முடித்தவர் முன்; (b) இன்னும் சமமானால் பிறந்த தேதி மூத்தவர் முன்னுரிமை.
+- TET (Teacher Eligibility Test) தேர்ச்சி பெற்றவர்கள் மட்டுமே நியமனத்திற்கு பரிசீலிக்கப்படுவர்.
 
 3. குருத்துவம்
 - தேர்ச்சி ஆண்டு முன்னுரிமை (மாதம் இருந்தால் முன்னுரிமை).

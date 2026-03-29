@@ -11,7 +11,7 @@ export const SENIORITY_RULES = {
   },
   elementarySchool: {
     tetQualifiedThreshold: ELEMENTARY_TET_PASS_MARK,
-    tieBreakOrder: ["pastorate", "council", "diocese", "yearOfRegistering", "yearOfPassing", "dateOfBirth"] as const,
+    tieBreakOrder: ["yearOfRegistering", "yearOfPassing", "dateOfBirth"] as const,
   },
   clergyOrdination: {
     tieBreakOrder: ["yearOfPassing", "yearsOfExperience", "dateOfBirth"] as const,
@@ -71,9 +71,6 @@ function compareByRule(
   a: any,
   b: any,
   rule:
-    | "pastorate"
-    | "council"
-    | "diocese"
     | "yearOfRegistering"
     | "yearOfPassing"
     | "dateOfBirth"
@@ -82,16 +79,7 @@ function compareByRule(
     | "tetCompletion"
     | "yearsOfExperience",
   extractPassingYear: (v: any) => number | null
-) {
-  if (rule === "pastorate" || rule === "council" || rule === "diocese") {
-    const aValue = String(a[rule] || "").trim().toLowerCase();
-    const bValue = String(b[rule] || "").trim().toLowerCase();
-    if (!aValue && !bValue) return 0;
-    if (!aValue) return 1;
-    if (!bValue) return -1;
-    return aValue.localeCompare(bValue);
-  }
-  if (rule === "yearOfRegistering") {
+) {  if (rule === "yearOfRegistering") {
     return Number(a.yearOfRegistering ?? Number.MAX_SAFE_INTEGER) - Number(b.yearOfRegistering ?? Number.MAX_SAFE_INTEGER);
   }
   if (rule === "yearOfPassing") {
@@ -216,16 +204,19 @@ export function compareElementarySchoolSeniorityCandidates(
   b: any,
   extractPassingYear: (v: any) => number | null
 ) {
-  const aPriority = isElementaryTetQualified(a) ? 1 : 0;
-  const bPriority = isElementaryTetQualified(b) ? 1 : 0;
-  if (aPriority !== bPriority) return bPriority - aPriority;
+  const order: Array<"yearOfRegistering" | "yearOfPassing" | "dateOfBirth"> = [
+    "yearOfRegistering",
+    "yearOfPassing",
+    "dateOfBirth",
+  ];
 
-  for (const rule of SENIORITY_RULES.elementarySchool.tieBreakOrder) {
+  for (const rule of order) {
     const diff = compareByRule(a, b, rule, extractPassingYear);
     if (diff !== 0) return diff;
   }
   return 0;
 }
+
 
 
 export function compareClergyOrdinationCandidates(
@@ -260,22 +251,21 @@ export function getRankingRulesDisplay(language: "en" | "ta" = "en") {
           "PG candidates follow the same seniority tie-breaks.",
         ];
 
-    const elementary =
+      const elementary =
     language === "ta"
       ? [
-          "மூப்பு முன்னுரிமை வரிசை: பாஸ்டரேட் → கவுன்சில் → மறைமாவட்டம்.",
-          "பதிவு செய்த ஆண்டு முன்னுரிமை.",
-          "ஒரே பதிவு ஆண்டு என்றால், தகுதி முடித்த காலம் முன்னுரிமை.",
-          "இன்னும் சமமானால், வயதில் மூத்தவர் முன்னுரிமை.",
-          "TET தேர்ச்சி பெற்றவர்கள் மட்டுமே நியமனத்திற்கு பரிசீலிக்கப்படுவர்.",
+          "நியமனங்கள் மூப்பு வரிசையில் நடைபெறும்: பாஸ்டரேட் நிலை → கவுன்சில் நிலை → மறைமாவட்ட நிலை.",
+          "முன்னதாக பதிவு செய்தவர் முன்னுரிமை.",
+          "ஒரே ஆண்டில் பதிவு செய்தால்: (a) தகுதி முடித்தவர் முன்; (b) இன்னும் சமமானால் பிறந்த தேதி மூத்தவர் முன்னுரிமை.",
+          "TET (Teacher Eligibility Test) தேர்ச்சி பெற்றவர்கள் மட்டுமே நியமனத்திற்கு பரிசீலிக்கப்படுவர்.",
         ]
       : [
-          "Appointment priority follows seniority levels: Pastorate → Council → Diocese.",
-          "Earlier registration year comes first.",
-          "If registration year is the same, earlier qualification completion comes first.",
-          "If still tied, older age (earlier DOB) comes first.",
-          "Only candidates who have passed TET are considered for appointment.",
+          "Appointments shall be made based on seniority in the following order: Pastorate Level → Council Level → Diocese Level.",
+          "Candidates who have registered earlier shall be given priority.",
+          "In case of candidates registered in the same year: a) The candidate who completed the required qualification earlier shall be given priority. b) If still equal, the candidate senior in age (as per date of birth) shall be given priority.",
+          "Only candidates who have passed the TET (Teacher Eligibility Test) shall be considered for appointment.",
         ];
+
 
 
   const clergy =
