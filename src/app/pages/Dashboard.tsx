@@ -324,7 +324,7 @@ function mapHighSchool(rows: any[]) {
         })(),
       };
     })
-    .filter((c) => c.name !== "Unnamed" && c.dateOfBirth && c.yearOfRegistering !== null);
+    .filter((c) => c.name !== "Unnamed" && c.dateOfBirth && c.yearOfRegistering !== null && c.yearOfPassing !== null && normalizeText(c.qualification || ""));
 }
 
 function mapElementarySchool(rows: any[]) {
@@ -383,7 +383,7 @@ function mapElementarySchool(rows: any[]) {
         })(),
       };
     })
-    .filter((c) => c.name !== "Unnamed" && c.dateOfBirth && c.yearOfRegistering !== null);
+    .filter((c) => c.name !== "Unnamed" && c.dateOfBirth && c.yearOfRegistering !== null && c.yearOfPassing !== null && normalizeText(c.subject || "") && normalizeText(c.qualification || ""));
 }
 
 function mapClergyOrdination(rows: any[]) {
@@ -433,7 +433,7 @@ function mapClergyOrdination(rows: any[]) {
         })(),
       };
     })
-    .filter((c) => c.name !== "Unnamed" && c.dateOfBirth && c.yearOfPassing !== null);
+    .filter((c) => c.name !== "Unnamed" && c.dateOfBirth && c.yearOfPassing !== null && normalizeText(c.qualification || ""));
 }
 
 function assignRanksIncludingAppointments(rows: any[]) {
