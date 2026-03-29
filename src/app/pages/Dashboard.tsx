@@ -19,6 +19,7 @@ import {
   APPOINTMENT_REPORT_ENABLED,
   CLERGY_SECTION_ENABLED,
   HIGH_SCHOOL_TET_PASS_MARK,
+  ELEMENTARY_TET_PASS_MARK,
   HIGH_SCHOOL_SECTION_ENABLED,
   MIDDLE_SCHOOL_SECTION_ENABLED,
   DOWNLOAD_PDF_ENABLED,
@@ -336,14 +337,21 @@ function mapElementarySchool(rows: any[]) {
         c["Ted Completion"] ||
         c["TET Qualification"] ||
         c["TET %"] ||
+        c["TET Qualified"] ||
+        c["TET"] ||
         "";
-      const tetCompletion = Number(String(tetRaw).replace("%", "").trim());
+      const tetRawText = String(tetRaw || "").trim();
+      const tetCompletion = Number(tetRawText.replace("%", "").trim());
+      const tetQualified = Number.isFinite(tetCompletion)
+        ? tetCompletion >= ELEMENTARY_TET_PASS_MARK
+        : /pass|yes|qualified|true/i.test(tetRawText);
+      const subject = normalizeText(c.subject || c.Subject || c.level || c.Level || "");
       const fallbackId = [
         c.memberId || c["Member ID"] || c["Member Id"] || "",
         c.name || c.Name || c["Full Name"] || "",
         c.dateOfBirth || c.DateOfBirth || c["Date of Birth"] || "",
         c.category || c.Category || "",
-        c.level || c.Level || "",
+        c.subject || c.Subject || c.level || c.Level || "",
         String(rowIndex),
       ].join("|");
       return {
@@ -357,10 +365,13 @@ function mapElementarySchool(rows: any[]) {
         ),
         council: normalizeText(c.council || c.Council || ""),
         pastorate: normalizeText(c.pastorate || c.Pastorate || ""),
+        diocese: normalizeText(c.diocese || c.Diocese || ""),
         category: normalizeText(c.category || c.Category || ""),
-        level: normalizeText(c.level || c.Level || ""),
+        subject,
+        level: subject,
         qualification: normalizeText(c.qualification || c.Qualification || ""),
         tetCompletion: Number.isFinite(tetCompletion) ? tetCompletion : null,
+        tetQualified,
         ...(() => {
           const appointment = getAppointmentFields(c, "elementary");
           if (!appointment.appointedLocation) {
@@ -501,6 +512,7 @@ function buildStableHashPayload(rows: any[]) {
     institution: r.institution || "",
     department: r.department || "",
     category: r.category || "",
+    subject: r.subject || "",
     level: r.level || "",
     qualification: r.qualification || "",
     homePastorate: r.homePastorate || "",
@@ -686,7 +698,7 @@ export function Dashboard() {
       { key: "council", title: t("Council", "கவுன்சில்"), items: buildFilterItems(currentCandidates, "council") },
       { key: "pastorate", title: t("Pastorate", "பாஸ்டரேட்"), items: buildFilterItems(currentCandidates, "pastorate") },
       { key: "category", title: t("Category", "வகை"), items: buildFilterItems(currentCandidates, "category") },
-      { key: "level", title: t("Level", "நிலை"), items: buildFilterItems(currentCandidates, "level") },
+      { key: "subject", title: t("Subject", "பாடம்"), items: buildFilterItems(currentCandidates, "subject") },
     ];
   }, [schoolType, currentCandidates, t]);
 
@@ -713,7 +725,7 @@ export function Dashboard() {
       addFilter("council", candidate.council);
       addFilter("pastorate", candidate.pastorate);
       addFilter("category", candidate.category);
-      addFilter("level", candidate.level);
+      addFilter("subject", candidate.subject);
     } else {
       addFilter("homePastorate", candidate.homePastorate);
       addFilter("qualification", candidate.qualification);
@@ -738,7 +750,7 @@ export function Dashboard() {
       schoolType === "high"
         ? (["department", "category", "pastorate", "council"] as const)
         : schoolType === "elementary"
-        ? (["council", "pastorate", "category", "level"] as const)
+        ? (["council", "pastorate", "category", "subject"] as const)
         : (["homePastorate", "qualification"] as const);
 
     const normalizedFilterMap = new Map<string, Set<string>>();

@@ -27,6 +27,7 @@ export function searchCandidatesGeneric(candidates: any[], query: string): any[]
       candidate.institution,
       candidate.department,
       candidate.category,
+      candidate.subject,
       candidate.level,
       candidate.homePastorate,
       candidate.yearsOfExperience,

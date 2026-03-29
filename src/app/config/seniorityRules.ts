@@ -11,7 +11,7 @@ export const SENIORITY_RULES = {
   },
   elementarySchool: {
     tetQualifiedThreshold: ELEMENTARY_TET_PASS_MARK,
-    tieBreakOrder: ["yearOfRegistering", "yearOfPassing", "dateOfBirth", "tetCompletion"] as const,
+    tieBreakOrder: ["pastorate", "council", "diocese", "yearOfRegistering", "yearOfPassing", "dateOfBirth"] as const,
   },
   clergyOrdination: {
     tieBreakOrder: ["yearOfPassing", "yearsOfExperience", "dateOfBirth"] as const,
@@ -58,10 +58,22 @@ function hasTetData(candidate: any) {
   return true;
 }
 
+function isElementaryTetQualified(candidate: any) {
+  if (candidate.tetQualified === true) return true;
+  if (candidate.tetQualified === false) return false;
+  if (Number.isFinite(candidate.tetCompletion)) {
+    return Number(candidate.tetCompletion) >= SENIORITY_RULES.elementarySchool.tetQualifiedThreshold;
+  }
+  return false;
+}
+
 function compareByRule(
   a: any,
   b: any,
   rule:
+    | "pastorate"
+    | "council"
+    | "diocese"
     | "yearOfRegistering"
     | "yearOfPassing"
     | "dateOfBirth"
@@ -71,6 +83,14 @@ function compareByRule(
     | "yearsOfExperience",
   extractPassingYear: (v: any) => number | null
 ) {
+  if (rule === "pastorate" || rule === "council" || rule === "diocese") {
+    const aValue = String(a[rule] || "").trim().toLowerCase();
+    const bValue = String(b[rule] || "").trim().toLowerCase();
+    if (!aValue && !bValue) return 0;
+    if (!aValue) return 1;
+    if (!bValue) return -1;
+    return aValue.localeCompare(bValue);
+  }
   if (rule === "yearOfRegistering") {
     return Number(a.yearOfRegistering ?? Number.MAX_SAFE_INTEGER) - Number(b.yearOfRegistering ?? Number.MAX_SAFE_INTEGER);
   }
@@ -178,8 +198,8 @@ export function compareElementarySchoolCandidates(
   b: any,
   extractPassingYear: (v: any) => number | null
 ) {
-  const aPriority = Number(a.tetCompletion) >= SENIORITY_RULES.elementarySchool.tetQualifiedThreshold ? 1 : 0;
-  const bPriority = Number(b.tetCompletion) >= SENIORITY_RULES.elementarySchool.tetQualifiedThreshold ? 1 : 0;
+  const aPriority = isElementaryTetQualified(a) ? 1 : 0;
+  const bPriority = isElementaryTetQualified(b) ? 1 : 0;
   if (aPriority !== bPriority) return bPriority - aPriority;
 
   for (const rule of SENIORITY_RULES.elementarySchool.tieBreakOrder) {
@@ -196,16 +216,17 @@ export function compareElementarySchoolSeniorityCandidates(
   b: any,
   extractPassingYear: (v: any) => number | null
 ) {
-  const order: Array<
-    "yearOfRegistering" | "yearOfPassing" | "dateOfBirth" | "tetCompletion"
-  > = ["yearOfRegistering", "yearOfPassing", "dateOfBirth", "tetCompletion"];
+  const aPriority = isElementaryTetQualified(a) ? 1 : 0;
+  const bPriority = isElementaryTetQualified(b) ? 1 : 0;
+  if (aPriority !== bPriority) return bPriority - aPriority;
 
-  for (const rule of order) {
+  for (const rule of SENIORITY_RULES.elementarySchool.tieBreakOrder) {
     const diff = compareByRule(a, b, rule, extractPassingYear);
     if (diff !== 0) return diff;
   }
   return 0;
 }
+
 
 export function compareClergyOrdinationCandidates(
   a: any,
@@ -239,24 +260,23 @@ export function getRankingRulesDisplay(language: "en" | "ta" = "en") {
           "PG candidates follow the same seniority tie-breaks.",
         ];
 
-  const elementary =
+    const elementary =
     language === "ta"
       ? [
-          "மூப்பு: பதிவு செய்த ஆண்டு முதலில்.",
-          "ஒரே ஆண்டு என்றால், தேர்ச்சி மாதம்/ஆண்டு முன்னுரிமை.",
+          "மூப்பு முன்னுரிமை வரிசை: பாஸ்டரேட் → கவுன்சில் → மறைமாவட்டம்.",
+          "பதிவு செய்த ஆண்டு முன்னுரிமை.",
+          "ஒரே பதிவு ஆண்டு என்றால், தகுதி முடித்த காலம் முன்னுரிமை.",
           "இன்னும் சமமானால், வயதில் மூத்தவர் முன்னுரிமை.",
-          "இன்னும் சமமானால், TET % அதிகம் முன்னுரிமை.",
-          "நியமன பார்வை: TET % தேர்ச்சி பெற்றவர்கள் முன்னுரிமை.",
-          "சமநிலை விதிகள் மாறாது.",
+          "TET தேர்ச்சி பெற்றவர்கள் மட்டுமே நியமனத்திற்கு பரிசீலிக்கப்படுவர்.",
         ]
       : [
-          "Seniority: earlier registration year comes first.",
-          "If registration year is the same, earlier passing month/year comes first.",
-          "If still tied, older age comes first.",
-          "If still tied, higher TET % comes first.",
-          "Appointment view: TET % at or above the pass mark is prioritized.",
-          "Tie-break order remains the same.",
+          "Appointment priority follows seniority levels: Pastorate → Council → Diocese.",
+          "Earlier registration year comes first.",
+          "If registration year is the same, earlier qualification completion comes first.",
+          "If still tied, older age (earlier DOB) comes first.",
+          "Only candidates who have passed TET are considered for appointment.",
         ];
+
 
   const clergy =
     language === "ta"

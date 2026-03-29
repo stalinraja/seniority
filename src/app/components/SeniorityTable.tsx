@@ -277,9 +277,9 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
               <TableHead className="font-semibold">{t("Year of Passing", "தேர்ச்சி ஆண்டு")}</TableHead>
               <TableHead className="font-semibold">{t("Year of Registering", "பதிவு ஆண்டு")}</TableHead>
               <TableHead className="font-semibold">{t("Qualification", "தகுதி")}</TableHead>
-              <TableHead className="font-semibold">{t("TET Qualification", "TET தகுதி")}</TableHead>
+              <TableHead className="font-semibold">{t("TET Qualified", "TET தகுதி")}</TableHead>
               <TableHead className="font-semibold">{t("Category", "வகை")}</TableHead>
-              <TableHead className="font-semibold">{t("Level", "நிலை")}</TableHead>
+              <TableHead className="font-semibold">{t("Subject", "பாடம்")}</TableHead>
               <TableHead className="font-semibold">{t("Pastorate", "பாஸ்டரேட்")}</TableHead>
               <TableHead className="font-semibold">{t("Council", "கவுன்சில்")}</TableHead>
               {showAppointments ? (
@@ -314,6 +314,10 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                     {appointmentNumber}
                   </span>
                 ) : null;
+                const elementaryTetPass =
+                  candidate.tetQualified === true ||
+                  (Number.isFinite(candidate.tetCompletion) && Number(candidate.tetCompletion) >= ELEMENTARY_TET_PASS_MARK);
+                const elementaryTetLabel = elementaryTetPass ? t("Pass", "தேர்ச்சி") : t("No", "இல்லை");
                 const rowClassName = `optimized-row ${showAppointments && isAppointed ? "bg-emerald-50/70 dark:bg-emerald-900/20 hover:bg-emerald-100/80 dark:hover:bg-emerald-900/30" : "hover:bg-slate-100/70 dark:hover:bg-slate-800/70"} ${onRowDoubleClick ? "cursor-pointer" : ""}`;
                 return (
                   <TableRow
@@ -463,15 +467,9 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                       <TableCell>
                         <Badge
                           variant="outline"
-                          className={
-                            Number(candidate.tetCompletion) >= ELEMENTARY_TET_PASS_MARK
-                              ? "bg-green-50 text-green-700 border-green-200"
-                              : "bg-red-50 text-red-700 border-red-200"
-                          }
+                          className={elementaryTetPass ? "bg-green-50 text-green-700 border-green-200" : "bg-red-50 text-red-700 border-red-200"}
                         >
-                          {Number.isFinite(candidate.tetCompletion)
-                            ? `${candidate.tetCompletion}%${Number(candidate.tetCompletion) >= ELEMENTARY_TET_PASS_MARK ? " (Yes)" : " (No)"}`
-                            : "-"}
+                          {elementaryTetLabel}
                         </Badge>
                       </TableCell>
                       <TableCell>
@@ -482,7 +480,7 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                           {candidate.category || ""}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-gray-700">{candidate.level || ""}</TableCell>
+                      <TableCell className="text-gray-700">{candidate.subject || candidate.level || ""}</TableCell>
                       <TableCell className="text-gray-700 table-responsive-cell">{candidate.pastorate || ""}</TableCell>
                       <TableCell className="text-gray-700 table-responsive-cell">{candidate.council || ""}</TableCell>
                       {showAppointments ? (
@@ -497,6 +495,7 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                 </TableRow>
               );
             })
+
             )}
           </TableBody>
       </Table>

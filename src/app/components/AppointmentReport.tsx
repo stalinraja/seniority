@@ -1,5 +1,6 @@
 import { differenceInYears, format } from "date-fns";
 import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
 import { Award } from "lucide-react";
 import {
   Table,
@@ -10,7 +11,7 @@ import {
   TableRow,
 } from "./ui/table";
 import { useLanguage } from "../i18n/language";
-import { SHOW_ADDRESS, SHOW_MEMBER_ID, SHOW_PINCODE } from "../config/features";
+import { SHOW_ADDRESS, SHOW_MEMBER_ID, SHOW_PINCODE, ELEMENTARY_TET_PASS_MARK } from "../config/features";
 
 type SchoolType = "high" | "elementary" | "clergy";
 
@@ -75,9 +76,9 @@ export function AppointmentReport({
               {isHigh || isElementary ? <TableHead>{t("Year of Registering", "பதிவு ஆண்டு")}</TableHead> : null}
               {isHigh ? <TableHead>{t("Department", "துறை")}</TableHead> : null}
               {isHigh || isElementary ? <TableHead>{t("Category", "வகை")}</TableHead> : null}
-              {isElementary ? <TableHead>{t("Level", "நிலை")}</TableHead> : null}
+              {isElementary ? <TableHead>{t("Subject", "பாடம்")}</TableHead> : null}
               {isHigh ? <TableHead>{t("TET Qualified", "TET தகுதி")}</TableHead> : null}
-              {isElementary ? <TableHead>{t("TET Qualification", "TET தகுதி")}</TableHead> : null}
+              {isElementary ? <TableHead>{t("TET Qualified", "TET தகுதி")}</TableHead> : null}
               {!isHigh && !isElementary ? <TableHead>{t("Year of Passing", "தேர்ச்சி ஆண்டு")}</TableHead> : null}
               {!isHigh && !isElementary ? <TableHead>{t("Years of Experience", "பணியாண்டுகள்")}</TableHead> : null}
               <TableHead>{t("Qualification", "தகுதி")}</TableHead>
@@ -115,9 +116,27 @@ export function AppointmentReport({
                   {isHigh || isElementary ? <TableCell>{row.yearOfRegistering ?? ""}</TableCell> : null}
                   {isHigh ? <TableCell>{row.department || ""}</TableCell> : null}
                   {isHigh || isElementary ? <TableCell>{row.category || ""}</TableCell> : null}
-                  {isElementary ? <TableCell>{row.level || ""}</TableCell> : null}
+                  {isElementary ? <TableCell>{row.subject || row.level || ""}</TableCell> : null}
                   {isHigh ? <TableCell>{row.tetRaw || (row.tetQualified === true ? "Yes" : row.tetQualified === false ? "No" : "-")}</TableCell> : null}
-                  {isElementary ? <TableCell>{Number.isFinite(row.tetCompletion) ? `${row.tetCompletion}%` : "-"}</TableCell> : null}
+                  {isElementary ? (
+                  <TableCell>
+                    <Badge
+                      variant="outline"
+                      className={
+                        row.tetQualified === true ||
+                        (Number.isFinite(row.tetCompletion) && Number(row.tetCompletion) >= ELEMENTARY_TET_PASS_MARK)
+                          ? "bg-green-50 text-green-700 border-green-200"
+                          : "bg-red-50 text-red-700 border-red-200"
+                      }
+                    >
+                      {row.tetQualified === true ||
+                      (Number.isFinite(row.tetCompletion) && Number(row.tetCompletion) >= ELEMENTARY_TET_PASS_MARK)
+                        ? t("Pass", "தேர்ச்சி")
+                        : t("No", "இல்லை")}
+                    </Badge>
+                  </TableCell>
+                ) : null}
+
                   {!isHigh && !isElementary ? <TableCell>{row.yearOfPassing ?? ""}</TableCell> : null}
                   {!isHigh && !isElementary ? <TableCell>{row.yearsOfExperience ?? ""}</TableCell> : null}
                   <TableCell>{row.qualification || ""}</TableCell>

@@ -68,7 +68,7 @@ export function DashboardVisual({
   const pastorateStats = groupBy(candidates, "pastorate");
   const homePastorateStats = groupBy(candidates, "homePastorate");
   const qualificationStats = groupBy(candidates, "qualification");
-  const levelStats = groupBy(candidates, "level");
+  const subjectStats = groupBy(candidates, "subject");
   const pgugStats = candidates.reduce((acc, curr) => {
     const value = curr.pgug || curr.category || "Unknown";
     acc[value] = (acc[value] || 0) + 1;
@@ -78,7 +78,7 @@ export function DashboardVisual({
     ? [
         { key: "council", label: t("By Council", "கவுன்சில் அடிப்படையில்") },
         { key: "pastorate", label: t("By Pastorate", "பாஸ்டரேட் அடிப்படையில்") },
-        { key: "level", label: t("By Level", "நிலை அடிப்படையில்") },
+        { key: "subject", label: t("By Subject", "பாடம் அடிப்படையில்") },
         { key: "pgug", label: t("Category Split", "வகைப் பிரிவு") },
       ]
     : isClergy
@@ -109,7 +109,7 @@ export function DashboardVisual({
   const pastorateLabeled = buildLabeledStats(pastorateStats);
   const homePastorateLabeled = buildLabeledStats(homePastorateStats);
   const qualificationLabeled = buildLabeledStats(qualificationStats);
-  const levelLabeled = buildLabeledStats(levelStats);
+  const subjectLabeled = buildLabeledStats(subjectStats);
 
   const chartData = {
     council: {
@@ -177,13 +177,13 @@ export function DashboardVisual({
         },
       ],
     },
-    level: {
-      labels: levelLabeled.labels,
+    subject: {
+      labels: subjectLabeled.labels,
       datasets: [
         {
-          label: t("By Level", "நிலை அடிப்படையில்"),
-          data: levelLabeled.values,
-          backgroundColor: getPalette(Object.keys(levelStats).length),
+          label: t("By Subject", "பாடம் அடிப்படையில்"),
+          data: subjectLabeled.values,
+          backgroundColor: getPalette(Object.keys(subjectStats).length),
           borderWidth: 1,
           borderColor: "#ffffff",
           borderRadius: 6,
@@ -245,8 +245,8 @@ export function DashboardVisual({
       ? chartData.homePastorate
       : tab === "qualification"
       ? chartData.qualification
-      : tab === "level"
-      ? chartData.level
+      : tab === "subject"
+      ? chartData.subject
       : chartData.pgug;
 
   const pieOptions = { ...doughnutOptions, cutout: "0%" };
@@ -291,7 +291,7 @@ export function DashboardVisual({
             </h2>
             <span className="text-slate-500 font-medium text-sm">
               {isElementary
-                ? t("Overview by council, pastorate, level and category.", "கவுன்சில், பாஸ்டரேட், நிலை மற்றும் வகை அடிப்படையிலான காட்சி.")
+                ? t("Overview by council, pastorate, subject and category.", "கவுன்சில், பாஸ்டரேட், பாடம் மற்றும் வகை அடிப்படையிலான காட்சி.")
                 : isClergy
                 ? t("Overview by home pastorate and qualification.", "சொந்த பாஸ்டரேட் மற்றும் தகுதி அடிப்படையிலான காட்சி.")
                 : t("Overview by department and category.", "துறை மற்றும் வகை அடிப்படையிலான காட்சி.")}

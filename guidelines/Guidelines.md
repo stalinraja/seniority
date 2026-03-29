@@ -1,6 +1,6 @@
 # CSI TND Seniority Portal - Guidelines
 
-_Last updated: 2026-03-20_
+_Last updated: 2026-03-30_
 
 ## 1) Purpose
 This portal manages and displays:
@@ -84,13 +84,13 @@ File: `src/app/config/features.ts`
 
 2. Elementary/Middle
 - **Seniority view (default):**
+  - Pastorate → Council → Diocese level order.
   - Earlier registration year comes first.
-  - If the year is the same, earlier passing month/year comes first.
+  - If the year is the same, earlier qualification completion comes first.
   - If still tied, older age comes first.
-  - If still tied, higher TET % comes first.
 - **Appointment view:**
-  - TET % at/above the pass mark is prioritized.
-  - Tie‑break order remains the same.
+  - Only candidates who have passed TET are considered.
+  - Same tie-break order as seniority.
 
 3. Clergy
 - Earlier year of passing comes first (month prioritized when available).
@@ -110,13 +110,13 @@ File: `src/app/config/features.ts`
 
 2. தொடக்க/நடுநிலை
 - **மூப்பு பார்வை (இயல்புநிலை):**
+  - பாஸ்டரேட் → கவுன்சில் → மறைமாவட்டம் வரிசை.
   - பதிவு செய்த ஆண்டு முன்னுரிமை.
-  - ஒரே ஆண்டு என்றால், தேர்ச்சி மாதம்/ஆண்டு முன்னுரிமை.
-  - இன்னும் சமமானால், வயது மூப்பு.
-  - இன்னும் சமமானால், TET % அதிகம் முன்னுரிமை.
+  - ஒரே ஆண்டு என்றால், தகுதி முடித்த காலம் முன்னுரிமை.
+  - இன்னும் சமமானால், வயதில் மூத்தவர் முன்னுரிமை.
 - **நியமன பார்வை:**
-  - TET % தேர்ச்சி பெற்றவர்கள் முன்னுரிமை.
-  - சமநிலை விதிகள் மாறாது.
+  - TET தேர்ச்சி பெற்றவர்கள் மட்டுமே பரிசீலிக்கப்படுவர்.
+  - மூப்பு வரிசையையே பின்பற்றுவர்.
 
 3. குருத்துவம்
 - தேர்ச்சி ஆண்டு முன்னுரிமை (மாதம் இருந்தால் முன்னுரிமை).

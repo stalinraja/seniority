@@ -126,15 +126,13 @@ export function DropdownFilter({
                   <label key={item} className="flex items-center gap-2 text-sm text-gray-700 dark:text-slate-200 cursor-pointer">
                     <input
                       id={`${title}-${item}`}
-                      type="radio"
+                      type="checkbox"
                       name={`filter-${title}`}
                       checked={selectedItems[0] === item}
                       onChange={(e) => {
                         onChange(item, e.target.checked);
-                        if (e.target.checked) {
-                          setOpen(false);
-                          setSearch("");
-                        }
+                        setOpen(false);
+                        setSearch("");
                       }}
                       className="peer sr-only"
                     />

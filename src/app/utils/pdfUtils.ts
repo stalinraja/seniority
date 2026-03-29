@@ -92,8 +92,10 @@ function splitQualifications(value: string) {
 }
 
 function getElementaryTetDisplay(candidate: any) {
-  if (candidate.tetCompletion === null || candidate.tetCompletion === undefined) return "-";
-  return `${candidate.tetCompletion}%${Number(candidate.tetCompletion) >= ELEMENTARY_TET_PASS_MARK ? " (Yes)" : " (No)"}`;
+  const qualified =
+    candidate.tetQualified === true ||
+    (Number.isFinite(candidate.tetCompletion) && Number(candidate.tetCompletion) >= ELEMENTARY_TET_PASS_MARK);
+  return qualified ? "Pass" : "No";
 }
 
 function getTetDisplay(candidate: any) {
@@ -141,9 +143,9 @@ function getElementaryColumns(): PdfColumn[] {
     { key: "yearOfPassing", title: "Year of Passing", align: "center", minWidth: 16, weight: 1, getValue: (c) => c.yearOfPassing ?? "" },
     { key: "yearOfRegistering", title: "Year of Registering", align: "center", minWidth: 18, weight: 1, getValue: (c) => c.yearOfRegistering ?? "" },
     { key: "qualification", title: "Qualification", minWidth: 36, weight: 2.6, wrap: true, getValue: (c) => splitQualifications(c.qualification) },
-    { key: "tet", title: "TET %", align: "center", minWidth: 20, weight: 1.7, getValue: (c) => getElementaryTetDisplay(c) },
+    { key: "tet", title: "TET Qualified", align: "center", minWidth: 20, weight: 1.7, getValue: (c) => getElementaryTetDisplay(c) },
     { key: "category", title: "Category", align: "center", minWidth: 16, weight: 1.2, getValue: (c) => c.category || "" },
-    { key: "level", title: "Level", align: "center", minWidth: 14, weight: 1.1, getValue: (c) => c.level || "" },
+    { key: "subject", title: "Subject", align: "center", minWidth: 14, weight: 1.1, getValue: (c) => c.subject || c.level || "" },
     { key: "pastorate", title: "Pastorate", minWidth: 22, weight: 1.6, wrap: true, getValue: (c) => c.pastorate || "" },
     { key: "council", title: "Council", minWidth: 20, weight: 1.5, wrap: true, getValue: (c) => c.council || "" },
   ];
