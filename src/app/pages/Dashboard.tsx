@@ -474,15 +474,47 @@ function getAppointmentSortValue(value: any) {
   return date ? date.getTime() : Number.MAX_SAFE_INTEGER;
 }
 
-function buildAppointmentRankMap(rows: any[]) {
+function getDobSortValue(value: any) {
+  if (value instanceof Date) return Number.isNaN(value.getTime()) ? Number.MAX_SAFE_INTEGER : value.getTime();
+  const parsed = parseDate(value);
+  return parsed ? parsed.getTime() : Number.MAX_SAFE_INTEGER;
+}
+
+function getRegisteringSortValue(value: any) {
+  const num = Number(value);
+  return Number.isFinite(num) ? num : Number.MAX_SAFE_INTEGER;
+}
+
+function getPassingSortValue(value: any) {
+  const year = extractPassingYear(value);
+  if (year !== null) return year;
+  const num = Number(value);
+  return Number.isFinite(num) ? num : Number.MAX_SAFE_INTEGER;
+}
+
+function compareAppointmentCandidates(a: any, b: any, schoolType: SchoolType) {
+  const dateDiff = getAppointmentSortValue(a.appointedDate) - getAppointmentSortValue(b.appointedDate);
+  if (dateDiff !== 0) return dateDiff;
+
+  if (schoolType === "high" || schoolType === "elementary") {
+    const regDiff = getRegisteringSortValue(a.yearOfRegistering) - getRegisteringSortValue(b.yearOfRegistering);
+    if (regDiff !== 0) return regDiff;
+
+    const passDiff = getPassingSortValue(a.yearOfPassing) - getPassingSortValue(b.yearOfPassing);
+    if (passDiff !== 0) return passDiff;
+
+    const dobDiff = getDobSortValue(a.dateOfBirth) - getDobSortValue(b.dateOfBirth);
+    if (dobDiff !== 0) return dobDiff;
+  }
+
+  const nameDiff = String(a.name || "").localeCompare(String(b.name || ""));
+  if (nameDiff !== 0) return nameDiff;
+  return String(a.memberId || "").localeCompare(String(b.memberId || ""));
+}
+
+function buildAppointmentRankMap(rows: any[], schoolType: SchoolType) {
   const appointed = rows.filter((row) => row.appointed === true);
-  appointed.sort((a, b) => {
-    const diff = getAppointmentSortValue(a.appointedDate) - getAppointmentSortValue(b.appointedDate);
-    if (diff !== 0) return diff;
-    const nameDiff = String(a.name || "").localeCompare(String(b.name || ""));
-    if (nameDiff !== 0) return nameDiff;
-    return String(a.memberId || "").localeCompare(String(b.memberId || ""));
-  });
+  appointed.sort((a, b) => compareAppointmentCandidates(a, b, schoolType));
 
   const map = new Map<string, number>();
   appointed.forEach((row, idx) => {
@@ -746,10 +778,7 @@ export function Dashboard() {
 
   const dashboardKey = useMemo(() => schoolType, [schoolType]);
 
-  const appointmentRankMap = useMemo(() => buildAppointmentRankMap(currentCandidates), [currentCandidates]);
-
-
-  const rankedCandidates = useMemo(() => {
+  const filteredByFilters = useMemo(() => {
     let rows = [...currentCandidates];
 
     const activeFilterKeys =
@@ -785,6 +814,17 @@ export function Dashboard() {
       });
     }
 
+    return rows;
+  }, [currentCandidates, filters, schoolType]);
+
+  const appointmentRankMap = useMemo(
+    () => buildAppointmentRankMap(filteredByFilters, schoolType),
+    [filteredByFilters, schoolType]
+  );
+
+  const rankedCandidates = useMemo(() => {
+    let rows = [...filteredByFilters];
+
     const includeAppointments = showAppointments;
     if (!includeAppointments) {
       rows = rows.filter((candidate) => candidate.appointed !== true);
@@ -803,8 +843,7 @@ export function Dashboard() {
       if (!candidate.appointed) return { ...candidate, appointmentNumber: null };
       return { ...candidate, appointmentNumber: appointmentRankMap.get(getCandidateKey(candidate)) ?? null };
     });
-  }, [currentCandidates, filters, schoolType, sortMode, showAppointments, appointmentRankMap]);
-
+  }, [filteredByFilters, schoolType, sortMode, showAppointments, appointmentRankMap]);
 
   const filteredCandidates = useMemo(() => {
     return searchQuery.trim()
@@ -814,12 +853,23 @@ export function Dashboard() {
 
   const appointmentRows = useMemo(() => {
     if (!showAppointments) return [];
-    return filteredCandidates
+    const rows = filteredCandidates
       .filter((row) => row.appointed === true)
-      .map((row) => ({
-        ...row,
-        appointmentNumber: appointmentRankMap.get(getCandidateKey(row)) ?? null,
-      }));
+      .map((row) => {
+        const appointmentNumber = appointmentRankMap.get(getCandidateKey(row)) ?? null;
+        return {
+          ...row,
+          appointmentNumber,
+          rank: appointmentNumber ?? null,
+        };
+      });
+
+    return rows.sort((a, b) => {
+      const aNum = a.appointmentNumber ?? Number.MAX_SAFE_INTEGER;
+      const bNum = b.appointmentNumber ?? Number.MAX_SAFE_INTEGER;
+      if (aNum !== bNum) return aNum - bNum;
+      return 0;
+    });
   }, [filteredCandidates, showAppointments, appointmentRankMap]);
 
   const totalPages = Math.max(1, Math.ceil(filteredCandidates.length / PAGE_SIZE));
