@@ -34,6 +34,8 @@ export function searchCandidatesGeneric(candidates: any[], query: string): any[]
       candidate.qualification,
       candidate.email,
       candidate.pincode,
+      candidate.holdReason,
+      candidate.exitType,
       tetText,
       ...qualificationParts,
     ]

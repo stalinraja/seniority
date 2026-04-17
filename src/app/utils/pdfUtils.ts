@@ -77,9 +77,34 @@ function buildRankMap(candidates: any[], schoolType: SchoolType, mode: "seniorit
   return map;
 }
 
+function parseDateForPdf(value: any) {
+  if (!value) return null;
+  if (value instanceof Date) {
+    return Number.isNaN(value.getTime()) ? null : value;
+  }
+
+  const raw = String(value).trim();
+  if (!raw) return null;
+
+  const compact = raw.replace(/\s+/g, "");
+  const normalized = compact.replace(/[./-]+/g, ".");
+  const match = normalized.match(/^(\d{1,2})\.(\d{1,2})\.(\d{2,4})$/);
+  if (match) {
+    const day = Number(match[1]);
+    const month = Number(match[2]);
+    const yearRaw = Number(match[3]);
+    const year = String(match[3]).length === 2 ? (yearRaw <= 30 ? 2000 + yearRaw : 1900 + yearRaw) : yearRaw;
+    const date = new Date(year, month - 1, day);
+    return Number.isNaN(date.getTime()) ? null : date;
+  }
+
+  const date = new Date(raw);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
 function formatDateForPdf(value: any) {
-  const date = value instanceof Date ? value : new Date(value);
-  if (Number.isNaN(date.getTime())) return "";
+  const date = parseDateForPdf(value);
+  if (!date) return "";
   return date.toLocaleDateString("en-GB", {
     day: "2-digit",
     month: "short",
@@ -166,9 +191,45 @@ function getClergyColumns(): PdfColumn[] {
 
 function getAppointmentColumns(): PdfColumn[] {
   return [
+    { key: "appointmentStatus", title: "Status", align: "center", minWidth: 16, weight: 1.2, keepAlways: true, getValue: (c) => c.appointmentStatus || (c.appointed ? "Appointed" : c.holdReason ? "Hold" : "-") },
     { key: "appointedDate", title: "Appointment Date", align: "center", minWidth: 20, weight: 1.4, keepAlways: true, getValue: (c) => (c.appointedDate ? formatDateForPdf(c.appointedDate) : "-") },
     { key: "appointedLocation", title: "Vacancy Institute", minWidth: 28, weight: 2, keepAlways: true, wrap: true, getValue: (c) => c.appointedLocation || c.appointedSchool || c.institution || "-" },
     { key: "compassionReason", title: "Based on", minWidth: 22, weight: 1.8, keepAlways: true, wrap: true, getValue: (c) => c.compassionReason || "-" },
+    { key: "holdReason", title: "Hold Reason", minWidth: 26, weight: 2, keepAlways: true, wrap: true, getValue: (c) => c.holdReason || "-" },
+  ];
+}
+
+function getExitRegisterColumns(schoolType: SchoolType): PdfColumn[] {
+  const baseColumns = [
+    { key: "exitNumber", title: "No.", align: "center" as const, minWidth: 12, weight: 1, keepAlways: true, getValue: (c: any) => c.exitNumber ?? "" },
+    ...getMemberIdColumn(),
+    { key: "name", title: "Name", minWidth: 32, weight: 2.2, keepAlways: true, wrap: true, getValue: (c: any) => c.name || "" },
+    { key: "dateOfBirth", title: "Date of Birth", align: "center" as const, minWidth: 20, weight: 1.5, keepAlways: true, getValue: (c: any) => formatDateForPdf(c.dateOfBirth) },
+  ];
+
+  if (schoolType === "high") {
+    return [
+      ...baseColumns,
+      { key: "yearOfRegistering", title: "Year of Registering", align: "center", minWidth: 18, weight: 1.2, keepAlways: true, getValue: (c) => c.yearOfRegistering ?? "" },
+      { key: "department", title: "Department", minWidth: 20, weight: 1.4, wrap: true, getValue: (c) => c.department || "" },
+      { key: "category", title: "Category", align: "center", minWidth: 18, weight: 1.2, getValue: (c) => c.category || "" },
+      { key: "exitType", title: "Exit Type", minWidth: 24, weight: 1.8, keepAlways: true, wrap: true, getValue: (c) => c.exitType || "" },
+    ];
+  }
+
+  if (schoolType === "elementary") {
+    return [
+      ...baseColumns,
+      { key: "yearOfRegistering", title: "Year of Registering", align: "center", minWidth: 18, weight: 1.2, keepAlways: true, getValue: (c) => c.yearOfRegistering ?? "" },
+      { key: "category", title: "Category", align: "center", minWidth: 18, weight: 1.2, getValue: (c) => c.category || "" },
+      { key: "subject", title: "Subject", minWidth: 18, weight: 1.2, wrap: true, getValue: (c) => c.subject || c.level || "" },
+      { key: "exitType", title: "Exit Type", minWidth: 24, weight: 1.8, keepAlways: true, wrap: true, getValue: (c) => c.exitType || "" },
+    ];
+  }
+
+  return [
+    ...baseColumns,
+    { key: "exitType", title: "Exit Type", minWidth: 24, weight: 1.8, keepAlways: true, wrap: true, getValue: (c) => c.exitType || "" },
   ];
 }
 
@@ -313,7 +374,7 @@ export async function downloadAppointmentsReportPDF(
   schoolType: SchoolType = "high",
   searchQuery = ""
 ) {
-  const onlyAppointments = candidates.filter((c) => c.appointed === true);
+  const reportRows = candidates.filter((c) => c.appointed === true || String(c.holdReason || "").trim());
   const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
   const logoDataUrl = await loadLogoDataUrl();
   const printedAt = new Date().toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" });
@@ -330,8 +391,11 @@ export async function downloadAppointmentsReportPDF(
   let startY = 28;
   doc.setFontSize(9);
   doc.setFont("helvetica", "normal");
+  const appointedCount = reportRows.filter((c) => c.appointed === true).length;
+  const holdCount = reportRows.filter((c) => String(c.holdReason || "").trim()).length;
   const metaLines = [
-    `Total appointments: ${onlyAppointments.length}`,
+    `Appointments: ${appointedCount}`,
+    `Hold entries: ${holdCount}`,
     searchQuery ? `Search: "${searchQuery}"` : "",
   ].filter(Boolean);
 
@@ -342,8 +406,8 @@ export async function downloadAppointmentsReportPDF(
 
   const baseColumns =
     schoolType === "high" ? getHighColumns() : schoolType === "elementary" ? getElementaryColumns() : getClergyColumns();
-  const columns = [...baseColumns, ...getAppointmentColumns()].filter((col) => col.keepAlways || onlyAppointments.some((c) => hasMeaningfulValue(col.getValue?.(c))));
-  const rows = onlyAppointments.map((c) => columns.map((col) => col.getValue?.(c) ?? ""));
+  const columns = [...baseColumns, ...getAppointmentColumns()].filter((col) => col.keepAlways || reportRows.some((c) => hasMeaningfulValue(col.getValue?.(c))));
+  const rows = reportRows.map((c) => columns.map((col) => col.getValue?.(c) ?? ""));
 
   autoTable(doc, {
     head: [columns.map((col) => col.title)],
@@ -359,4 +423,53 @@ export async function downloadAppointmentsReportPDF(
   applyPdfFooterAndWatermark(doc, logoDataUrl, printedAt);
 
   doc.save(`appointments-${schoolType}-${new Date().toISOString().slice(0, 10)}.pdf`);
+}
+
+export async function downloadExitRegisterPDF(
+  candidates: any[],
+  schoolType: SchoolType = "high",
+  searchQuery = ""
+) {
+  const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+  const logoDataUrl = await loadLogoDataUrl();
+  const printedAt = new Date().toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" });
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(16);
+  if (logoDataUrl) doc.addImage(logoDataUrl, "PNG", 10, 8, 15, 15);
+  doc.text("CSI Thoothukudi-Nazareth Diocese", 28, 15);
+
+  doc.setFontSize(11);
+  doc.text("Exit Register", 28, 21);
+
+  let startY = 28;
+  doc.setFontSize(9);
+  doc.setFont("helvetica", "normal");
+  const metaLines = [
+    `Total exited candidates: ${candidates.length}`,
+    searchQuery ? `Search: "${searchQuery}"` : "",
+  ].filter(Boolean);
+
+  metaLines.forEach((line) => {
+    doc.text(line, 10, startY);
+    startY += 4.5;
+  });
+
+  const columns = getExitRegisterColumns(schoolType).filter((col) => col.keepAlways || candidates.some((c) => hasMeaningfulValue(col.getValue?.(c))));
+  const rows = candidates.map((c) => columns.map((col) => col.getValue?.(c) ?? ""));
+
+  autoTable(doc, {
+    head: [columns.map((col) => col.title)],
+    body: rows,
+    startY: startY + 2,
+    theme: "grid",
+    styles: { font: "helvetica", fontSize: 7.2, cellPadding: 1.5 },
+    headStyles: { fillColor: [220, 38, 38], textColor: 255, halign: "center" },
+    columnStyles: buildColumnStyles(doc, columns),
+    margin: { left: 10, right: 10, bottom: 15 },
+  });
+
+  applyPdfFooterAndWatermark(doc, logoDataUrl, printedAt);
+
+  doc.save(`exit-register-${schoolType}-${new Date().toISOString().slice(0, 10)}.pdf`);
 }

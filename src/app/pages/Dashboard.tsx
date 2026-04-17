@@ -211,6 +211,12 @@ function getAppointmentFields(row: Record<string, any>, schoolType: SchoolType) 
   const appointedDate = normalizeText(
     getLooseValue(row, ["appointedDate", "Appointed Date", "Apointed Date", "Date of Appointment", "Appointment Date"])
   );
+  const holdReason = normalizeText(
+    getLooseValue(row, ["holdReason", "Hold Reason", "Hold reason", "HoldReason"])
+  );
+  const exitType = normalizeText(
+    getLooseValue(row, ["exitType", "Exit Type", "Exit type", "ExitType"])
+  );
   const compassionReason = normalizeText(
     getLooseValue(row, [
       "compassionReason",
@@ -255,6 +261,8 @@ function getAppointmentFields(row: Record<string, any>, schoolType: SchoolType) 
     appointed: isYesValue(appointedRaw),
     appointedRaw: normalizeText(appointedRaw),
     appointedDate,
+    holdReason,
+    exitType,
     compassionReason,
     appointedLocation: explicitLocation,
   };
@@ -527,6 +535,14 @@ function buildFilterItems(rows: any[], key: string) {
   return [...new Set(rows.map((r) => normalizeText(r[key])).filter(Boolean))];
 }
 
+function isHoldCandidate(candidate: any) {
+  return normalizeText(candidate.holdReason || "").length > 0;
+}
+
+function isExitedCandidate(candidate: any) {
+  return normalizeText(candidate.exitType || "").length > 0;
+}
+
 function buildStableHashPayload(rows: any[]) {
   return rows.map((r) => ({
     id: r.id,
@@ -557,6 +573,8 @@ function buildStableHashPayload(rows: any[]) {
     appointed: r.appointed ?? false,
     appointedRaw: r.appointedRaw ?? "",
     appointedDate: r.appointedDate ?? "",
+    holdReason: r.holdReason ?? "",
+    exitType: r.exitType ?? "",
     compassionReason: r.compassionReason ?? "",
     appointedLocation: r.appointedLocation ?? "",
   }));
@@ -582,10 +600,12 @@ export function Dashboard() {
   const [downloadingPdf, setDownloadingPdf] = useState(false);
   const [sortingPulse, setSortingPulse] = useState(false);
   const [downloadingReport, setDownloadingReport] = useState(false);
+  const [downloadingExitReport, setDownloadingExitReport] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [lastSyncAttempt, setLastSyncAttempt] = useState<Date | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [showExitRegister, setShowExitRegister] = useState(false);
   const lastDataHashRef = useRef<string>("");
   const availableSchoolTypes = useMemo<SchoolType[]>(() => {
     const list: SchoolType[] = [];
@@ -682,12 +702,22 @@ export function Dashboard() {
     };
   }, [t, highSchoolCandidates.length, elementaryCandidates.length, clergyCandidates.length]);
 
-  const currentCandidates =
+  const currentSheetCandidates =
     schoolType === "high"
       ? highSchoolCandidates
       : schoolType === "elementary"
       ? elementaryCandidates
       : clergyCandidates;
+
+  const currentExitedCandidates = useMemo(
+    () => currentSheetCandidates.filter((candidate) => isExitedCandidate(candidate)),
+    [currentSheetCandidates]
+  );
+
+  const currentCandidates = useMemo(
+    () => currentSheetCandidates.filter((candidate) => !isExitedCandidate(candidate)),
+    [currentSheetCandidates]
+  );
 
   const totalCandidates = highSchoolCandidates.length + elementaryCandidates.length + clergyCandidates.length;
   const readyToShowApp = logoReady && !loading && initialLoadDone && totalCandidates > 0;
@@ -854,23 +884,36 @@ export function Dashboard() {
   const appointmentRows = useMemo(() => {
     if (!showAppointments) return [];
     const rows = filteredCandidates
-      .filter((row) => row.appointed === true)
+      .filter((row) => row.appointed === true || isHoldCandidate(row))
       .map((row) => {
         const appointmentNumber = appointmentRankMap.get(getCandidateKey(row)) ?? null;
         return {
           ...row,
           appointmentNumber,
-          rank: appointmentNumber ?? null,
+          rank: row.appointed ? appointmentNumber ?? null : row.rank ?? null,
+          appointmentStatus: row.appointed ? "Appointed" : "Hold",
         };
       });
 
     return rows.sort((a, b) => {
+      if (a.appointed !== b.appointed) return a.appointed ? -1 : 1;
       const aNum = a.appointmentNumber ?? Number.MAX_SAFE_INTEGER;
       const bNum = b.appointmentNumber ?? Number.MAX_SAFE_INTEGER;
       if (aNum !== bNum) return aNum - bNum;
-      return 0;
+      return Number(a.rank ?? Number.MAX_SAFE_INTEGER) - Number(b.rank ?? Number.MAX_SAFE_INTEGER);
     });
   }, [filteredCandidates, showAppointments, appointmentRankMap]);
+
+  const exitRows = useMemo(() => {
+    const rows = searchQuery.trim()
+      ? searchCandidatesGeneric(currentExitedCandidates, searchQuery)
+      : currentExitedCandidates;
+
+    return rows.map((row, index) => ({
+      ...row,
+      exitNumber: index + 1,
+    }));
+  }, [currentExitedCandidates, searchQuery]);
 
   const totalPages = Math.max(1, Math.ceil(filteredCandidates.length / PAGE_SIZE));
 
@@ -922,6 +965,16 @@ export function Dashboard() {
       await mod.downloadAppointmentsReportPDF(appointmentRows, schoolType, searchQuery);
     } finally {
       setDownloadingReport(false);
+    }
+  };
+
+  const handleDownloadExitRegister = async () => {
+    try {
+      setDownloadingExitReport(true);
+      const mod = await import("../utils/pdfUtils");
+      await mod.downloadExitRegisterPDF(exitRows, schoolType, searchQuery);
+    } finally {
+      setDownloadingExitReport(false);
     }
   };
 
@@ -1040,7 +1093,7 @@ export function Dashboard() {
             <p className="text-gray-600 mt-1">
               {error
                 ? error
-                : currentCandidates.length === 0
+                : currentSheetCandidates.length === 0
                 ? t(
                     "No data loaded. Please check your sync script and Google Sheet URL.",
                     "தரவு ஏற்றப்படவில்லை. உங்கள் sync script மற்றும் Google Sheet URL-ஐ சரிபார்க்கவும்."
@@ -1110,6 +1163,90 @@ export function Dashboard() {
                 onRowDoubleClick={handleCandidateDoubleClick}
                 showAppointments={showAppointments}
               />
+              <div className="mt-4 flex justify-end gap-2">
+                <Button
+                  variant="destructive"
+                  onClick={() => setShowExitRegister((prev) => !prev)}
+                  disabled={currentExitedCandidates.length === 0}
+                >
+                  {showExitRegister
+                    ? t("Hide Exit Register", "வெளியேற்ற பதிவை மறை")
+                    : t("Exit Register", "வெளியேற்ற பதிவு")}
+                </Button>
+                {showExitRegister ? (
+                  <Button
+                    variant="outline"
+                    onClick={handleDownloadExitRegister}
+                    disabled={downloadingExitReport || exitRows.length === 0}
+                  >
+                    {downloadingExitReport
+                      ? t("Preparing Exit Register...", "வெளியேற்ற பதிவு தயாராகிறது...")
+                      : t("Download Exit Register", "வெளியேற்ற பதிவை பதிவிறக்கு")}
+                  </Button>
+                ) : null}
+              </div>
+              {showExitRegister ? (
+                <div className="mt-6">
+                  <div className="mb-3 flex items-center justify-between gap-3">
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {t("Exit Register", "வெளியேற்ற பதிவு")}
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      {t(
+                        `Showing ${exitRows.length} exited candidates`,
+                        `${exitRows.length} வெளியேற்றப்பட்ட பதிவுகள் காட்டப்படுகிறது`
+                      )}
+                    </p>
+                  </div>
+                  <div className="glass-panel rounded-lg border border-red-200 shadow-sm overflow-x-auto">
+                    <table className="min-w-full text-sm">
+                      <thead>
+                        <tr className="bg-red-50 text-left">
+                          <th className="px-4 py-3 font-semibold">{t("No.", "எண்")}</th>
+                          <th className="px-4 py-3 font-semibold">{t("Member ID", "உறுப்பினர் ஐடி")}</th>
+                          <th className="px-4 py-3 font-semibold">{t("Name", "பெயர்")}</th>
+                          <th className="px-4 py-3 font-semibold">{t("Date of Birth", "பிறந்த தேதி")}</th>
+                          {schoolType !== "clergy" ? <th className="px-4 py-3 font-semibold">{t("Year of Registering", "பதிவு ஆண்டு")}</th> : null}
+                          {schoolType === "high" ? <th className="px-4 py-3 font-semibold">{t("Department", "துறை")}</th> : null}
+                          {schoolType !== "clergy" ? <th className="px-4 py-3 font-semibold">{t("Category", "வகை")}</th> : null}
+                          {schoolType === "elementary" ? <th className="px-4 py-3 font-semibold">{t("Subject", "பாடம்")}</th> : null}
+                          <th className="px-4 py-3 font-semibold">{t("Exit Type", "வெளியேற்ற வகை")}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {exitRows.length === 0 ? (
+                          <tr>
+                            <td
+                              className="px-4 py-8 text-center text-gray-500"
+                              colSpan={schoolType === "high" ? 8 : schoolType === "elementary" ? 8 : 5}
+                            >
+                              {t("No exited candidates found.", "வெளியேற்றப்பட்ட பதிவுகள் இல்லை.")}
+                            </td>
+                          </tr>
+                        ) : (
+                          exitRows.map((candidate) => (
+                            <tr key={`exit-${candidate.id || candidate.memberId || candidate.name}`} className="border-t border-red-100">
+                              <td className="px-4 py-3">{candidate.exitNumber}</td>
+                              <td className="px-4 py-3">{candidate.memberId || ""}</td>
+                              <td className="px-4 py-3 font-medium text-gray-900">{candidate.name || ""}</td>
+                              <td className="px-4 py-3">
+                                {candidate.dateOfBirth instanceof Date
+                                  ? candidate.dateOfBirth.toLocaleDateString("en-GB")
+                                  : String(candidate.dateOfBirth || "")}
+                              </td>
+                              {schoolType !== "clergy" ? <td className="px-4 py-3">{candidate.yearOfRegistering ?? ""}</td> : null}
+                              {schoolType === "high" ? <td className="px-4 py-3">{candidate.department || ""}</td> : null}
+                              {schoolType !== "clergy" ? <td className="px-4 py-3">{candidate.category || ""}</td> : null}
+                              {schoolType === "elementary" ? <td className="px-4 py-3">{candidate.subject || candidate.level || ""}</td> : null}
+                              <td className="px-4 py-3 font-medium text-red-700">{candidate.exitType || ""}</td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ) : null}
               {filteredCandidates.length > PAGE_SIZE && (
                 <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
                   <p className="text-sm text-gray-600">

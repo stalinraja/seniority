@@ -84,7 +84,7 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
   const longPressFiredRef = useRef(false);
   const lastTapRef = useRef(0);
 
-  const appointmentColSpan = showAppointments ? 3 : 0;
+  const appointmentColSpan = showAppointments ? 5 : 0;
   const highColSpan = 11 + appointmentColSpan + (SHOW_MEMBER_ID ? 1 : 0) + (SHOW_ADDRESS ? 1 : 0) + (SHOW_PINCODE ? 1 : 0);
   const elementaryColSpan = 11 + appointmentColSpan + (SHOW_MEMBER_ID ? 1 : 0);
   const clergyColSpan = 7 + appointmentColSpan + (SHOW_MEMBER_ID ? 1 : 0);
@@ -244,9 +244,11 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
               <TableHead className="font-semibold">{t("Council", "கவுன்சில்")}</TableHead>
               {showAppointments ? (
               <>
+                <TableHead className="font-semibold">{t("Status", "நிலை")}</TableHead>
                 <TableHead className="font-semibold">{t("Appointment Date", "நியமன தேதி")}</TableHead>
                 <TableHead className="font-semibold">{t("Vacancy Institute", "காலியிடம் நிறுவனம்")}</TableHead>
                 <TableHead className="font-semibold">{t("Based on", "அடிப்படையில்")}</TableHead>
+                <TableHead className="font-semibold">{t("Hold Reason", "நிறுத்த காரணம்")}</TableHead>
               </>
             ) : null}
             </>
@@ -262,9 +264,11 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
               <TableHead className="font-semibold">{t("Home Pastorate", "சொந்த பாஸ்டரேட்")}</TableHead>
               {showAppointments ? (
               <>
+                <TableHead className="font-semibold">{t("Status", "நிலை")}</TableHead>
                 <TableHead className="font-semibold">{t("Appointment Date", "நியமன தேதி")}</TableHead>
                 <TableHead className="font-semibold">{t("Vacancy Institute", "காலியிடம் நிறுவனம்")}</TableHead>
                 <TableHead className="font-semibold">{t("Based on", "அடிப்படையில்")}</TableHead>
+                <TableHead className="font-semibold">{t("Hold Reason", "நிறுத்த காரணம்")}</TableHead>
               </>
             ) : null}
             </>
@@ -284,9 +288,11 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
               <TableHead className="font-semibold">{t("Council", "கவுன்சில்")}</TableHead>
               {showAppointments ? (
               <>
+                <TableHead className="font-semibold">{t("Status", "நிலை")}</TableHead>
                 <TableHead className="font-semibold">{t("Appointment Date", "நியமன தேதி")}</TableHead>
                 <TableHead className="font-semibold">{t("Vacancy Institute", "காலியிடம் நிறுவனம்")}</TableHead>
                 <TableHead className="font-semibold">{t("Based on", "அடிப்படையில்")}</TableHead>
+                <TableHead className="font-semibold">{t("Hold Reason", "நிறுத்த காரணம்")}</TableHead>
               </>
             ) : null}
             </>
@@ -307,6 +313,7 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
             ) : (
               rows.map((candidate, index) => {
                 const isAppointed = candidate.appointed === true;
+                const isOnHold = Boolean(String(candidate.holdReason || "").trim());
                 const rankValue = isAppointed && !showAppointments ? "" : candidate.rank;
                 const appointmentNumber = showAppointments ? candidate.appointmentNumber : null;
                 const appointedBadge = showAppointments && isAppointed && appointmentNumber ? (
@@ -318,7 +325,12 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                   candidate.tetQualified === true ||
                   (Number.isFinite(candidate.tetCompletion) && Number(candidate.tetCompletion) >= ELEMENTARY_TET_PASS_MARK);
                 const elementaryTetLabel = elementaryTetPass ? t("Pass", "தேர்ச்சி") : t("No", "இல்லை");
-                const rowClassName = `optimized-row ${showAppointments && isAppointed ? "bg-emerald-50/70 dark:bg-emerald-900/20 hover:bg-emerald-100/80 dark:hover:bg-emerald-900/30" : "hover:bg-slate-100/70 dark:hover:bg-slate-800/70"} ${onRowDoubleClick ? "cursor-pointer" : ""}`;
+                const rowTone = showAppointments && isAppointed
+                  ? "bg-emerald-50/70 dark:bg-emerald-900/20 hover:bg-emerald-100/80 dark:hover:bg-emerald-900/30"
+                  : showAppointments && isOnHold
+                  ? "bg-orange-50/80 dark:bg-orange-900/20 hover:bg-orange-100/80 dark:hover:bg-orange-900/30"
+                  : "hover:bg-slate-100/70 dark:hover:bg-slate-800/70";
+                const rowClassName = `optimized-row ${rowTone} ${onRowDoubleClick ? "cursor-pointer" : ""}`;
                 return (
                   <TableRow
                   key={[
@@ -405,9 +417,18 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                       <TableCell className="text-gray-700 table-responsive-cell">{candidate.council || "-"}</TableCell>
                       {showAppointments ? (
                       <>
+                        <TableCell>
+                          <Badge
+                            variant="outline"
+                            className={isAppointed ? "bg-emerald-50 text-emerald-700 border-emerald-200" : isOnHold ? "bg-orange-50 text-orange-700 border-orange-200" : "bg-slate-50 text-slate-700 border-slate-200"}
+                          >
+                            {isAppointed ? t("Appointed", "நியமனம்") : isOnHold ? t("Hold", "நிறுத்தம்") : "-"}
+                          </Badge>
+                        </TableCell>
                         <TableCell className="text-gray-700">{candidate.appointedDate ? formatDateOnly(candidate.appointedDate) : "-"}</TableCell>
                         <TableCell className="text-gray-700 table-responsive-cell">{candidate.appointedLocation || candidate.appointedSchool || candidate.institution || "-"}</TableCell>
                         <TableCell className="text-gray-700">{candidate.compassionReason || "-"}</TableCell>
+                        <TableCell className="text-gray-700 table-responsive-cell">{candidate.holdReason || "-"}</TableCell>
                       </>
                     ) : null}
                     </>
@@ -436,9 +457,18 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                       <TableCell className="text-gray-700 table-responsive-cell">{candidate.homePastorate || ""}</TableCell>
                       {showAppointments ? (
                       <>
+                        <TableCell>
+                          <Badge
+                            variant="outline"
+                            className={isAppointed ? "bg-emerald-50 text-emerald-700 border-emerald-200" : isOnHold ? "bg-orange-50 text-orange-700 border-orange-200" : "bg-slate-50 text-slate-700 border-slate-200"}
+                          >
+                            {isAppointed ? t("Appointed", "நியமனம்") : isOnHold ? t("Hold", "நிறுத்தம்") : "-"}
+                          </Badge>
+                        </TableCell>
                         <TableCell className="text-gray-700">{candidate.appointedDate ? formatDateOnly(candidate.appointedDate) : "-"}</TableCell>
                         <TableCell className="text-gray-700 table-responsive-cell">{candidate.appointedLocation || candidate.appointedSchool || candidate.institution || "-"}</TableCell>
                         <TableCell className="text-gray-700">{candidate.compassionReason || "-"}</TableCell>
+                        <TableCell className="text-gray-700 table-responsive-cell">{candidate.holdReason || "-"}</TableCell>
                       </>
                     ) : null}
                     </>
@@ -485,9 +515,18 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                       <TableCell className="text-gray-700 table-responsive-cell">{candidate.council || ""}</TableCell>
                       {showAppointments ? (
                       <>
+                        <TableCell>
+                          <Badge
+                            variant="outline"
+                            className={isAppointed ? "bg-emerald-50 text-emerald-700 border-emerald-200" : isOnHold ? "bg-orange-50 text-orange-700 border-orange-200" : "bg-slate-50 text-slate-700 border-slate-200"}
+                          >
+                            {isAppointed ? t("Appointed", "நியமனம்") : isOnHold ? t("Hold", "நிறுத்தம்") : "-"}
+                          </Badge>
+                        </TableCell>
                         <TableCell className="text-gray-700">{candidate.appointedDate ? formatDateOnly(candidate.appointedDate) : "-"}</TableCell>
                         <TableCell className="text-gray-700 table-responsive-cell">{candidate.appointedLocation || candidate.appointedSchool || candidate.institution || "-"}</TableCell>
                         <TableCell className="text-gray-700">{candidate.compassionReason || "-"}</TableCell>
+                        <TableCell className="text-gray-700 table-responsive-cell">{candidate.holdReason || "-"}</TableCell>
                       </>
                     ) : null}
                     </>
