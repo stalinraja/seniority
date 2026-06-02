@@ -246,7 +246,7 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
               <>
                 <TableHead className="font-semibold">{t("Status", "நிலை")}</TableHead>
                 <TableHead className="font-semibold">{t("Appointment Date", "நியமன தேதி")}</TableHead>
-                <TableHead className="font-semibold">{t("Vacancy Institute", "காலியிடம் நிறுவனம்")}</TableHead>
+                <TableHead className="font-semibold">{t("Institute", "நிறுவனம்")}</TableHead>
                 <TableHead className="font-semibold">{t("Based on", "அடிப்படையில்")}</TableHead>
                 <TableHead className="font-semibold">{t("Hold Reason", "நிறுத்த காரணம்")}</TableHead>
               </>
@@ -266,7 +266,7 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
               <>
                 <TableHead className="font-semibold">{t("Status", "நிலை")}</TableHead>
                 <TableHead className="font-semibold">{t("Appointment Date", "நியமன தேதி")}</TableHead>
-                <TableHead className="font-semibold">{t("Vacancy Institute", "காலியிடம் நிறுவனம்")}</TableHead>
+                <TableHead className="font-semibold">{t("Institute", "நிறுவனம்")}</TableHead>
                 <TableHead className="font-semibold">{t("Based on", "அடிப்படையில்")}</TableHead>
                 <TableHead className="font-semibold">{t("Hold Reason", "நிறுத்த காரணம்")}</TableHead>
               </>
@@ -290,7 +290,7 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
               <>
                 <TableHead className="font-semibold">{t("Status", "நிலை")}</TableHead>
                 <TableHead className="font-semibold">{t("Appointment Date", "நியமன தேதி")}</TableHead>
-                <TableHead className="font-semibold">{t("Vacancy Institute", "காலியிடம் நிறுவனம்")}</TableHead>
+                <TableHead className="font-semibold">{t("Institute", "நிறுவனம்")}</TableHead>
                 <TableHead className="font-semibold">{t("Based on", "அடிப்படையில்")}</TableHead>
                 <TableHead className="font-semibold">{t("Hold Reason", "நிறுத்த காரணம்")}</TableHead>
               </>
@@ -426,7 +426,7 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                           </Badge>
                         </TableCell>
                         <TableCell className="text-gray-700">{candidate.appointedDate ? formatDateOnly(candidate.appointedDate) : "-"}</TableCell>
-                        <TableCell className="text-gray-700 table-responsive-cell">{candidate.appointedLocation || candidate.appointedSchool || candidate.institution || "-"}</TableCell>
+                        <TableCell className="text-gray-700 table-responsive-cell">{candidate.appointedLocation || candidate.institution || "-"}</TableCell>
                         <TableCell className="text-gray-700">{candidate.compassionReason || "-"}</TableCell>
                         <TableCell className="text-gray-700 table-responsive-cell">{candidate.holdReason || "-"}</TableCell>
                       </>
@@ -466,7 +466,7 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                           </Badge>
                         </TableCell>
                         <TableCell className="text-gray-700">{candidate.appointedDate ? formatDateOnly(candidate.appointedDate) : "-"}</TableCell>
-                        <TableCell className="text-gray-700 table-responsive-cell">{candidate.appointedLocation || candidate.appointedSchool || candidate.institution || "-"}</TableCell>
+                        <TableCell className="text-gray-700 table-responsive-cell">{candidate.appointedLocation || "-"}</TableCell>
                         <TableCell className="text-gray-700">{candidate.compassionReason || "-"}</TableCell>
                         <TableCell className="text-gray-700 table-responsive-cell">{candidate.holdReason || "-"}</TableCell>
                       </>
@@ -524,7 +524,7 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                           </Badge>
                         </TableCell>
                         <TableCell className="text-gray-700">{candidate.appointedDate ? formatDateOnly(candidate.appointedDate) : "-"}</TableCell>
-                        <TableCell className="text-gray-700 table-responsive-cell">{candidate.appointedLocation || candidate.appointedSchool || candidate.institution || "-"}</TableCell>
+                        <TableCell className="text-gray-700 table-responsive-cell">{candidate.appointedLocation || "-"}</TableCell>
                         <TableCell className="text-gray-700">{candidate.compassionReason || "-"}</TableCell>
                         <TableCell className="text-gray-700 table-responsive-cell">{candidate.holdReason || "-"}</TableCell>
                       </>

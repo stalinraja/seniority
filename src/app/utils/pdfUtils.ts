@@ -193,7 +193,7 @@ function getAppointmentColumns(): PdfColumn[] {
   return [
     { key: "appointmentStatus", title: "Status", align: "center", minWidth: 16, weight: 1.2, keepAlways: true, getValue: (c) => c.appointmentStatus || (c.appointed ? "Appointed" : c.holdReason ? "Hold" : "-") },
     { key: "appointedDate", title: "Appointment Date", align: "center", minWidth: 20, weight: 1.4, keepAlways: true, getValue: (c) => (c.appointedDate ? formatDateForPdf(c.appointedDate) : "-") },
-    { key: "appointedLocation", title: "Vacancy Institute", minWidth: 28, weight: 2, keepAlways: true, wrap: true, getValue: (c) => c.appointedLocation || c.appointedSchool || c.institution || "-" },
+    { key: "appointedLocation", title: "Institute", minWidth: 28, weight: 2, keepAlways: true, wrap: true, getValue: (c) => c.appointedLocation || c.institution || "-" },
     { key: "compassionReason", title: "Based on", minWidth: 22, weight: 1.8, keepAlways: true, wrap: true, getValue: (c) => c.compassionReason || "-" },
     { key: "holdReason", title: "Hold Reason", minWidth: 26, weight: 2, keepAlways: true, wrap: true, getValue: (c) => c.holdReason || "-" },
   ];

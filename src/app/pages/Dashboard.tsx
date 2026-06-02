@@ -241,15 +241,19 @@ function getAppointmentFields(row: Record<string, any>, schoolType: SchoolType) 
           "Home Pastorate",
           "Home-Pastorate",
         ])
+      : schoolType === "elementary"
+      ? getLooseValue(row, [
+          "Vacancy Institute",
+          "Vacancy Institution",
+          "Vacncy institute",
+          "Vacncy Institute",
+        ])
       : getLooseValue(row, [
           "appointedSchool",
           "Appointed School",
           "Appointed institute",
           "Appointed Institute",
           "Appointed Location",
-          "School",
-          "Institute",
-          "Institution",
           "Vacancy Institute",
           "Vacancy Institution",
           "Vacncy institute",
@@ -382,11 +386,6 @@ function mapElementarySchool(rows: any[]) {
         tetQualified,
         ...(() => {
           const appointment = getAppointmentFields(c, "elementary");
-          if (!appointment.appointedLocation) {
-            appointment.appointedLocation = normalizeText(
-              c.school || c.School || c.pastorate || c.Pastorate || ""
-            );
-          }
           return appointment;
         })(),
       };
@@ -1198,19 +1197,19 @@ export function Dashboard() {
                       )}
                     </p>
                   </div>
-                  <div className="glass-panel rounded-lg border border-red-200 shadow-sm overflow-x-auto">
-                    <table className="min-w-full text-sm">
+                  <div className="glass-panel rounded-lg border border-red-200 shadow-sm overflow-x-auto overscroll-x-contain touch-pan-x [-webkit-overflow-scrolling:touch]">
+                    <table className={schoolType === "clergy" ? "min-w-[760px] text-sm" : "min-w-[1180px] text-sm"}>
                       <thead>
                         <tr className="bg-red-50 text-left">
-                          <th className="px-4 py-3 font-semibold">{t("No.", "எண்")}</th>
-                          <th className="px-4 py-3 font-semibold">{t("Member ID", "உறுப்பினர் ஐடி")}</th>
-                          <th className="px-4 py-3 font-semibold">{t("Name", "பெயர்")}</th>
-                          <th className="px-4 py-3 font-semibold">{t("Date of Birth", "பிறந்த தேதி")}</th>
-                          {schoolType !== "clergy" ? <th className="px-4 py-3 font-semibold">{t("Year of Registering", "பதிவு ஆண்டு")}</th> : null}
-                          {schoolType === "high" ? <th className="px-4 py-3 font-semibold">{t("Department", "துறை")}</th> : null}
-                          {schoolType !== "clergy" ? <th className="px-4 py-3 font-semibold">{t("Category", "வகை")}</th> : null}
-                          {schoolType === "elementary" ? <th className="px-4 py-3 font-semibold">{t("Subject", "பாடம்")}</th> : null}
-                          <th className="px-4 py-3 font-semibold">{t("Exit Type", "வெளியேற்ற வகை")}</th>
+                          <th className="px-4 py-3 font-semibold whitespace-nowrap">{t("No.", "எண்")}</th>
+                          <th className="px-4 py-3 font-semibold whitespace-nowrap">{t("Member ID", "உறுப்பினர் ஐடி")}</th>
+                          <th className="px-4 py-3 font-semibold whitespace-nowrap">{t("Name", "பெயர்")}</th>
+                          <th className="px-4 py-3 font-semibold whitespace-nowrap">{t("Date of Birth", "பிறந்த தேதி")}</th>
+                          {schoolType !== "clergy" ? <th className="px-4 py-3 font-semibold whitespace-nowrap">{t("Year of Registering", "பதிவு ஆண்டு")}</th> : null}
+                          {schoolType === "high" ? <th className="px-4 py-3 font-semibold whitespace-nowrap">{t("Department", "துறை")}</th> : null}
+                          {schoolType !== "clergy" ? <th className="px-4 py-3 font-semibold whitespace-nowrap">{t("Category", "வகை")}</th> : null}
+                          {schoolType === "elementary" ? <th className="px-4 py-3 font-semibold whitespace-nowrap">{t("Subject", "பாடம்")}</th> : null}
+                          <th className="px-4 py-3 font-semibold whitespace-nowrap">{t("Exit Type", "வெளியேற்ற வகை")}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1226,19 +1225,19 @@ export function Dashboard() {
                         ) : (
                           exitRows.map((candidate) => (
                             <tr key={`exit-${candidate.id || candidate.memberId || candidate.name}`} className="border-t border-red-100">
-                              <td className="px-4 py-3">{candidate.exitNumber}</td>
-                              <td className="px-4 py-3">{candidate.memberId || ""}</td>
-                              <td className="px-4 py-3 font-medium text-gray-900">{candidate.name || ""}</td>
-                              <td className="px-4 py-3">
+                              <td className="px-4 py-3 whitespace-nowrap">{candidate.exitNumber}</td>
+                              <td className="px-4 py-3 whitespace-nowrap">{candidate.memberId || ""}</td>
+                              <td className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap">{candidate.name || ""}</td>
+                              <td className="px-4 py-3 whitespace-nowrap">
                                 {candidate.dateOfBirth instanceof Date
                                   ? candidate.dateOfBirth.toLocaleDateString("en-GB")
                                   : String(candidate.dateOfBirth || "")}
                               </td>
-                              {schoolType !== "clergy" ? <td className="px-4 py-3">{candidate.yearOfRegistering ?? ""}</td> : null}
-                              {schoolType === "high" ? <td className="px-4 py-3">{candidate.department || ""}</td> : null}
-                              {schoolType !== "clergy" ? <td className="px-4 py-3">{candidate.category || ""}</td> : null}
-                              {schoolType === "elementary" ? <td className="px-4 py-3">{candidate.subject || candidate.level || ""}</td> : null}
-                              <td className="px-4 py-3 font-medium text-red-700">{candidate.exitType || ""}</td>
+                              {schoolType !== "clergy" ? <td className="px-4 py-3 whitespace-nowrap">{candidate.yearOfRegistering ?? ""}</td> : null}
+                              {schoolType === "high" ? <td className="px-4 py-3 whitespace-nowrap">{candidate.department || ""}</td> : null}
+                              {schoolType !== "clergy" ? <td className="px-4 py-3 whitespace-nowrap">{candidate.category || ""}</td> : null}
+                              {schoolType === "elementary" ? <td className="px-4 py-3 whitespace-nowrap">{candidate.subject || candidate.level || ""}</td> : null}
+                              <td className="px-4 py-3 font-medium text-red-700 whitespace-nowrap">{candidate.exitType || ""}</td>
                             </tr>
                           ))
                         )}

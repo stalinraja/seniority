@@ -90,7 +90,7 @@ export function AppointmentReport({
               <TableHead>{t("Appointed", "நியமிக்கப்பட்டது")}</TableHead>
               <TableHead>{t("Appointed Date", "நியமன தேதி")}</TableHead>
               <TableHead>{t("Compassion Based Reason", "இரக்க அடிப்படை காரணம்")}</TableHead>
-              <TableHead>{t("Appointed Location", "நியமன இடம்")}</TableHead>
+              <TableHead>{t("Institute", "நிறுவனம்")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
