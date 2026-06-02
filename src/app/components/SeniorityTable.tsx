@@ -426,7 +426,7 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                           </Badge>
                         </TableCell>
                         <TableCell className="text-gray-700">{candidate.appointedDate ? formatDateOnly(candidate.appointedDate) : "-"}</TableCell>
-                        <TableCell className="text-gray-700 table-responsive-cell">{candidate.appointedLocation || candidate.institution || "-"}</TableCell>
+                        <TableCell className="text-gray-700 table-responsive-cell">{isAppointed ? candidate.appointedLocation || "-" : "-"}</TableCell>
                         <TableCell className="text-gray-700">{candidate.compassionReason || "-"}</TableCell>
                         <TableCell className="text-gray-700 table-responsive-cell">{candidate.holdReason || "-"}</TableCell>
                       </>
@@ -466,7 +466,7 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                           </Badge>
                         </TableCell>
                         <TableCell className="text-gray-700">{candidate.appointedDate ? formatDateOnly(candidate.appointedDate) : "-"}</TableCell>
-                        <TableCell className="text-gray-700 table-responsive-cell">{candidate.appointedLocation || "-"}</TableCell>
+                        <TableCell className="text-gray-700 table-responsive-cell">{isAppointed ? candidate.appointedLocation || "-" : "-"}</TableCell>
                         <TableCell className="text-gray-700">{candidate.compassionReason || "-"}</TableCell>
                         <TableCell className="text-gray-700 table-responsive-cell">{candidate.holdReason || "-"}</TableCell>
                       </>
@@ -524,7 +524,7 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                           </Badge>
                         </TableCell>
                         <TableCell className="text-gray-700">{candidate.appointedDate ? formatDateOnly(candidate.appointedDate) : "-"}</TableCell>
-                        <TableCell className="text-gray-700 table-responsive-cell">{candidate.appointedLocation || "-"}</TableCell>
+                        <TableCell className="text-gray-700 table-responsive-cell">{isAppointed ? candidate.appointedLocation || "-" : "-"}</TableCell>
                         <TableCell className="text-gray-700">{candidate.compassionReason || "-"}</TableCell>
                         <TableCell className="text-gray-700 table-responsive-cell">{candidate.holdReason || "-"}</TableCell>
                       </>

@@ -148,7 +148,7 @@ export function AppointmentReport({
                   <TableCell>{row.appointed ? "Yes" : "No"}</TableCell>
                   <TableCell>{row.appointedDate || "-"}</TableCell>
                   <TableCell>{row.compassionReason || "-"}</TableCell>
-                  <TableCell>{row.appointedLocation || "-"}</TableCell>
+                  <TableCell>{row.appointed ? row.appointedLocation || "-" : "-"}</TableCell>
                 </TableRow>
               ))
             )}
