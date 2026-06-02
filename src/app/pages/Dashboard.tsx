@@ -1207,9 +1207,14 @@ export function Dashboard() {
                       )}
                     </p>
                   </div>
-                  <div className="w-full min-w-0 max-w-[calc(100vw-2rem)] sm:max-w-full">
-                    <div className="glass-panel block w-full max-w-full rounded-lg border border-red-200 shadow-sm overflow-x-scroll overscroll-x-contain touch-pan-x [-webkit-overflow-scrolling:touch] pb-2">
-                      <table className={schoolType === "clergy" ? "w-[760px] min-w-[760px] table-fixed text-sm" : "w-[1180px] min-w-[1180px] table-fixed text-sm"}>
+                  <div className="w-full min-w-0 max-w-full">
+                    <div
+                      className="exit-register-scroll"
+                      role="region"
+                      aria-label={t("Exit Register table", "வெளியேற்ற பதிவு அட்டவணை")}
+                      tabIndex={0}
+                    >
+                      <table className={schoolType === "clergy" ? "exit-register-table exit-register-table--clergy" : "exit-register-table"}>
                         <thead>
                           <tr className="bg-red-50 text-left">
                             <th className="px-4 py-3 font-semibold whitespace-nowrap">{t("No.", "எண்")}</th>
