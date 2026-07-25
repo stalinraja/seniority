@@ -19,9 +19,6 @@ import { HIGH_SCHOOL_SECTION_ENABLED, MIDDLE_SCHOOL_SECTION_ENABLED } from "../c
 
 ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
-const DEFAULT_SCHOOL_VACANCY_CSV_URL =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQizNtmY220qkpPceFvfQk_M241lqzKs3K3ffxYTng5cLslZK_Xm6LlkQelDWdXQH2Plo_AmYwmnBew/pub?gid=1387124453&single=true&output=csv";
-
 function parseCSVLine(line: string) {
   const values: string[] = [];
   let current = "";
@@ -76,29 +73,13 @@ function appendNoCacheParam(url: string) {
 }
 
 async function fetchSchoolVacancyRows(): Promise<any[]> {
-  const configuredUrl =
-    import.meta.env.VITE_SCHOOL_VACANCY_DATA_URL ||
-    import.meta.env.VITE_SCHOOL_VACANCY_CSV_URL ||
-    DEFAULT_SCHOOL_VACANCY_CSV_URL;
-
-  const urlToFetch = configuredUrl || "/seniority-data.json";
-  const response = await fetch(appendNoCacheParam(urlToFetch), { cache: "no-store" });
+  const response = await fetch("/api/seniority-data", { cache: "no-store", credentials: "include" });
   if (!response.ok) {
     throw new Error("Failed to load school vacancy data");
   }
 
-  const contentType = String(response.headers.get("content-type") || "").toLowerCase();
-  const raw = await response.text();
-  const isJson = contentType.includes("application/json") || urlToFetch.toLowerCase().includes(".json");
-  if (isJson) {
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed?.schoolVacancies) ? parsed.schoolVacancies : Array.isArray(parsed) ? parsed : [];
-  }
-
-  if (/<html/i.test(raw) || contentType.includes("text/html")) {
-    throw new Error("Expected CSV/JSON but got HTML");
-  }
-  return parseCSV(raw);
+  const payload = await response.json();
+  return Array.isArray(payload?.schoolVacancies) ? payload.schoolVacancies : [];
 }
 
 const FORM_FILES = {
