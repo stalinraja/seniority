@@ -366,6 +366,7 @@ function getAppointmentFields(row: Record<string, any>, schoolType: SchoolType) 
     appointedDate,
     holdReason,
     compassionReason,
+    exitType,
     appointedLocation: explicitLocation,
   };
 }
