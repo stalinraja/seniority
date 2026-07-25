@@ -36,7 +36,9 @@ const ELEMENTARY_SCHOOL_CSV_URL =
     ? buildCsvUrlFromPublishedUrl(GOOGLE_SHEET_PUB_URL, ELEMENTARY_SCHOOL_GID)
     : "");
 const SCHOOL_VACANCY_CSV_URL = process.env.SCHOOL_VACANCY_CSV_URL || "";
-const CHANGE_LOG_CSV_URL = process.env.CHANGE_LOG_CSV_URL || "";
+const DEFAULT_CHANGE_LOG_CSV_URL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQizNtmY220qkpPceFvfQk_M241lqzKs3K3ffxYTng5cLslZK_Xm6LlkQelDWdXQH2Plo_AmYwmnBew/pub?gid=246990650&single=true&output=csv";
+const CHANGE_LOG_CSV_URL = process.env.CHANGE_LOG_CSV_URL || DEFAULT_CHANGE_LOG_CSV_URL;
 const OUTPUT_PATH = "./public/seniority-data.json";
 const ONE_MINUTE_MS = 60 * 1000;
 const WATCH_MODE = process.argv.includes("--watch");

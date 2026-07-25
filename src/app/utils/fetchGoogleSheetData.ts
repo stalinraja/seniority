@@ -12,6 +12,8 @@ const DEFAULT_ELEMENTARY_SCHOOL_CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vQizNtmY220qkpPceFvfQk_M241lqzKs3K3ffxYTng5cLslZK_Xm6LlkQelDWdXQH2Plo_AmYwmnBew/pub?gid=882704265&single=true&output=csv";
 const DEFAULT_CLERGY_ORDINATION_CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vQizNtmY220qkpPceFvfQk_M241lqzKs3K3ffxYTng5cLslZK_Xm6LlkQelDWdXQH2Plo_AmYwmnBew/pub?gid=271291357&single=true&output=csv";
+const DEFAULT_CHANGE_LOG_CSV_URL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQizNtmY220qkpPceFvfQk_M241lqzKs3K3ffxYTng5cLslZK_Xm6LlkQelDWdXQH2Plo_AmYwmnBew/pub?gid=246990650&single=true&output=csv";
 
 function parseCSV(text: string) {
   const normalized = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
@@ -135,7 +137,7 @@ function getConfiguredUrls() {
   const changeLogUrl =
     import.meta.env.VITE_CHANGE_LOG_DATA_URL ||
     import.meta.env.VITE_CHANGE_LOG_CSV_URL ||
-    "";
+    DEFAULT_CHANGE_LOG_CSV_URL;
 
   return { highUrl, elementaryUrl, clergyUrl, changeLogUrl };
 }
