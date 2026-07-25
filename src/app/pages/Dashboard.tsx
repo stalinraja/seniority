@@ -365,7 +365,6 @@ function getAppointmentFields(row: Record<string, any>, schoolType: SchoolType) 
     appointedRaw: normalizeText(appointedRaw),
     appointedDate,
     holdReason,
-    exitType,
     compassionReason,
     appointedLocation: explicitLocation,
   };
@@ -375,53 +374,36 @@ function mapHighSchool(rows: any[]) {
   return rows
     .map((c: any, rowIndex: number) => {
       const dateOfBirth = parseDate(c.dateOfBirth || c.DateOfBirth || c["Date of Birth"]);
-      const yearOfRegistering = toNumber(
-        c.yearOfRegistering || c.YearOfRegistering || c["Year of Registering"]
-      );
-      const normalizedName =
-        c.name ||
-        c.Name ||
-        c["Full Name"] ||
-        c["Candidate Name"] ||
-        c["NAME"] ||
-        "Unnamed";
+      const yearOfPassing = toNumber(c.yearOfPassing || c.YearOfPassing || c["Year of Passing"]);
+      const yearOfRegistering = toNumber(c.yearOfRegistering || c.YearOfRegistering || c["Year of Registering"]);
+      const tetRaw = c.tetCompletion || c["TET Completion"] || c["TET %"] || c["TET Qualified"] || "";
+      const tetCompletion = Number(String(tetRaw || "").replace("%", "").trim());
+      const tetQualified = Number.isFinite(tetCompletion) ? tetCompletion >= HIGH_SCHOOL_TET_PASS_MARK : /pass|yes|qualified|true/i.test(String(tetRaw || ""));
+
       const fallbackId = [
-        c.memberId || c["Member ID"] || c["Member Id"] || "",
-        normalizedName,
-        c.dateOfBirth || c.DateOfBirth || c["Date of Birth"] || "",
-        c.yearOfRegistering || c.YearOfRegistering || c["Year of Registering"] || "",
-        c.department || c.Department || "",
-        c.category || c.Category || c.pgug || c.PGUG || c["PG/UG"] || "",
+        c.memberId || c["Member ID"] || "",
+        c.name || c.Name || "",
+        c.dateOfBirth || c.DateOfBirth || "",
+        c.category || c.Category || "",
         String(rowIndex),
       ].join("|");
+
       return {
         id: c.id || c.ID || c.Id || fallbackId,
         memberId: c.memberId || c["Member ID"] || c["Member Id"] || "",
-        name: normalizedName,
+        name: c.name || c.Name || c["Full Name"] || "Unnamed",
         dateOfBirth,
-        yearOfPassing: normalizePassingLabel(
-          c.yearOfPassing || c.YearOfPassing || c["Year of Passing"] || c["Month & Year of Passing"]
-        ),
+        yearOfPassing,
         yearOfRegistering,
         council: normalizeText(c.council || c.Council || ""),
         pastorate: normalizeText(c.pastorate || c.Pastorate || ""),
         institution: normalizeText(c.institution || c.Institution || ""),
         department: normalizeText(c.department || c.Department || ""),
         category: normalizeText(c.category || c.Category || c.pgug || c.PGUG || c["PG/UG"] || ""),
-        ...(() => {
-          const tetRaw =
-            c.tetQualified || c["TET Qualified"] || c["TET Qualification"] || c["TET %"] || "";
-          const tet = parseTetMetrics(tetRaw);
-          return {
-            tetRaw: normalizeText(tetRaw),
-            tetQualified: tet.qualified,
-            tetScore: tet.bestScore,
-            tetYear: tet.bestYear,
-          };
-        })(),
         qualification: normalizeText(c.qualification || c.Qualification || ""),
-        address: normalizeText(c.address || c.Address || ""),
-        pincode: normalizeText(c.pincode || c.Pincode || ""),
+        tetCompletion: Number.isFinite(tetCompletion) ? tetCompletion : null,
+        tetQualified,
+        tetRaw: normalizeText(tetRaw),
         email: c.email || c.Email || "",
         phone: c.phone || c.Phone || "",
         ...(() => {
