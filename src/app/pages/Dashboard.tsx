@@ -413,7 +413,7 @@ function mapHighSchool(rows: any[]) {
         })(),
       };
     })
-    .filter((c) => c.name !== "Unnamed" && c.dateOfBirth && c.yearOfRegistering !== null && c.yearOfPassing !== null && normalizeText(c.qualification || ""));
+    .filter((c) => c.name !== "Unnamed");
 }
 
 function mapElementarySchool(rows: any[]) {
@@ -467,7 +467,7 @@ function mapElementarySchool(rows: any[]) {
         })(),
       };
     })
-    .filter((c) => c.name !== "Unnamed" && c.dateOfBirth && c.yearOfRegistering !== null && c.yearOfPassing !== null && normalizeText(c.subject || "") && normalizeText(c.qualification || ""));
+    .filter((c) => c.name !== "Unnamed");
 }
 
 function mapClergyOrdination(rows: any[]) {
@@ -517,7 +517,7 @@ function mapClergyOrdination(rows: any[]) {
         })(),
       };
     })
-    .filter((c) => c.name !== "Unnamed" && c.dateOfBirth && c.yearOfPassing !== null && normalizeText(c.qualification || ""));
+    .filter((c) => c.name !== "Unnamed");
 }
 
 function assignRanksIncludingAppointments(rows: any[]) {
@@ -1458,29 +1458,6 @@ export function Dashboard() {
                   </div>
                 </div>
               ) : null}
-              {filteredCandidates.length > PAGE_SIZE && (
-                <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-                  <p className="text-sm text-gray-600">
-                    {t("Page", "பக்கம்")} {currentPage} {t("of", "இல்")} {totalPages}
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                      disabled={currentPage === 1}
-                    >
-                      {t("Previous", "முந்தையது")}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                      disabled={currentPage >= totalPages}
-                    >
-                      {t("Next", "அடுத்தது")}
-                    </Button>
-                  </div>
-                </div>
-              )}
             </>
           )}
         </div>
