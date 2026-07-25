@@ -1264,7 +1264,31 @@ export function Dashboard() {
                 onRowDoubleClick={handleCandidateDoubleClick}
                 showAppointments={showAppointments}
               />
-              
+
+              {totalPages > 1 && (
+                <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+                  <p className="text-sm text-gray-600">
+                    {t("Page", "பக்கம்")} {currentPage} {t("of", "இல்")} {totalPages}
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                      disabled={currentPage === 1}
+                    >
+                      {t("Previous", "முந்தையது")}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                      disabled={currentPage >= totalPages}
+                    >
+                      {t("Next", "அடுத்தது")}
+                    </Button>
+                  </div>
+                </div>
+              )}
+
               <div className="mt-4 flex justify-end gap-2">
                 <Button
                   variant="destructive"
