@@ -1,4 +1,4 @@
-sexport function searchCandidatesGeneric(candidates: any[], query: string): any[] {
+export function searchCandidatesGeneric(candidates: any[], query: string): any[] {
   if (!query.trim()) return candidates;
 
   const tokens = query
