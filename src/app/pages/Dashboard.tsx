@@ -177,7 +177,7 @@ function normalizeChangeLogSheetName(value: any): SchoolType | "" {
 function mapChangeLogRows(rows: any[]): ChangeLogRow[] {
   return rows
     .map((row, index) => {
-      const sheetName = normalizeText(getLooseValue(row, ["Sheet name", "Sheet Name", "Sheet", "List", "School Type", "Category"]));
+      const sheetName = normalizeText(getLooseValue(row, ["Sheet name", "Sheet Name", "List name", "List Name", "Sheet", "List", "School Type", "Category"]));
       const date = normalizeText(getLooseValue(row, ["Date", "Change Date", "Changed Date"]));
       const memberId = normalizeText(getLooseValue(row, ["Member ID", "Member Id", "MemberID", "memberId"]));
       const name = normalizeText(getLooseValue(row, ["Name", "Member Name", "Candidate Name"]));
