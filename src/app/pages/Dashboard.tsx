@@ -700,8 +700,8 @@ export function Dashboard() {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [lastSyncAttempt, setLastSyncAttempt] = useState<Date | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [showExitRegister, setShowExitRegister] = useState(false);
-  const [showChangeLog, setShowChangeLog] = useState(false);
+  const [showExitRegisterMap, setShowExitRegisterMap] = useState<Record<SchoolType, boolean>>({});
+  const [showChangeLogMap, setShowChangeLogMap] = useState<Record<SchoolType, boolean>>({});
   const [selectedDocument, setSelectedDocument] = useState<ChangeLogRow | null>(null);
   const lastDataHashRef = useRef<string>("");
   const availableSchoolTypes = useMemo<SchoolType[]>(() => {
@@ -1282,24 +1282,18 @@ export function Dashboard() {
                 onRowDoubleClick={handleCandidateDoubleClick}
                 showAppointments={showAppointments}
               />
+              
               <div className="mt-4 flex justify-end gap-2">
                 <Button
                   variant="destructive"
-                  onClick={() => setShowExitRegister((prev) => !prev)}
+                  onClick={() => setShowExitRegisterMap((prev) => ({ ...prev, [schoolType]: !prev[schoolType] }))}
                   disabled={currentExitedCandidates.length === 0}
                 >
-                  {showExitRegister
+                  {showExitRegisterMap[schoolType]
                     ? t("Hide Exit Register", "வெளியேற்ற பதிவை மறை")
                     : t("Exit Register", "வெளியேற்ற பதிவு")}
                 </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => setShowChangeLog((prev) => !prev)}
-                  disabled={currentSheetChangeLogRows.length === 0}
-                >
-                  {showChangeLog ? t("Hide ChangeLog", "மாற்றப் பதிவை மறை") : t("ChangeLog", "மாற்றப் பதிவு")}
-                </Button>
-                {showExitRegister ? (
+                {showExitRegisterMap[schoolType] ? (
                   <Button
                     variant="outline"
                     onClick={handleDownloadExitRegister}
@@ -1310,8 +1304,16 @@ export function Dashboard() {
                       : t("Download Exit Register", "வெளியேற்ற பதிவை பதிவிறக்கு")}
                   </Button>
                 ) : null}
+
+                <Button
+                  variant="outline"
+                  onClick={() => setShowChangeLogMap((prev) => ({ ...prev, [schoolType]: !prev[schoolType] }))}
+                  disabled={currentSheetChangeLogRows.length === 0}
+                >
+                  {showChangeLogMap[schoolType] ? t("Hide ChangeLog", "மாற்றப் பதிவை மறை") : t("ChangeLog", "மாற்றப் பதிவு")}
+                </Button>
               </div>
-              {showExitRegister ? (
+              {showExitRegisterMap[schoolType] ? (
                 <div className="mt-6 min-w-0">
                   <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
                     <h3 className="text-lg font-semibold text-gray-900">
@@ -1380,7 +1382,7 @@ export function Dashboard() {
                   </div>
                 </div>
               ) : null}
-              {showChangeLog ? (
+              {showChangeLogMap[schoolType] ? (
                 <div className="mt-6 min-w-0">
                   <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
                     <h3 className="text-lg font-semibold text-gray-900">
@@ -1435,11 +1437,6 @@ export function Dashboard() {
                                     <div className="flex flex-wrap items-center gap-2">
                                       <Button size="sm" variant="outline" onClick={() => setSelectedDocument(entry)}>
                                         {t("View", "காண்க")}
-                                      </Button>
-                                      <Button size="sm" variant="outline" asChild>
-                                        <a href={getDocumentDownloadUrl(entry.documents)} target="_blank" rel="noreferrer">
-                                          {t("Download", "பதிவிறக்கம்")}
-                                        </a>
                                       </Button>
                                     </div>
                                   ) : (
