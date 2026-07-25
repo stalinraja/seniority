@@ -5,6 +5,7 @@ import { SeniorityTable } from "../components/SeniorityTable";
 import { fetchGoogleSheetData } from "../utils/fetchGoogleSheetData";
 import { searchCandidatesGeneric } from "../utils/helpers";
 import { Button } from "../components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../components/ui/dialog";
 import { DashboardVisual } from "../components/DashboardVisual";
 import { useSearchParams } from "react-router";
 import {
@@ -29,6 +30,19 @@ import {
 type SchoolType = "high" | "elementary" | "clergy";
 
 type SortMode = "seniority" | "appointment";
+
+type ChangeLogRow = {
+  rowKey: string;
+  sheetName: string;
+  date: string;
+  memberId: string;
+  name: string;
+  action: string;
+  informationChanged: string;
+  descriptionOfChange: string;
+  approvedBy: string;
+  documents: string;
+};
 
 function normalizeText(value: any) {
   return String(value ?? "")
@@ -141,6 +155,64 @@ function getLooseValue(row: Record<string, any>, keys: string[]) {
     if (wanted.has(normalized)) return v;
   }
   return "";
+}
+
+function normalizeChangeLogSheetName(value: any): SchoolType | "" {
+  const normalized = normalizeText(value).toLowerCase().replace(/[^a-z0-9]/g, "");
+  if (!normalized) return "";
+  if (["hss", "high", "highschool", "highersecondary", "highhighersecondary"].includes(normalized)) return "high";
+  if (normalized.includes("hss") || normalized.includes("high") || normalized.includes("highersecondary")) return "high";
+  if (
+    normalized.includes("elementary") ||
+    normalized.includes("elementry") ||
+    normalized.includes("middle") ||
+    normalized.includes("primary")
+  ) {
+    return "elementary";
+  }
+  if (normalized.includes("clergy") || normalized.includes("ordination")) return "clergy";
+  return "";
+}
+
+function mapChangeLogRows(rows: any[]): ChangeLogRow[] {
+  return rows
+    .map((row, index) => {
+      const sheetName = normalizeText(getLooseValue(row, ["Sheet name", "Sheet Name", "Sheet", "List", "School Type", "Category"]));
+      const date = normalizeText(getLooseValue(row, ["Date", "Change Date", "Changed Date"]));
+      const memberId = normalizeText(getLooseValue(row, ["Member ID", "Member Id", "MemberID", "memberId"]));
+      const name = normalizeText(getLooseValue(row, ["Name", "Member Name", "Candidate Name"]));
+      const action = normalizeText(getLooseValue(row, ["Action", "Change Action"]));
+      const informationChanged = normalizeText(getLooseValue(row, ["Information Changed", "Info Changed", "Field Changed", "Changed Field"]));
+      const descriptionOfChange = normalizeText(getLooseValue(row, ["Description of Change", "Change Description", "Description"]));
+      const approvedBy = normalizeText(getLooseValue(row, ["Approved by", "Approved By", "Approver"]));
+      const documents = normalizeText(getLooseValue(row, ["Documents", "Document", "Document Link", "Drive Link", "PDF"]));
+
+      return {
+        rowKey: [sheetName, date, memberId, name, action, index].join("|"),
+        sheetName,
+        date,
+        memberId,
+        name,
+        action,
+        informationChanged,
+        descriptionOfChange,
+        approvedBy,
+        documents,
+      };
+    })
+    .filter((row) => row.sheetName || row.date || row.memberId || row.name || row.action || row.descriptionOfChange);
+}
+
+function getDocumentPreviewUrl(url: string) {
+  const trimmed = normalizeText(url);
+  if (!trimmed) return "";
+
+  const driveMatch = trimmed.match(/drive\.google\.com\/file\/d\/([^/]+)/i) || trimmed.match(/[?&]id=([^&]+)/i);
+  if (driveMatch?.[1]) {
+    return `https://drive.google.com/file/d/${driveMatch[1]}/preview`;
+  }
+
+  return trimmed;
 }
 
 function normalizePassingLabel(value: any) {
@@ -602,6 +674,7 @@ export function Dashboard() {
   const [highSchoolCandidates, setHighSchoolCandidates] = useState<any[]>([]);
   const [elementaryCandidates, setElementaryCandidates] = useState<any[]>([]);
   const [clergyCandidates, setClergyCandidates] = useState<any[]>([]);
+  const [changeLogRows, setChangeLogRows] = useState<ChangeLogRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [initialLoadDone, setInitialLoadDone] = useState(false);
   const [logoReady, setLogoReady] = useState(false);
@@ -615,6 +688,8 @@ export function Dashboard() {
   const [lastSyncAttempt, setLastSyncAttempt] = useState<Date | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [showExitRegister, setShowExitRegister] = useState(false);
+  const [showChangeLog, setShowChangeLog] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState<ChangeLogRow | null>(null);
   const lastDataHashRef = useRef<string>("");
   const availableSchoolTypes = useMemo<SchoolType[]>(() => {
     const list: SchoolType[] = [];
@@ -661,15 +736,18 @@ export function Dashboard() {
             ? data.elementarySchool
             : [];
           const clergyRows = Array.isArray(data?.clergyOrdination) ? data.clergyOrdination : [];
+          const rawChangeLogRows = Array.isArray(data?.changeLog) ? data.changeLog : [];
 
           const mappedHigh = mapHighSchool(highRows);
           const mappedElementary = mapElementarySchool(elementaryRows);
           const mappedClergy = mapClergyOrdination(clergyRows);
+          const mappedChangeLog = mapChangeLogRows(rawChangeLogRows);
 
           const dataHash = JSON.stringify({
             high: buildStableHashPayload(mappedHigh),
             elementary: buildStableHashPayload(mappedElementary),
             clergy: buildStableHashPayload(mappedClergy),
+            changeLog: mappedChangeLog,
           });
 
           if (dataHash !== lastDataHashRef.current) {
@@ -677,6 +755,7 @@ export function Dashboard() {
             setHighSchoolCandidates(mappedHigh);
             setElementaryCandidates(mappedElementary);
             setClergyCandidates(mappedClergy);
+            setChangeLogRows(mappedChangeLog);
             setLastUpdated(new Date());
           }
 
@@ -923,6 +1002,23 @@ export function Dashboard() {
       exitNumber: index + 1,
     }));
   }, [currentExitedCandidates, searchQuery]);
+
+
+  const currentSheetChangeLogRows = useMemo(
+    () => changeLogRows.filter((row) => normalizeChangeLogSheetName(row.sheetName) === schoolType),
+    [changeLogRows, schoolType]
+  );
+
+  const currentChangeLogRows = useMemo(() => {
+    if (!searchQuery.trim()) return currentSheetChangeLogRows;
+    const query = normalizeFilterKey(searchQuery);
+    return currentSheetChangeLogRows.filter((row) =>
+      [row.date, row.memberId, row.name, row.action, row.informationChanged, row.descriptionOfChange, row.approvedBy]
+        .some((value) => normalizeFilterKey(value).includes(query))
+    );
+  }, [currentSheetChangeLogRows, searchQuery]);
+
+  const selectedDocumentPreviewUrl = selectedDocument ? getDocumentPreviewUrl(selectedDocument.documents) : "";
 
   const totalPages = Math.max(1, Math.ceil(filteredCandidates.length / PAGE_SIZE));
 
@@ -1182,6 +1278,13 @@ export function Dashboard() {
                     ? t("Hide Exit Register", "வெளியேற்ற பதிவை மறை")
                     : t("Exit Register", "வெளியேற்ற பதிவு")}
                 </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowChangeLog((prev) => !prev)}
+                  disabled={currentSheetChangeLogRows.length === 0}
+                >
+                  {showChangeLog ? t("Hide ChangeLog", "மாற்றப் பதிவை மறை") : t("ChangeLog", "மாற்றப் பதிவு")}
+                </Button>
                 {showExitRegister ? (
                   <Button
                     variant="outline"
@@ -1263,6 +1366,74 @@ export function Dashboard() {
                   </div>
                 </div>
               ) : null}
+              {showChangeLog ? (
+                <div className="mt-6 min-w-0">
+                  <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {t("ChangeLog", "மாற்றப் பதிவு")}
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      {t(
+                        `Showing ${currentChangeLogRows.length} change log entries`,
+                        `${currentChangeLogRows.length} மாற்றப் பதிவுகள் காட்டப்படுகிறது`
+                      )}
+                    </p>
+                  </div>
+                  <div className="w-full min-w-0 max-w-full">
+                    <div
+                      className="change-log-scroll"
+                      role="region"
+                      aria-label={t("ChangeLog table", "மாற்றப் பதிவு அட்டவணை")}
+                      tabIndex={0}
+                    >
+                      <table className="change-log-table">
+                        <thead>
+                          <tr className="bg-blue-50 text-left">
+                            <th className="px-4 py-3 font-semibold whitespace-nowrap">{t("Date", "தேதி")}</th>
+                            <th className="px-4 py-3 font-semibold whitespace-nowrap">{t("Member ID", "உறுப்பினர் ஐடி")}</th>
+                            <th className="px-4 py-3 font-semibold whitespace-nowrap">{t("Name", "பெயர்")}</th>
+                            <th className="px-4 py-3 font-semibold whitespace-nowrap">{t("Action", "செயல்")}</th>
+                            <th className="px-4 py-3 font-semibold whitespace-nowrap">{t("Information Changed", "மாற்றிய தகவல்")}</th>
+                            <th className="px-4 py-3 font-semibold whitespace-nowrap">{t("Description of Change", "மாற்ற விவரம்")}</th>
+                            <th className="px-4 py-3 font-semibold whitespace-nowrap">{t("Approved by", "அங்கீகரித்தவர்")}</th>
+                            <th className="px-4 py-3 font-semibold whitespace-nowrap">{t("Documents", "ஆவணங்கள்")}</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {currentChangeLogRows.length === 0 ? (
+                            <tr>
+                              <td className="px-4 py-8 text-center text-gray-500" colSpan={8}>
+                                {t("No change log entries found.", "மாற்றப் பதிவுகள் இல்லை.")}
+                              </td>
+                            </tr>
+                          ) : (
+                            currentChangeLogRows.map((entry) => (
+                              <tr key={`change-log-${entry.rowKey}`} className="border-t border-blue-100">
+                                <td className="px-4 py-3 align-top whitespace-nowrap">{entry.date}</td>
+                                <td className="px-4 py-3 align-top whitespace-nowrap">{entry.memberId}</td>
+                                <td className="px-4 py-3 align-top font-medium text-gray-900 whitespace-nowrap">{entry.name}</td>
+                                <td className="px-4 py-3 align-top whitespace-nowrap">{entry.action}</td>
+                                <td className="px-4 py-3 align-top">{entry.informationChanged}</td>
+                                <td className="px-4 py-3 align-top">{entry.descriptionOfChange}</td>
+                                <td className="px-4 py-3 align-top whitespace-nowrap">{entry.approvedBy}</td>
+                                <td className="px-4 py-3 align-top whitespace-nowrap">
+                                  {entry.documents ? (
+                                    <Button size="sm" variant="outline" onClick={() => setSelectedDocument(entry)}>
+                                      {t("View", "காண்க")}
+                                    </Button>
+                                  ) : (
+                                    <span className="text-gray-400">-</span>
+                                  )}
+                                </td>
+                              </tr>
+                            ))
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
               {filteredCandidates.length > PAGE_SIZE && (
                 <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
                   <p className="text-sm text-gray-600">
@@ -1291,6 +1462,35 @@ export function Dashboard() {
         </div>
       </div>
     </div>
+      <Dialog open={Boolean(selectedDocument)} onOpenChange={(open) => !open && setSelectedDocument(null)}>
+        <DialogContent className="sm:max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>{t("Document", "ஆவணம்")}</DialogTitle>
+          </DialogHeader>
+          {selectedDocument ? (
+            <div className="space-y-3">
+              <div className="text-sm text-gray-600">
+                <span className="font-medium text-gray-900">{selectedDocument.name || selectedDocument.memberId}</span>
+                {selectedDocument.action ? ` - ${selectedDocument.action}` : ""}
+              </div>
+              <div className="overflow-hidden rounded-md border border-gray-200 bg-gray-50">
+                <iframe
+                  title={t("ChangeLog document preview", "மாற்றப் பதிவு ஆவண முன்னோட்டம்")}
+                  src={selectedDocumentPreviewUrl}
+                  className="h-[70vh] w-full bg-white"
+                />
+              </div>
+              <div className="flex justify-end">
+                <Button variant="outline" asChild>
+                  <a href={selectedDocument.documents} target="_blank" rel="noreferrer">
+                    {t("Open in Drive", "Drive-ல் திற")}
+                  </a>
+                </Button>
+              </div>
+            </div>
+          ) : null}
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

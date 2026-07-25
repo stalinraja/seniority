@@ -3,6 +3,7 @@ type SchoolDataPayload = {
   elementarySchool: any[];
   clergyOrdination: any[];
   schoolVacancies?: any[];
+  changeLog?: any[];
 };
 
 const DEFAULT_HIGH_SCHOOL_CSV_URL =
@@ -81,6 +82,7 @@ function normalizePayload(parsed: any): SchoolDataPayload {
     elementarySchool: Array.isArray(parsed?.elementarySchool) ? parsed.elementarySchool : [],
     clergyOrdination: Array.isArray(parsed?.clergyOrdination) ? parsed.clergyOrdination : [],
     schoolVacancies: Array.isArray(parsed?.schoolVacancies) ? parsed.schoolVacancies : [],
+    changeLog: Array.isArray(parsed?.changeLog) ? parsed.changeLog : [],
   };
 }
 
@@ -130,11 +132,16 @@ function getConfiguredUrls() {
     import.meta.env.VITE_CLERGY_ORDINATION_CSV_URL ||
     DEFAULT_CLERGY_ORDINATION_CSV_URL;
 
-  return { highUrl, elementaryUrl, clergyUrl };
+  const changeLogUrl =
+    import.meta.env.VITE_CHANGE_LOG_DATA_URL ||
+    import.meta.env.VITE_CHANGE_LOG_CSV_URL ||
+    "";
+
+  return { highUrl, elementaryUrl, clergyUrl, changeLogUrl };
 }
 
 export async function fetchGoogleSheetData(): Promise<SchoolDataPayload> {
-  const { highUrl, elementaryUrl, clergyUrl } = getConfiguredUrls();
+  const { highUrl, elementaryUrl, clergyUrl, changeLogUrl } = getConfiguredUrls();
 
   const highResult = await fetchRowsFromUrl(highUrl);
   if (!Array.isArray(highResult)) {
@@ -143,6 +150,7 @@ export async function fetchGoogleSheetData(): Promise<SchoolDataPayload> {
       elementarySchool: highResult.elementarySchool || [],
       clergyOrdination: highResult.clergyOrdination || [],
       schoolVacancies: highResult.schoolVacancies || [],
+      changeLog: highResult.changeLog || [],
     };
   }
 
@@ -162,10 +170,19 @@ export async function fetchGoogleSheetData(): Promise<SchoolDataPayload> {
       : clergyResult.clergyOrdination || [];
   }
 
+  let changeLogRows: any[] = [];
+  if (changeLogUrl) {
+    const changeLogResult = await fetchRowsFromUrl(changeLogUrl);
+    changeLogRows = Array.isArray(changeLogResult)
+      ? changeLogResult
+      : changeLogResult.changeLog || [];
+  }
+
   return {
     highSchool: highResult,
     elementarySchool: elementaryRows,
     clergyOrdination: clergyRows,
     schoolVacancies: [],
+    changeLog: changeLogRows,
   };
 }

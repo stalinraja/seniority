@@ -36,6 +36,7 @@ const ELEMENTARY_SCHOOL_CSV_URL =
     ? buildCsvUrlFromPublishedUrl(GOOGLE_SHEET_PUB_URL, ELEMENTARY_SCHOOL_GID)
     : "");
 const SCHOOL_VACANCY_CSV_URL = process.env.SCHOOL_VACANCY_CSV_URL || "";
+const CHANGE_LOG_CSV_URL = process.env.CHANGE_LOG_CSV_URL || "";
 const OUTPUT_PATH = "./public/seniority-data.json";
 const ONE_MINUTE_MS = 60 * 1000;
 const WATCH_MODE = process.argv.includes("--watch");
@@ -100,11 +101,12 @@ function parseCSV(text) {
   });
 }
 
-function buildDataPayload(highSchoolRows, elementarySchoolRows, schoolVacancies) {
+function buildDataPayload(highSchoolRows, elementarySchoolRows, schoolVacancies, changeLog = []) {
   return {
     highSchool: highSchoolRows,
     elementarySchool: elementarySchoolRows,
     schoolVacancies,
+    changeLog,
   };
 }
 
@@ -119,7 +121,8 @@ function buildDataHashFromFileContent(raw) {
       buildDataPayload(
         parsed.highSchool || [],
         parsed.elementarySchool || [],
-        parsed.schoolVacancies || []
+        parsed.schoolVacancies || [],
+        parsed.changeLog || []
       )
     );
   } catch {
@@ -223,7 +226,20 @@ async function syncOnce() {
       schoolVacancies = parseCSV(vacancyCsvText);
     }
 
-    const dataPayload = buildDataPayload(highSchoolRows, elementarySchoolRows, schoolVacancies);
+    let changeLog = [];
+    if (CHANGE_LOG_CSV_URL) {
+      const changeLogResult = await fetchCSV(CHANGE_LOG_CSV_URL);
+      const changeLogCsvText = changeLogResult.body;
+      const changeLogContentType = String(changeLogResult.contentType || "");
+      if (/<html/i.test(changeLogCsvText) || /text\/html/i.test(changeLogContentType)) {
+        throw new Error(
+          `Expected CSV but received HTML for change log from ${changeLogResult.finalUrl}.`
+        );
+      }
+      changeLog = parseCSV(changeLogCsvText);
+    }
+
+    const dataPayload = buildDataPayload(highSchoolRows, elementarySchoolRows, schoolVacancies, changeLog);
     const payload = {
       ...dataPayload,
       syncedAt: new Date().toISOString(),
@@ -231,6 +247,7 @@ async function syncOnce() {
         highSchool: HIGH_SCHOOL_CSV_URL,
         elementarySchool: ELEMENTARY_SCHOOL_CSV_URL || elementarySource,
         schoolVacancies: SCHOOL_VACANCY_CSV_URL,
+        changeLog: CHANGE_LOG_CSV_URL,
       },
     };
 
@@ -256,7 +273,7 @@ async function syncOnce() {
     writeFileSync(OUTPUT_PATH, nextJson);
     lastSyncedHash = nextHash;
     console.log(
-      `[${new Date().toISOString()}] Synced High=${highSchoolRows.length}, Elementary=${elementarySchoolRows.length} rows to ${OUTPUT_PATH}`
+      `[${new Date().toISOString()}] Synced High=${highSchoolRows.length}, Elementary=${elementarySchoolRows.length}, ChangeLog=${changeLog.length} rows to ${OUTPUT_PATH}`
     );
   } catch (error) {
     console.error(`[${new Date().toISOString()}] Sync failed:`, error);

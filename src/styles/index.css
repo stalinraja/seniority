@@ -71,3 +71,51 @@
   width: max(900px, 100%);
   min-width: 900px;
 }
+
+.change-log-scroll {
+  position: relative;
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x pan-y;
+  border: 1px solid rgb(191 219 254);
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+  scrollbar-gutter: stable;
+  scrollbar-width: auto;
+  scrollbar-color: rgb(96 165 250) rgb(219 234 254);
+}
+
+.change-log-scroll:focus {
+  outline: 2px solid rgb(96 165 250);
+  outline-offset: 2px;
+}
+
+.change-log-scroll::-webkit-scrollbar {
+  height: 14px;
+}
+
+.change-log-scroll::-webkit-scrollbar-track {
+  background: rgb(219 234 254);
+  border-radius: 999px;
+}
+
+.change-log-scroll::-webkit-scrollbar-thumb {
+  background: rgb(96 165 250);
+  border: 3px solid rgb(219 234 254);
+  border-radius: 999px;
+}
+
+.change-log-table {
+  width: max(1500px, 100%);
+  min-width: 1500px;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
