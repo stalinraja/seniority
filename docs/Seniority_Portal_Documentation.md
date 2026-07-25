@@ -1,6 +1,6 @@
 # Seniority Portal - Enterprise Documentation Package
 
-Generated on: 2026-06-10
+Generated on: 2026-07-26
 
 ## 1. Executive Overview
 
@@ -18,6 +18,7 @@ Seniority Portal is a frontend web application that publishes and manages employ
 - Applies repeatable ranking rules instead of requiring manual re-sorting.
 - Separates active candidates from appointed, held, and exited candidates.
 - Provides PDF exports for priority lists, appointment reports, and exit registers.
+- Displays ChangeLog audit rows with official document preview and download actions.
 - Supports English and Tamil UI text for operational accessibility.
 - Provides an implemented vacancy dashboard and map for school application workflows, although the route is disabled by feature flag in the current configuration.
 
@@ -96,12 +97,14 @@ The application includes:
 - Compact filter bar.
 - Search across candidate identity, geography, qualification, category, and status fields.
 - Visual dashboard modal using charts.
-- Appointment and exit register views.
+- Appointment, exit register, and ChangeLog views.
 - Pagination at 20 rows per page.
 
 ### Security Considerations
 
-The application is frontend-only. It does not implement authentication, authorization, server-side access checks, or private data protection in this repository. Any published CSV/JSON URL used by the browser should be treated as public. Feature flags can hide fields such as member ID, address, and pincode from the UI/PDF, but they do not secure the underlying data source if the browser can fetch it.
+The application is frontend-only. It does not implement authentication, authorization, server-side access checks, or private data protection in this repository. Any published CSV/JSON URL or Drive PDF URL used by the browser should be treated as public to technical users because browser DevTools and network traffic can reveal client-fetched URLs and response data. Feature flags can hide fields such as member ID, address, pincode, and raw Drive links from the UI/PDF, but they do not secure the underlying data source if the browser can fetch it.
+
+The ChangeLog UI intentionally shows only View and Download document actions and does not show an Open in Drive action. This improves presentation and reduces accidental sharing, but it does not make a public Drive file or published CSV private. True URL secrecy requires a backend/serverless API with authentication, role checks, private Google credentials, and server-side row/document proxying.
 
 ### Scalability Considerations
 
@@ -222,8 +225,8 @@ sync-google-sheet-to-json.js
 
 - React 18.3.1: component model and application state.
 - React DOM 18.3.1: browser rendering.
-- React Router 7.13.0: SPA routing.
-- Vite 6.4.1: development server and build system.
+- React Router 7.18.1: SPA routing.
+- Vite 6.4.3: development server and build system.
 - Tailwind CSS 4.1.12 with `@tailwindcss/vite`: utility styling pipeline.
 - Radix UI primitives: checkbox, dialog, label, scroll area, slot.
 - lucide-react: icons.
@@ -261,6 +264,7 @@ Default endpoints in `src/app/utils/fetchGoogleSheetData.ts`:
 - High school: published Google Sheet, `gid=0`.
 - Elementary school: published Google Sheet, `gid=882704265`.
 - Clergy ordination: published Google Sheet, `gid=271291357`.
+- ChangeLog: published Google Sheet, `gid=246990650`.
 
 Vacancy endpoint in `src/app/pages/ApplyPage.tsx`:
 
@@ -289,6 +293,7 @@ Static form resources:
 - `schoolVacancies`: 11 rows.
 - `syncedAt`: 2026-03-08T17:03:04.870Z.
 - `sources`: published Google Sheet source URLs.
+- `changeLog`: optional audit rows when synced.
 
 `data/high-higher-secondary-converted.csv` contains 3,048 data rows.
 
@@ -319,6 +324,7 @@ The application performs defensive normalization:
 - Column access uses loose matching for spelling and casing variations.
 - TET parsing accepts numeric percentages, yes/no values, and year-score pairs.
 - Appointment fields are discovered from several possible column names.
+- ChangeLog list names and columns tolerate spelling/casing variants such as `List name`, `Sheet name`, `HSS`, `Elementry`, and `Elementary`.
 - Exit and hold status are derived from text fields.
 
 ### Data Security Measures
@@ -327,7 +333,8 @@ Implemented measures are limited to presentation controls and fetch safety:
 
 - Address, pincode, and member ID display are controlled by feature flags.
 - CSV/JSON fetches use cache-busting and response-type checks.
-- Links opened for directions use `target="_blank"` with `rel="noreferrer"`.
+- Links opened for directions and document downloads use `target="_blank"` with `rel="noreferrer"`.
+- ChangeLog raw document URLs are not printed as visible table text.
 
 Not implemented in this repository:
 
@@ -337,6 +344,7 @@ Not implemented in this repository:
 - Server-side audit logging.
 - Role-based access control.
 - Secret backend storage.
+- Private Google Sheet or Drive access that is hidden from technical users.
 
 ## 6. Feature-by-Feature Analysis
 
@@ -457,6 +465,34 @@ Technical implementation:
 - Exit status detection through `exitType`.
 - UI table in `Dashboard.tsx`.
 - PDF export in `downloadExitRegisterPDF()`.
+
+
+### ChangeLog
+
+Purpose: Display audit/history rows for the currently selected High/Higher Secondary, Elementary/Middle, or Clergy list.
+
+Technical implementation:
+
+- Data source: `changeLog` rows from `fetchGoogleSheetData()` or the optional static JSON cache.
+- Mapping and filtering: `mapChangeLogRows()` and `normalizeChangeLogSheetName()` in `Dashboard.tsx`.
+- UI: inline table beside the Exit Register controls in `Dashboard.tsx`.
+- Documents: `View` opens a compact in-app preview dialog; `Download` uses a Google Drive download URL when a Drive file ID can be extracted.
+
+Supported columns:
+
+- `List name` or `Sheet name`
+- `Member ID`
+- `Name`
+- `Date`
+- `Action`
+- `Information Changed`
+- `Description of Change`
+- `Approved by`
+- `Documents`
+
+The row can contain blank cells. `HSS` routes to the High/Higher Secondary list; `Elementary`, `Elementry`, `Middle`, and `Primary` route to the Elementary/Middle list; `Clergy` and `Ordination` route to the Clergy list.
+
+Security note: Drive links are not shown as plain text and there is no Open in Drive button, but any document fetched or downloaded by the browser is still accessible to a technical user unless served through an authenticated backend proxy.
 
 ### PDF Priority List Export
 

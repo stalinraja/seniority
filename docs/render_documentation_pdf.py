@@ -95,7 +95,7 @@ class PdfDoc:
 
     def _footer(self) -> None:
         self.current.append(
-            "BT /F1 8 Tf 50 28 Td (Generated from workspace source on 2026-06-10) Tj ET"
+            "BT /F1 8 Tf 50 28 Td (Generated from workspace source on 2026-07-26) Tj ET"
         )
 
     def ensure(self, amount: int) -> None:

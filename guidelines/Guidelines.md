@@ -8,6 +8,7 @@ This portal manages and displays:
 - Elementary/Middle seniority
 - Clergy ordination seniority
 - Appointment-made reports (all 3 categories)
+- ChangeLog audit records with official document view/download actions
 
 Supports bilingual UI (English/Tamil), filters, search, ranking, dashboard charts, and PDF downloads.
 
@@ -36,6 +37,7 @@ Env vars:
 - `VITE_ELEMENTARY_SCHOOL_CSV_URL`
 - `VITE_CLERGY_ORDINATION_CSV_URL`
 - `VITE_SCHOOL_VACANCY_CSV_URL`
+- `VITE_CHANGE_LOG_CSV_URL` or `VITE_CHANGE_LOG_DATA_URL`
 
 ### Apply page vacancy source
 - Live fetch from published vacancy URL:
@@ -68,6 +70,7 @@ File: `src/app/config/features.ts`
    - displays `Appointment Date`, `Vacancy Institute/Pastorate`, `Based on`
    - no `Appointment Made (Yes/No)` column is shown
 5. `Download Appointment Report` exports appointed candidates only with the same appointment columns.
+6. `ChangeLog` appears beside `Exit Register`. It shows audit rows for the selected list only and supports `View` plus `Download` document actions.
 
 ## 6) Ranking Rules (Current)
 
@@ -140,14 +143,41 @@ Add at end:
 - `Compassion if any`
 - `Appointed Pastorate`
 
-## 8) Security Status (Current)
+
+## 8) Sheet Columns (ChangeLog)
+
+The ChangeLog sheet can contain blank cells. A row is accepted as long as it has useful change information such as list name, date, name, action, or description.
+
+Recommended columns:
+- `List name` (accepted values include `HSS`, `High School`, `Elementary`, `Elementry`, `Middle`, `Clergy`)
+- `Member ID`
+- `Name`
+- `Date`
+- `Action`
+- `Information Changed`
+- `Description of Change`
+- `Approved by`
+- `Documents` (Google Drive PDF/link)
+
+Document handling:
+- `View` opens a small in-app preview popup.
+- `Download` downloads or opens the downloadable Google Drive URL.
+- The UI does not show an `Open in Drive` action.
+
+## 9) Security Status (Current)
 - `.env` excluded from git.
 - Frontend has no payment/API secret handling.
 - Data fetch uses public published sheet URLs only.
+- Published Google Sheet and Drive URLs fetched by the browser are not secret from technical users; DevTools/network traffic can reveal them.
+- The app does not write back to Google Sheets and cannot modify sheet data.
+- ChangeLog Drive links are not shown as plain text and do not provide an `Open in Drive` button, but true link secrecy requires an authenticated backend proxy.
 - No runtime backend/payment endpoint in app now.
 - No backend/payment packages in runtime dependency tree now.
 
-## 9) Hosting Instructions (Vercel + Other Clouds)
+Private-data requirement:
+- To prevent technical users from seeing source Google Sheet or Drive URLs, do not publish them directly to the browser. Use a serverless/backend API with authentication, role checks, private Google credentials, and server-side document streaming.
+
+## 10) Hosting Instructions (Vercel + Other Clouds)
 
 ### What to upload to GitHub
 Upload:
@@ -184,6 +214,7 @@ Do not upload:
    - `VITE_ELEMENTARY_SCHOOL_CSV_URL`
    - `VITE_CLERGY_ORDINATION_CSV_URL`
    - `VITE_SCHOOL_VACANCY_CSV_URL`
+   - `VITE_CHANGE_LOG_CSV_URL` or `VITE_CHANGE_LOG_DATA_URL`
 5. Deploy.
 6. Verify:
    - `/`
@@ -199,11 +230,12 @@ Note: `vercel.json` handles SPA route rewrites to `index.html`.
 - Add same `VITE_*` env vars
 - Configure SPA fallback rewrite to `index.html`
 
-## 10) Key Files
+## 11) Key Files
 - Dashboard logic: `src/app/pages/Dashboard.tsx`
 - Appointment report UI: `src/app/components/AppointmentReport.tsx`
 - Seniority table UI: `src/app/components/SeniorityTable.tsx`
 - Ranking rules text + comparators: `src/app/config/seniorityRules.ts`
 - PDF exports: `src/app/utils/pdfUtils.ts`
 - Google sheet fetch: `src/app/utils/fetchGoogleSheetData.ts`
+- ChangeLog UI and document preview/download: `src/app/pages/Dashboard.tsx`
 - Feature flags: `src/app/config/features.ts`

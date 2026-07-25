@@ -215,6 +215,19 @@ function getDocumentPreviewUrl(url: string) {
   return trimmed;
 }
 
+
+function getDocumentDownloadUrl(url: string) {
+  const trimmed = normalizeText(url);
+  if (!trimmed) return "";
+
+  const driveMatch = trimmed.match(/drive\.google\.com\/file\/d\/([^/]+)/i) || trimmed.match(/[?&]id=([^&]+)/i);
+  if (driveMatch?.[1]) {
+    return `https://drive.google.com/uc?export=download&id=${driveMatch[1]}`;
+  }
+
+  return trimmed;
+}
+
 function normalizePassingLabel(value: any) {
   if (value === undefined || value === null) return "";
   const raw = String(value).trim();
@@ -1019,6 +1032,7 @@ export function Dashboard() {
   }, [currentSheetChangeLogRows, searchQuery]);
 
   const selectedDocumentPreviewUrl = selectedDocument ? getDocumentPreviewUrl(selectedDocument.documents) : "";
+  const selectedDocumentDownloadUrl = selectedDocument ? getDocumentDownloadUrl(selectedDocument.documents) : "";
 
   const totalPages = Math.max(1, Math.ceil(filteredCandidates.length / PAGE_SIZE));
 
@@ -1418,9 +1432,16 @@ export function Dashboard() {
                                 <td className="px-4 py-3 align-top whitespace-nowrap">{entry.approvedBy}</td>
                                 <td className="px-4 py-3 align-top whitespace-nowrap">
                                   {entry.documents ? (
-                                    <Button size="sm" variant="outline" onClick={() => setSelectedDocument(entry)}>
-                                      {t("View", "காண்க")}
-                                    </Button>
+                                    <div className="flex flex-wrap items-center gap-2">
+                                      <Button size="sm" variant="outline" onClick={() => setSelectedDocument(entry)}>
+                                        {t("View", "காண்க")}
+                                      </Button>
+                                      <Button size="sm" variant="outline" asChild>
+                                        <a href={getDocumentDownloadUrl(entry.documents)} target="_blank" rel="noreferrer">
+                                          {t("Download", "பதிவிறக்கம்")}
+                                        </a>
+                                      </Button>
+                                    </div>
                                   ) : (
                                     <span className="text-gray-400">-</span>
                                   )}
@@ -1463,7 +1484,7 @@ export function Dashboard() {
       </div>
     </div>
       <Dialog open={Boolean(selectedDocument)} onOpenChange={(open) => !open && setSelectedDocument(null)}>
-        <DialogContent className="sm:max-w-3xl">
+        <DialogContent className="max-h-[92dvh] overflow-y-auto sm:max-w-3xl">
           <DialogHeader>
             <DialogTitle>{t("Document", "ஆவணம்")}</DialogTitle>
           </DialogHeader>
@@ -1477,13 +1498,13 @@ export function Dashboard() {
                 <iframe
                   title={t("ChangeLog document preview", "மாற்றப் பதிவு ஆவண முன்னோட்டம்")}
                   src={selectedDocumentPreviewUrl}
-                  className="h-[70vh] w-full bg-white"
+                  className="h-[68dvh] min-h-[320px] w-full bg-white"
                 />
               </div>
               <div className="flex justify-end">
                 <Button variant="outline" asChild>
-                  <a href={selectedDocument.documents} target="_blank" rel="noreferrer">
-                    {t("Open in Drive", "Drive-ல் திற")}
+                  <a href={selectedDocumentDownloadUrl} target="_blank" rel="noreferrer">
+                    {t("Download", "பதிவிறக்கம்")}
                   </a>
                 </Button>
               </div>
