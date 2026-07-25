@@ -1,0 +1,709 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [7 0 R 9 0 R 11 0 R 13 0 R 15 0 R 17 0 R 19 0 R 21 0 R 23 0 R 25 0 R 27 0 R 29 0 R] /Count 12 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>
+endobj
+6 0 obj
+<< /Length 4238 >>
+stream
+BT /F2 8 Tf 50 815 Td (Seniority Portal - Enterprise Documentation Package) Tj ET
+BT /F1 8 Tf 500 815 Td (Page 1) Tj ET
+BT /F2 18 Tf 50 788 Td (Seniority Portal - Enterprise Documentation Package) Tj ET
+BT /F1 9 Tf 50 768 Td (Generated on: 2026-06-10) Tj ET
+BT /F2 14 Tf 50 746 Td (1. Executive Overview) Tj ET
+BT /F2 11 Tf 50 722 Td (Application Name) Tj ET
+BT /F1 9 Tf 50 702 Td (The application is documented in the repository as Seniority Portal. The deployed browser UI) Tj ET
+BT /F1 9 Tf 50 689 Td (brands the system as CSI Thoothukudi-Nazareth Diocese - Employment Priority List.) Tj ET
+BT /F2 11 Tf 50 667 Td (Business Purpose) Tj ET
+BT /F1 9 Tf 50 647 Td (Seniority Portal is a frontend web application that publishes and manages employment) Tj ET
+BT /F1 9 Tf 50 634 Td (priority lists for the CSI Thoothukudi-Nazareth Diocese. It helps authorized stakeholders) Tj ET
+BT /F1 9 Tf 50 621 Td (and applicants view candidate priority rankings for school employment and clergy ordination) Tj ET
+BT /F1 9 Tf 50 608 Td (categories, filter lists by ministry or education attributes, and export formal reports as) Tj ET
+BT /F1 9 Tf 50 595 Td (PDFs.) Tj ET
+BT /F2 11 Tf 50 573 Td (Problems Solved) Tj ET
+BT /F1 9 Tf 50 553 Td (- Converts spreadsheet-based candidate records into searchable, ranked priority lists.) Tj ET
+BT /F1 9 Tf 50 540 Td (- Applies repeatable ranking rules instead of requiring manual re-sorting.) Tj ET
+BT /F1 9 Tf 50 527 Td (- Separates active candidates from appointed, held, and exited candidates.) Tj ET
+BT /F1 9 Tf 50 514 Td (- Provides PDF exports for priority lists, appointment reports, and exit registers.) Tj ET
+BT /F1 9 Tf 50 501 Td (- Supports English and Tamil UI text for operational accessibility.) Tj ET
+BT /F1 9 Tf 50 488 Td (- Provides an implemented vacancy dashboard and map for school application workflows,) Tj ET
+BT /F1 9 Tf 50 475 Td (  although the route is disabled by feature flag in the current configuration.) Tj ET
+BT /F2 11 Tf 50 453 Td (Intended Users) Tj ET
+BT /F1 9 Tf 50 433 Td (- Diocese administrative staff who maintain appointment and priority records.) Tj ET
+BT /F1 9 Tf 50 420 Td (- Pastorate and council stakeholders reviewing candidate lists.) Tj ET
+BT /F1 9 Tf 50 407 Td (- Candidates or applicants checking priority list visibility.) Tj ET
+BT /F1 9 Tf 50 394 Td (- School appointment workflow teams using appointment, hold, and exit reports.) Tj ET
+BT /F2 11 Tf 50 372 Td (Key Benefits) Tj ET
+BT /F1 9 Tf 50 352 Td (- Browser-first deployment: no application server is required for the main runtime.) Tj ET
+BT /F1 9 Tf 50 339 Td (- Live data loading: published Google Sheets CSV/JSON can be fetched directly by the) Tj ET
+BT /F1 9 Tf 50 326 Td (  browser.) Tj ET
+BT /F1 9 Tf 50 313 Td (- Transparent business rules: ranking logic is encoded in) Tj ET
+BT /F1 9 Tf 50 300 Td (  src/app/config/seniorityRules.ts.) Tj ET
+BT /F1 9 Tf 50 287 Td (- Export-ready reporting: client-side PDF generation is implemented with jspdf and) Tj ET
+BT /F1 9 Tf 50 274 Td (  jspdf-autotable.) Tj ET
+BT /F1 9 Tf 50 261 Td (- Operational controls: feature flags enable or suppress sections, downloads, IDs,) Tj ET
+BT /F1 9 Tf 50 248 Td (  address fields, and routing.) Tj ET
+BT /F2 14 Tf 50 226 Td (2. Application Complexity Assessment) Tj ET
+BT /F2 11 Tf 50 202 Td (Technical Complexity) Tj ET
+BT /F1 9 Tf 50 182 Td (This is a single-page React application built with Vite, but it contains significant) Tj ET
+BT /F1 9 Tf 50 169 Td (business and data complexity. The application maps multiple source data schemas into) Tj ET
+BT /F1 9 Tf 50 156 Td (normalized candidate models, applies category-specific ranking logic, refreshes remote data) Tj ET
+BT /F1 9 Tf 50 143 Td (periodically, handles appointment state, and supports report generation.) Tj ET
+BT /F1 9 Tf 50 125 Td (The codebase includes:) Tj ET
+BT /F1 9 Tf 50 107 Td (- Main React app under src/app.) Tj ET
+BT /F1 9 Tf 50 94 Td (- Shared theme package under packages/ui-theme.) Tj ET
+BT /F1 9 Tf 50 81 Td (- Reusable starter template under templates/csi-starter.) Tj ET
+BT /F1 9 Tf 50 68 Td (- Public static assets and generated data cache under public.) Tj ET
+BT /F1 8 Tf 50 28 Td (Generated from workspace source on 2026-06-10) Tj ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 6 0 R >>
+endobj
+8 0 obj
+<< /Length 4100 >>
+stream
+BT /F2 8 Tf 50 815 Td (Seniority Portal - Enterprise Documentation Package) Tj ET
+BT /F1 8 Tf 500 815 Td (Page 2) Tj ET
+BT /F1 9 Tf 50 788 Td (- Node-based Google Sheet sync script at sync-google-sheet-to-json.js.) Tj ET
+BT /F1 9 Tf 50 775 Td (- Docker and Vercel deployment configuration.) Tj ET
+BT /F2 11 Tf 50 753 Td (Development Effort Required) Tj ET
+BT /F1 9 Tf 50 733 Td (The implementation represents more than a static table. It required:) Tj ET
+BT /F1 9 Tf 50 715 Td (- CSV and JSON ingestion logic.) Tj ET
+BT /F1 9 Tf 50 702 Td (- Date, year, TET, appointment, hold, and exit normalization.) Tj ET
+BT /F1 9 Tf 50 689 Td (- Ranking algorithms for three business domains.) Tj ET
+BT /F1 9 Tf 50 676 Td (- Dynamic filtering, searching, pagination, and sort-mode switching.) Tj ET
+BT /F1 9 Tf 50 663 Td (- Responsive tables with conditional columns.) Tj ET
+BT /F1 9 Tf 50 650 Td (- PDF report layout, footer, watermark, and export behavior.) Tj ET
+BT /F1 9 Tf 50 637 Td (- Chart and map-based visualizations.) Tj ET
+BT /F1 9 Tf 50 624 Td (- Theme and language persistence.) Tj ET
+BT /F1 9 Tf 50 611 Td (- Deployment configuration for static hosting and containerized hosting.) Tj ET
+BT /F2 11 Tf 50 589 Td (Architectural Challenges) Tj ET
+BT /F1 9 Tf 50 569 Td (- Remote spreadsheet data can contain inconsistent column names and spelling variations.) Tj ET
+BT /F1 9 Tf 50 556 Td (- Published Google Sheets can return HTML error pages instead of CSV, so the app checks) Tj ET
+BT /F1 9 Tf 50 543 Td (  response content.) Tj ET
+BT /F1 9 Tf 50 530 Td (- Ranking rules differ by school type and view mode.) Tj ET
+BT /F1 9 Tf 50 517 Td (- Appointment rows are ranked separately from seniority rows.) Tj ET
+BT /F1 9 Tf 50 504 Td (- UI must remain useful across wide tables and mobile viewports.) Tj ET
+BT /F1 9 Tf 50 491 Td (- The main application is frontend-only, so all public data URLs and source data are) Tj ET
+BT /F1 9 Tf 50 478 Td (  accessible to clients.) Tj ET
+BT /F2 11 Tf 50 456 Td (Integration Complexity) Tj ET
+BT /F1 9 Tf 50 436 Td (The application integrates with:) Tj ET
+BT /F1 9 Tf 50 418 Td (- Published Google Sheets CSV endpoints.) Tj ET
+BT /F1 9 Tf 50 405 Td (- Optional JSON cache file at public/seniority-data.json.) Tj ET
+BT /F1 9 Tf 50 392 Td (- Browser storage through localStorage.) Tj ET
+BT /F1 9 Tf 50 379 Td (- Browser Fetch API.) Tj ET
+BT /F1 9 Tf 50 366 Td (- OpenStreetMap tiles through Leaflet.) Tj ET
+BT /F1 9 Tf 50 353 Td (- Google Maps direction links generated from coordinates or map links.) Tj ET
+BT /F1 9 Tf 50 340 Td (- Static PDF form files under public/forms.) Tj ET
+BT /F2 11 Tf 50 318 Td (User Experience Considerations) Tj ET
+BT /F1 9 Tf 50 298 Td (The application includes:) Tj ET
+BT /F1 9 Tf 50 280 Td (- Sticky header with logo, theme toggle, and language toggle.) Tj ET
+BT /F1 9 Tf 50 267 Td (- Splash screen using public/diocese-logo.png.) Tj ET
+BT /F1 9 Tf 50 254 Td (- Priority type selector for High/Higher Secondary, Elementary/Middle, and Clergy.) Tj ET
+BT /F1 9 Tf 50 241 Td (- Compact filter bar.) Tj ET
+BT /F1 9 Tf 50 228 Td (- Search across candidate identity, geography, qualification, category, and status) Tj ET
+BT /F1 9 Tf 50 215 Td (  fields.) Tj ET
+BT /F1 9 Tf 50 202 Td (- Visual dashboard modal using charts.) Tj ET
+BT /F1 9 Tf 50 189 Td (- Appointment and exit register views.) Tj ET
+BT /F1 9 Tf 50 176 Td (- Pagination at 20 rows per page.) Tj ET
+BT /F2 11 Tf 50 154 Td (Security Considerations) Tj ET
+BT /F1 9 Tf 50 134 Td (The application is frontend-only. It does not implement authentication, authorization,) Tj ET
+BT /F1 9 Tf 50 121 Td (server-side access checks, or private data protection in this repository. Any published) Tj ET
+BT /F1 9 Tf 50 108 Td (CSV/JSON URL used by the browser should be treated as public. Feature flags can hide fields) Tj ET
+BT /F1 9 Tf 50 95 Td (such as member ID, address, and pincode from the UI/PDF, but they do not secure the) Tj ET
+BT /F1 9 Tf 50 82 Td (underlying data source if the browser can fetch it.) Tj ET
+BT /F1 8 Tf 50 28 Td (Generated from workspace source on 2026-06-10) Tj ET
+endstream
+endobj
+9 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 8 0 R >>
+endobj
+10 0 obj
+<< /Length 3662 >>
+stream
+BT /F2 8 Tf 50 815 Td (Seniority Portal - Enterprise Documentation Package) Tj ET
+BT /F1 8 Tf 500 815 Td (Page 3) Tj ET
+BT /F2 11 Tf 50 788 Td (Scalability Considerations) Tj ET
+BT /F1 9 Tf 50 768 Td (The current bundled JSON cache contains 3,048 high school records, 8 elementary records, and) Tj ET
+BT /F1 9 Tf 50 755 Td (11 vacancy records. The app performs filtering, ranking, searching, and PDF generation in) Tj ET
+BT /F1 9 Tf 50 742 Td (the browser. This is appropriate for thousands of rows, but substantially larger datasets) Tj ET
+BT /F1 9 Tf 50 729 Td (may require virtualization, server-side filtering, or API-backed pagination.) Tj ET
+BT /F2 14 Tf 50 707 Td (3. System Architecture) Tj ET
+BT /F2 11 Tf 50 683 Td (Overall Architecture) Tj ET
+BT /F1 9 Tf 50 663 Td (The discovered architecture is a static frontend single-page application.) Tj ET
+BT /F3 8 Tf 60 645 Td (User Browser) Tj ET
+BT /F3 8 Tf 60 632 Td (  |) Tj ET
+BT /F3 8 Tf 60 619 Td (  | loads static HTML/CSS/JS from hosting) Tj ET
+BT /F3 8 Tf 60 606 Td (  v) Tj ET
+BT /F3 8 Tf 60 593 Td (React + Vite SPA) Tj ET
+BT /F3 8 Tf 60 580 Td (  |) Tj ET
+BT /F3 8 Tf 60 567 Td (  | fetches CSV/JSON with cache-busting) Tj ET
+BT /F3 8 Tf 60 554 Td (  v) Tj ET
+BT /F3 8 Tf 60 541 Td (Published Google Sheets / public JSON cache) Tj ET
+BT /F3 8 Tf 60 528 Td (  |) Tj ET
+BT /F3 8 Tf 60 515 Td (  | normalized in browser) Tj ET
+BT /F3 8 Tf 60 502 Td (  v) Tj ET
+BT /F3 8 Tf 60 489 Td (Ranking, filtering, searching, reports, charts, map) Tj ET
+BT /F1 9 Tf 50 471 Td (No traditional backend API or database implementation exists in the workspace.) Tj ET
+BT /F2 11 Tf 50 449 Td (Frontend Architecture) Tj ET
+BT /F1 9 Tf 50 429 Td (Primary frontend files:) Tj ET
+BT /F1 9 Tf 50 411 Td (- src/main.tsx: React entrypoint.) Tj ET
+BT /F1 9 Tf 50 398 Td (- src/app/App.tsx: theme initialization, language provider, router provider, toaster.) Tj ET
+BT /F1 9 Tf 50 385 Td (- src/app/routes.tsx: browser routes.) Tj ET
+BT /F1 9 Tf 50 372 Td (- src/app/pages/Root.tsx: shared layout.) Tj ET
+BT /F1 9 Tf 50 359 Td (- src/app/pages/Dashboard.tsx: main priority list workflow.) Tj ET
+BT /F1 9 Tf 50 346 Td (- src/app/pages/ApplyPage.tsx: application forms, vacancy dashboard, and map workflow.) Tj ET
+BT /F1 9 Tf 50 333 Td (- src/app/components/*: tables, filters, charts, header, footer, guidelines, map.) Tj ET
+BT /F1 9 Tf 50 320 Td (- src/app/utils/*: data fetch, search helper, PDF utilities.) Tj ET
+BT /F2 11 Tf 50 298 Td (Backend Architecture) Tj ET
+BT /F1 9 Tf 50 278 Td (No running backend server is implemented for the application runtime. The closest supporting) Tj ET
+BT /F1 9 Tf 50 265 Td (service is sync-google-sheet-to-json.js, a Node script that can fetch published Google Sheet) Tj ET
+BT /F1 9 Tf 50 252 Td (CSV data and write a static JSON cache file to public/seniority-data.json.) Tj ET
+BT /F2 11 Tf 50 230 Td (Service Architecture) Tj ET
+BT /F1 9 Tf 50 210 Td (Runtime services are external or browser-native:) Tj ET
+BT /F1 9 Tf 50 192 Td (- Static hosting service, such as Vercel, Netlify, Cloudflare Pages, Nginx, or another) Tj ET
+BT /F1 9 Tf 50 179 Td (  static host.) Tj ET
+BT /F1 9 Tf 50 166 Td (- Published Google Sheets endpoints as CSV data providers.) Tj ET
+BT /F1 9 Tf 50 153 Td (- Browser storage for language and theme preferences.) Tj ET
+BT /F1 9 Tf 50 140 Td (- OpenStreetMap tile service for vacancy mapping.) Tj ET
+BT /F2 11 Tf 50 118 Td (Component Relationships) Tj ET
+BT /F3 8 Tf 60 98 Td (App) Tj ET
+BT /F3 8 Tf 60 85 Td (  -> LanguageProvider) Tj ET
+BT /F3 8 Tf 60 72 Td (  -> RouterProvider) Tj ET
+BT /F1 8 Tf 50 28 Td (Generated from workspace source on 2026-06-10) Tj ET
+endstream
+endobj
+11 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 10 0 R >>
+endobj
+12 0 obj
+<< /Length 3649 >>
+stream
+BT /F2 8 Tf 50 815 Td (Seniority Portal - Enterprise Documentation Package) Tj ET
+BT /F1 8 Tf 500 815 Td (Page 4) Tj ET
+BT /F3 8 Tf 60 788 Td (       -> Root) Tj ET
+BT /F3 8 Tf 60 775 Td (            -> Header) Tj ET
+BT /F3 8 Tf 60 762 Td (            -> Dashboard) Tj ET
+BT /F3 8 Tf 60 749 Td (                 -> FilterSidebar) Tj ET
+BT /F3 8 Tf 60 736 Td (                 -> SearchBar) Tj ET
+BT /F3 8 Tf 60 723 Td (                 -> SeniorityTable) Tj ET
+BT /F3 8 Tf 60 710 Td (                 -> DashboardVisual) Tj ET
+BT /F3 8 Tf 60 697 Td (                 -> pdfUtils dynamic imports) Tj ET
+BT /F3 8 Tf 60 684 Td (            -> ApplyPage \(disabled by current flag\)) Tj ET
+BT /F3 8 Tf 60 671 Td (                 -> SchoolVacancyMap) Tj ET
+BT /F3 8 Tf 60 658 Td (                 -> Chart.js charts) Tj ET
+BT /F3 8 Tf 60 645 Td (            -> AppGuidelines) Tj ET
+BT /F3 8 Tf 60 632 Td (            -> SiteFooter) Tj ET
+BT /F2 11 Tf 50 610 Td (Communication Methods) Tj ET
+BT /F1 9 Tf 50 590 Td (- Browser fetch\(\) retrieves CSV or JSON.) Tj ET
+BT /F1 9 Tf 50 577 Td (- React state and memoized selectors compute rankings and filtered views.) Tj ET
+BT /F1 9 Tf 50 564 Td (- URL search params record appointment view state.) Tj ET
+BT /F1 9 Tf 50 551 Td (- localStorage stores theme and language preferences.) Tj ET
+BT /F1 9 Tf 50 538 Td (- Client-side downloads are triggered with jsPDF or temporary anchor elements.) Tj ET
+BT /F2 11 Tf 50 516 Td (Data Flow) Tj ET
+BT /F3 8 Tf 60 496 Td (Google Sheets CSV endpoints) Tj ET
+BT /F3 8 Tf 60 483 Td (  -> fetchGoogleSheetData\(\)) Tj ET
+BT /F3 8 Tf 60 470 Td (  -> parseCSV\(\) / normalizePayload\(\)) Tj ET
+BT /F3 8 Tf 60 457 Td (  -> Dashboard mapping functions) Tj ET
+BT /F3 8 Tf 60 444 Td (  -> candidate arrays by domain) Tj ET
+BT /F3 8 Tf 60 431 Td (  -> filters + search + ranking) Tj ET
+BT /F3 8 Tf 60 418 Td (  -> SeniorityTable / DashboardVisual / PDF exports) Tj ET
+BT /F1 9 Tf 50 400 Td (Optional local sync flow:) Tj ET
+BT /F3 8 Tf 60 382 Td (sync-google-sheet-to-json.js) Tj ET
+BT /F3 8 Tf 60 369 Td (  -> HTTPS fetch Google Sheet CSV) Tj ET
+BT /F3 8 Tf 60 356 Td (  -> parse CSV) Tj ET
+BT /F3 8 Tf 60 343 Td (  -> hash payload) Tj ET
+BT /F3 8 Tf 60 330 Td (  -> write public/seniority-data.json when changed) Tj ET
+BT /F2 14 Tf 50 308 Td (4. Technology Stack Analysis) Tj ET
+BT /F2 11 Tf 50 284 Td (Languages) Tj ET
+BT /F1 9 Tf 50 264 Td (- TypeScript and TSX: application source and React components.) Tj ET
+BT /F1 9 Tf 50 251 Td (- JavaScript: Google Sheet sync script.) Tj ET
+BT /F1 9 Tf 50 238 Td (- CSS: application styling and shared theme package.) Tj ET
+BT /F1 9 Tf 50 225 Td (- JSON: package, config, data cache, and deployment metadata.) Tj ET
+BT /F1 9 Tf 50 212 Td (- CSV: source/fixture candidate data.) Tj ET
+BT /F2 11 Tf 50 190 Td (Frameworks and Libraries) Tj ET
+BT /F1 9 Tf 50 170 Td (- React 18.3.1: component model and application state.) Tj ET
+BT /F1 9 Tf 50 157 Td (- React DOM 18.3.1: browser rendering.) Tj ET
+BT /F1 9 Tf 50 144 Td (- React Router 7.13.0: SPA routing.) Tj ET
+BT /F1 9 Tf 50 131 Td (- Vite 6.4.1: development server and build system.) Tj ET
+BT /F1 9 Tf 50 118 Td (- Tailwind CSS 4.1.12 with @tailwindcss/vite: utility styling pipeline.) Tj ET
+BT /F1 9 Tf 50 105 Td (- Radix UI primitives: checkbox, dialog, label, scroll area, slot.) Tj ET
+BT /F1 9 Tf 50 92 Td (- lucide-react: icons.) Tj ET
+BT /F1 9 Tf 50 79 Td (- date-fns: date formatting and age calculation.) Tj ET
+BT /F1 9 Tf 50 66 Td (- Chart.js and react-chartjs-2: dashboards and vacancy charts.) Tj ET
+BT /F1 8 Tf 50 28 Td (Generated from workspace source on 2026-06-10) Tj ET
+endstream
+endobj
+13 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 12 0 R >>
+endobj
+14 0 obj
+<< /Length 3447 >>
+stream
+BT /F2 8 Tf 50 815 Td (Seniority Portal - Enterprise Documentation Package) Tj ET
+BT /F1 8 Tf 500 815 Td (Page 5) Tj ET
+BT /F1 9 Tf 50 788 Td (- Leaflet and react-leaflet: school vacancy map.) Tj ET
+BT /F1 9 Tf 50 775 Td (- Framer Motion: dashboard modal animation.) Tj ET
+BT /F1 9 Tf 50 762 Td (- jsPDF and jspdf-autotable: PDF report generation.) Tj ET
+BT /F1 9 Tf 50 749 Td (- Sonner: toast infrastructure.) Tj ET
+BT /F1 9 Tf 50 736 Td (- dotenv: environment loading for the Node sync script.) Tj ET
+BT /F1 9 Tf 50 723 Td (- class-variance-authority, clsx, tailwind-merge: UI class composition.) Tj ET
+BT /F1 9 Tf 50 710 Td (- next-themes is listed as a dependency but the implemented theme manager is local in) Tj ET
+BT /F1 9 Tf 50 697 Td (  packages/ui-theme.) Tj ET
+BT /F2 11 Tf 50 675 Td (Development and Build Tools) Tj ET
+BT /F1 9 Tf 50 655 Td (- npm scripts currently present: dev, build, preview.) Tj ET
+BT /F1 9 Tf 50 642 Td (- vite.config.ts configures React, Tailwind, alias @ to src, and raw asset support for) Tj ET
+BT /F1 9 Tf 50 629 Td (  SVG/CSV.) Tj ET
+BT /F1 9 Tf 50 616 Td (- Dockerfile builds with Node 20 Alpine and serves dist with Nginx 1.27 Alpine.) Tj ET
+BT /F1 9 Tf 50 603 Td (- vercel.json rewrites all routes to index.html for SPA fallback.) Tj ET
+BT /F2 11 Tf 50 581 Td (Deployment Technologies) Tj ET
+BT /F1 9 Tf 50 561 Td (- Static build output: dist.) Tj ET
+BT /F1 9 Tf 50 548 Td (- Vercel SPA fallback is configured.) Tj ET
+BT /F1 9 Tf 50 535 Td (- Docker runtime is configured with Nginx.) Tj ET
+BT /F2 14 Tf 50 513 Td (5. Data Management Architecture) Tj ET
+BT /F2 11 Tf 50 489 Td (Discovered Data Sources) Tj ET
+BT /F1 9 Tf 50 469 Td (The application uses published Google Sheets CSV endpoints and optional static JSON.) Tj ET
+BT /F1 9 Tf 50 451 Td (Default endpoints in src/app/utils/fetchGoogleSheetData.ts:) Tj ET
+BT /F1 9 Tf 50 433 Td (- High school: published Google Sheet, gid=0.) Tj ET
+BT /F1 9 Tf 50 420 Td (- Elementary school: published Google Sheet, gid=882704265.) Tj ET
+BT /F1 9 Tf 50 407 Td (- Clergy ordination: published Google Sheet, gid=271291357.) Tj ET
+BT /F1 9 Tf 50 389 Td (Vacancy endpoint in src/app/pages/ApplyPage.tsx:) Tj ET
+BT /F1 9 Tf 50 371 Td (- School vacancy sheet, gid=1387124453.) Tj ET
+BT /F1 9 Tf 50 353 Td (Static cache:) Tj ET
+BT /F1 9 Tf 50 335 Td (- public/seniority-data.json.) Tj ET
+BT /F1 9 Tf 50 317 Td (Local CSV resources:) Tj ET
+BT /F1 9 Tf 50 299 Td (- data/high-higher-secondary-converted.csv.) Tj ET
+BT /F1 9 Tf 50 286 Td (- elementary-mock-data.csv.) Tj ET
+BT /F1 9 Tf 50 268 Td (Static form resources:) Tj ET
+BT /F1 9 Tf 50 250 Td (- public/forms/high-higher-secondary-school-form.pdf.) Tj ET
+BT /F1 9 Tf 50 237 Td (- public/forms/elementry-middle-school-form.pdf.) Tj ET
+BT /F2 11 Tf 50 215 Td (Data Counts Observed) Tj ET
+BT /F1 9 Tf 50 195 Td (public/seniority-data.json contains:) Tj ET
+BT /F1 9 Tf 50 177 Td (- highSchool: 3,048 rows.) Tj ET
+BT /F1 9 Tf 50 164 Td (- elementarySchool: 8 rows.) Tj ET
+BT /F1 9 Tf 50 151 Td (- schoolVacancies: 11 rows.) Tj ET
+BT /F1 9 Tf 50 138 Td (- syncedAt: 2026-03-08T17:03:04.870Z.) Tj ET
+BT /F1 9 Tf 50 125 Td (- sources: published Google Sheet source URLs.) Tj ET
+BT /F1 9 Tf 50 107 Td (data/high-higher-secondary-converted.csv contains 3,048 data rows.) Tj ET
+BT /F1 9 Tf 50 89 Td (elementary-mock-data.csv contains 8 data rows.) Tj ET
+BT /F1 8 Tf 50 28 Td (Generated from workspace source on 2026-06-10) Tj ET
+endstream
+endobj
+15 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 14 0 R >>
+endobj
+16 0 obj
+<< /Length 3965 >>
+stream
+BT /F2 8 Tf 50 815 Td (Seniority Portal - Enterprise Documentation Package) Tj ET
+BT /F1 8 Tf 500 815 Td (Page 6) Tj ET
+BT /F2 11 Tf 50 788 Td (Storage Methods) Tj ET
+BT /F1 9 Tf 50 768 Td (No database schema, database client, migrations, or server persistence layer exists in the) Tj ET
+BT /F1 9 Tf 50 755 Td (workspace. Data is stored externally in published sheets, optionally mirrored into a static) Tj ET
+BT /F1 9 Tf 50 742 Td (JSON file, and processed in browser memory after load.) Tj ET
+BT /F1 9 Tf 50 724 Td (Browser storage is used for preferences:) Tj ET
+BT /F1 9 Tf 50 706 Td (- theme-mode in localStorage.) Tj ET
+BT /F1 9 Tf 50 693 Td (- seniority_language in localStorage.) Tj ET
+BT /F2 11 Tf 50 671 Td (Data Synchronization) Tj ET
+BT /F1 9 Tf 50 651 Td (The browser fetch path refreshes data every 60 seconds in Dashboard.tsx. It retries failed) Tj ET
+BT /F1 9 Tf 50 638 Td (loads and only updates React state when a stable JSON hash of normalized records changes.) Tj ET
+BT /F1 9 Tf 50 620 Td (The Node sync script supports one-shot and watch mode behavior in code, but package.json) Tj ET
+BT /F1 9 Tf 50 607 Td (does not currently define sync:sheet or sync:sheet:watch scripts even though README.md) Tj ET
+BT /F1 9 Tf 50 594 Td (mentions them.) Tj ET
+BT /F2 11 Tf 50 572 Td (Data Validation and Normalization) Tj ET
+BT /F1 9 Tf 50 552 Td (The application performs defensive normalization:) Tj ET
+BT /F1 9 Tf 50 534 Td (- CSV parser handles quoted values and BOM headers.) Tj ET
+BT /F1 9 Tf 50 521 Td (- Fetch layer detects HTML responses when CSV/JSON is expected.) Tj ET
+BT /F1 9 Tf 50 508 Td (- Date parser supports dd.mm.yy, dd.mm.yyyy, slash and dash variants, and native date) Tj ET
+BT /F1 9 Tf 50 495 Td (  parsing fallback.) Tj ET
+BT /F1 9 Tf 50 482 Td (- Column access uses loose matching for spelling and casing variations.) Tj ET
+BT /F1 9 Tf 50 469 Td (- TET parsing accepts numeric percentages, yes/no values, and year-score pairs.) Tj ET
+BT /F1 9 Tf 50 456 Td (- Appointment fields are discovered from several possible column names.) Tj ET
+BT /F1 9 Tf 50 443 Td (- Exit and hold status are derived from text fields.) Tj ET
+BT /F2 11 Tf 50 421 Td (Data Security Measures) Tj ET
+BT /F1 9 Tf 50 401 Td (Implemented measures are limited to presentation controls and fetch safety:) Tj ET
+BT /F1 9 Tf 50 383 Td (- Address, pincode, and member ID display are controlled by feature flags.) Tj ET
+BT /F1 9 Tf 50 370 Td (- CSV/JSON fetches use cache-busting and response-type checks.) Tj ET
+BT /F1 9 Tf 50 357 Td (- Links opened for directions use target="_blank" with rel="noreferrer".) Tj ET
+BT /F1 9 Tf 50 339 Td (Not implemented in this repository:) Tj ET
+BT /F1 9 Tf 50 321 Td (- Authentication.) Tj ET
+BT /F1 9 Tf 50 308 Td (- Authorization.) Tj ET
+BT /F1 9 Tf 50 295 Td (- Encryption of local records.) Tj ET
+BT /F1 9 Tf 50 282 Td (- Server-side audit logging.) Tj ET
+BT /F1 9 Tf 50 269 Td (- Role-based access control.) Tj ET
+BT /F1 9 Tf 50 256 Td (- Secret backend storage.) Tj ET
+BT /F2 14 Tf 50 234 Td (6. Feature-by-Feature Analysis) Tj ET
+BT /F2 11 Tf 50 210 Td (High/Higher Secondary Priority List) Tj ET
+BT /F1 9 Tf 50 190 Td (Purpose: Display and rank high/higher secondary school candidates.) Tj ET
+BT /F1 9 Tf 50 172 Td (User value: Users can review ranked candidates, filter by) Tj ET
+BT /F1 9 Tf 50 159 Td (department/category/pastorate/council, search, switch sort mode, and export PDFs.) Tj ET
+BT /F1 9 Tf 50 141 Td (Business value: Provides consistent appointment priority handling for a large candidate) Tj ET
+BT /F1 9 Tf 50 128 Td (list.) Tj ET
+BT /F1 9 Tf 50 110 Td (Technical implementation:) Tj ET
+BT /F1 9 Tf 50 92 Td (- Mapping: mapHighSchool\(\) in Dashboard.tsx.) Tj ET
+BT /F1 9 Tf 50 79 Td (- Ranking: compareHighSchoolSeniorityCandidates\(\) and compareHighSchoolCandidates\(\) in) Tj ET
+BT /F1 9 Tf 50 66 Td (  seniorityRules.ts.) Tj ET
+BT /F1 8 Tf 50 28 Td (Generated from workspace source on 2026-06-10) Tj ET
+endstream
+endobj
+17 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 16 0 R >>
+endobj
+18 0 obj
+<< /Length 3684 >>
+stream
+BT /F2 8 Tf 50 815 Td (Seniority Portal - Enterprise Documentation Package) Tj ET
+BT /F1 8 Tf 500 815 Td (Page 7) Tj ET
+BT /F1 9 Tf 50 788 Td (- UI: SeniorityTable.tsx, FilterSidebar.tsx, SearchBar.tsx.) Tj ET
+BT /F1 9 Tf 50 775 Td (- Reports: downloadCandidatesPDF\(\), downloadAppointmentsReportPDF\(\),) Tj ET
+BT /F1 9 Tf 50 762 Td (  downloadExitRegisterPDF\(\).) Tj ET
+BT /F1 9 Tf 50 744 Td (Dependencies: React, date-fns, jsPDF, jspdf-autotable.) Tj ET
+BT /F1 9 Tf 50 726 Td (Workflow:) Tj ET
+BT /F1 9 Tf 50 708 Td (1. Fetch high school rows.) Tj ET
+BT /F1 9 Tf 50 695 Td (2. Normalize dates, registration year, category, department, qualification, TET, pastorate,) Tj ET
+BT /F1 9 Tf 50 682 Td (council, and appointment fields.) Tj ET
+BT /F1 9 Tf 50 669 Td (3. Exclude exited candidates from active list.) Tj ET
+BT /F1 9 Tf 50 656 Td (4. Apply filters and search.) Tj ET
+BT /F1 9 Tf 50 643 Td (5. Rank by seniority or appointment mode.) Tj ET
+BT /F1 9 Tf 50 630 Td (6. Render paginated table and optional report exports.) Tj ET
+BT /F2 11 Tf 50 608 Td (Elementary/Middle Priority List) Tj ET
+BT /F1 9 Tf 50 588 Td (Purpose: Display and rank elementary/middle school candidates.) Tj ET
+BT /F1 9 Tf 50 570 Td (User value: Users can review candidates by council, pastorate, category, subject,) Tj ET
+BT /F1 9 Tf 50 557 Td (qualification, TET status, and ranking.) Tj ET
+BT /F1 9 Tf 50 539 Td (Business value: Standardizes elementary/middle appointment ordering and TET pass handling.) Tj ET
+BT /F1 9 Tf 50 521 Td (Technical implementation:) Tj ET
+BT /F1 9 Tf 50 503 Td (- Mapping: mapElementarySchool\(\) in Dashboard.tsx.) Tj ET
+BT /F1 9 Tf 50 490 Td (- Ranking: compareElementarySchoolSeniorityCandidates\(\) and) Tj ET
+BT /F1 9 Tf 50 477 Td (  compareElementarySchoolCandidates\(\).) Tj ET
+BT /F1 9 Tf 50 464 Td (- TET pass mark: ELEMENTARY_TET_PASS_MARK = 40.) Tj ET
+BT /F1 9 Tf 50 446 Td (Dependencies: React, date-fns, jsPDF.) Tj ET
+BT /F1 9 Tf 50 428 Td (Workflow:) Tj ET
+BT /F1 9 Tf 50 410 Td (1. Fetch elementary rows.) Tj ET
+BT /F1 9 Tf 50 397 Td (2. Normalize subject/level, qualification, TET completion, registration and passing year.) Tj ET
+BT /F1 9 Tf 50 384 Td (3. Apply filters and search.) Tj ET
+BT /F1 9 Tf 50 371 Td (4. Rank by seniority or appointment mode.) Tj ET
+BT /F1 9 Tf 50 358 Td (5. Render table and reports.) Tj ET
+BT /F2 11 Tf 50 336 Td (Clergy Ordination Priority List) Tj ET
+BT /F1 9 Tf 50 316 Td (Purpose: Display and rank clergy ordination candidates.) Tj ET
+BT /F1 9 Tf 50 298 Td (User value: Users can review clergy priority by ordination year, experience, age,) Tj ET
+BT /F1 9 Tf 50 285 Td (qualification, and home pastorate.) Tj ET
+BT /F1 9 Tf 50 267 Td (Business value: Provides repeatable ordination priority ordering.) Tj ET
+BT /F1 9 Tf 50 249 Td (Technical implementation:) Tj ET
+BT /F1 9 Tf 50 231 Td (- Mapping: mapClergyOrdination\(\) in Dashboard.tsx.) Tj ET
+BT /F1 9 Tf 50 218 Td (- Ranking: compareClergyOrdinationCandidates\(\).) Tj ET
+BT /F1 9 Tf 50 205 Td (- Filters: home pastorate and qualification.) Tj ET
+BT /F1 9 Tf 50 187 Td (Workflow:) Tj ET
+BT /F1 9 Tf 50 169 Td (1. Fetch clergy ordination rows.) Tj ET
+BT /F1 9 Tf 50 156 Td (2. Normalize birth date, passing year, experience, qualification, home pastorate, and) Tj ET
+BT /F1 9 Tf 50 143 Td (appointment fields.) Tj ET
+BT /F1 9 Tf 50 130 Td (3. Rank by earlier passing year, more experience, and older age.) Tj ET
+BT /F1 9 Tf 50 117 Td (4. Render table and reports.) Tj ET
+BT /F2 11 Tf 50 95 Td (Search) Tj ET
+BT /F1 9 Tf 50 75 Td (Purpose: Search candidate records across multiple fields.) Tj ET
+BT /F1 8 Tf 50 28 Td (Generated from workspace source on 2026-06-10) Tj ET
+endstream
+endobj
+19 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 18 0 R >>
+endobj
+20 0 obj
+<< /Length 3457 >>
+stream
+BT /F2 8 Tf 50 815 Td (Seniority Portal - Enterprise Documentation Package) Tj ET
+BT /F1 8 Tf 500 815 Td (Page 8) Tj ET
+BT /F1 9 Tf 50 788 Td (Technical implementation: searchCandidatesGeneric\(\) in src/app/utils/helpers.ts.) Tj ET
+BT /F1 9 Tf 50 770 Td (Search fields include name, member ID, council, pastorate, diocese, institution, department,) Tj ET
+BT /F1 9 Tf 50 757 Td (category, subject, level, home pastorate, experience, qualification, email, pincode, hold) Tj ET
+BT /F1 9 Tf 50 744 Td (reason, exit type, and TET completion.) Tj ET
+BT /F2 11 Tf 50 722 Td (Filtering) Tj ET
+BT /F1 9 Tf 50 702 Td (Purpose: Narrow candidate lists using domain-specific dimensions.) Tj ET
+BT /F1 9 Tf 50 684 Td (Technical implementation:) Tj ET
+BT /F1 9 Tf 50 666 Td (- FilterSidebar.tsx.) Tj ET
+BT /F1 9 Tf 50 653 Td (- DropdownFilter.tsx.) Tj ET
+BT /F1 9 Tf 50 640 Td (- Filter groups built dynamically in Dashboard.tsx.) Tj ET
+BT /F1 9 Tf 50 622 Td (High school filters: department, category, pastorate, council.) Tj ET
+BT /F1 9 Tf 50 604 Td (Elementary filters: council, pastorate, category, subject.) Tj ET
+BT /F1 9 Tf 50 586 Td (Clergy filters: home pastorate, qualification.) Tj ET
+BT /F2 11 Tf 50 564 Td (Appointment View and Appointment Report) Tj ET
+BT /F1 9 Tf 50 544 Td (Purpose: Show appointed and held candidates and export appointment reports.) Tj ET
+BT /F1 9 Tf 50 526 Td (Technical implementation:) Tj ET
+BT /F1 9 Tf 50 508 Td (- Feature flag: APPOINTMENT_REPORT_ENABLED = true.) Tj ET
+BT /F1 9 Tf 50 495 Td (- URL search param: appointments=1.) Tj ET
+BT /F1 9 Tf 50 482 Td (- Appointment ranking map in buildAppointmentRankMap\(\).) Tj ET
+BT /F1 9 Tf 50 469 Td (- Report export in downloadAppointmentsReportPDF\(\).) Tj ET
+BT /F1 9 Tf 50 451 Td (Appointment fields include status, appointment date, institute/location, compassion reason,) Tj ET
+BT /F1 9 Tf 50 438 Td (and hold reason.) Tj ET
+BT /F2 11 Tf 50 416 Td (Exit Register) Tj ET
+BT /F1 9 Tf 50 396 Td (Purpose: Separate exited candidates from active ranking and report them.) Tj ET
+BT /F1 9 Tf 50 378 Td (Technical implementation:) Tj ET
+BT /F1 9 Tf 50 360 Td (- Exit status detection through exitType.) Tj ET
+BT /F1 9 Tf 50 347 Td (- UI table in Dashboard.tsx.) Tj ET
+BT /F1 9 Tf 50 334 Td (- PDF export in downloadExitRegisterPDF\(\).) Tj ET
+BT /F2 11 Tf 50 312 Td (PDF Priority List Export) Tj ET
+BT /F1 9 Tf 50 292 Td (Purpose: Export the filtered priority list.) Tj ET
+BT /F1 9 Tf 50 274 Td (Technical implementation:) Tj ET
+BT /F1 9 Tf 50 256 Td (- Feature flag: DOWNLOAD_PDF_ENABLED = true.) Tj ET
+BT /F1 9 Tf 50 243 Td (- Dynamic import of pdfUtils.) Tj ET
+BT /F1 9 Tf 50 230 Td (- Landscape A4 PDF with logo, metadata, table, watermark, printed timestamp, and page) Tj ET
+BT /F1 9 Tf 50 217 Td (  numbering.) Tj ET
+BT /F2 11 Tf 50 195 Td (Visual Dashboard) Tj ET
+BT /F1 9 Tf 50 175 Td (Purpose: Provide chart-based summary of candidate distribution.) Tj ET
+BT /F1 9 Tf 50 157 Td (Technical implementation:) Tj ET
+BT /F1 9 Tf 50 139 Td (- DashboardVisual.tsx.) Tj ET
+BT /F1 9 Tf 50 126 Td (- Chart.js Doughnut charts.) Tj ET
+BT /F1 9 Tf 50 113 Td (- Framer Motion modal animation.) Tj ET
+BT /F1 9 Tf 50 95 Td (Views vary by domain:) Tj ET
+BT /F1 9 Tf 50 77 Td (- High school: department and category split.) Tj ET
+BT /F1 9 Tf 50 64 Td (- Elementary: council, pastorate, subject, and category split.) Tj ET
+BT /F1 8 Tf 50 28 Td (Generated from workspace source on 2026-06-10) Tj ET
+endstream
+endobj
+21 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 20 0 R >>
+endobj
+22 0 obj
+<< /Length 3255 >>
+stream
+BT /F2 8 Tf 50 815 Td (Seniority Portal - Enterprise Documentation Package) Tj ET
+BT /F1 8 Tf 500 815 Td (Page 9) Tj ET
+BT /F1 9 Tf 50 788 Td (- Clergy: home pastorate and qualification.) Tj ET
+BT /F2 11 Tf 50 766 Td (Apply Page and Vacancy Dashboard) Tj ET
+BT /F1 9 Tf 50 746 Td (Purpose: Download static application forms and view school vacancies on charts and a map.) Tj ET
+BT /F1 9 Tf 50 728 Td (Current status: Implemented but not routed because APPLY_SECTION_ENABLED = false.) Tj ET
+BT /F1 9 Tf 50 710 Td (Technical implementation:) Tj ET
+BT /F1 9 Tf 50 692 Td (- ApplyPage.tsx.) Tj ET
+BT /F1 9 Tf 50 679 Td (- SchoolVacancyMap.tsx.) Tj ET
+BT /F1 9 Tf 50 666 Td (- Static form downloads from public/forms.) Tj ET
+BT /F1 9 Tf 50 653 Td (- Vacancy data from Google Sheet CSV or JSON.) Tj ET
+BT /F1 9 Tf 50 640 Td (- Chart.js bar/doughnut charts.) Tj ET
+BT /F1 9 Tf 50 627 Td (- Leaflet map with OpenStreetMap tiles.) Tj ET
+BT /F2 11 Tf 50 605 Td (Theme Switching) Tj ET
+BT /F1 9 Tf 50 585 Td (Purpose: Toggle light/dark visual mode.) Tj ET
+BT /F1 9 Tf 50 567 Td (Technical implementation:) Tj ET
+BT /F1 9 Tf 50 549 Td (- packages/ui-theme/src/theme-manager.ts.) Tj ET
+BT /F1 9 Tf 50 536 Td (- localStorage key: theme-mode.) Tj ET
+BT /F1 9 Tf 50 523 Td (- DOM class: dark.) Tj ET
+BT /F1 9 Tf 50 510 Td (- DOM dataset: data-theme.) Tj ET
+BT /F2 11 Tf 50 488 Td (Language Switching) Tj ET
+BT /F1 9 Tf 50 468 Td (Purpose: Toggle English and Tamil UI labels.) Tj ET
+BT /F1 9 Tf 50 450 Td (Technical implementation:) Tj ET
+BT /F1 9 Tf 50 432 Td (- src/app/i18n/language.tsx.) Tj ET
+BT /F1 9 Tf 50 419 Td (- localStorage key: seniority_language.) Tj ET
+BT /F1 9 Tf 50 406 Td (- document.documentElement.lang updated to en or ta.) Tj ET
+BT /F2 14 Tf 50 384 Td (7. Business Rules) Tj ET
+BT /F2 11 Tf 50 360 Td (High/Higher Secondary Seniority) Tj ET
+BT /F1 9 Tf 50 340 Td (- Earlier registration year comes first.) Tj ET
+BT /F1 9 Tf 50 327 Td (- If tied, earlier passing month/year comes first.) Tj ET
+BT /F1 9 Tf 50 314 Td (- If tied, older age comes first.) Tj ET
+BT /F1 9 Tf 50 301 Td (- If tied, higher TET score comes first for UG candidates.) Tj ET
+BT /F2 11 Tf 50 279 Td (High/Higher Secondary Appointment Mode) Tj ET
+BT /F1 9 Tf 50 259 Td (- PG candidates follow registration, passing, and date of birth ordering.) Tj ET
+BT /F1 9 Tf 50 246 Td (- UG candidates with valid TET data are prioritized over UG candidates without valid) Tj ET
+BT /F1 9 Tf 50 233 Td (  TET.) Tj ET
+BT /F1 9 Tf 50 220 Td (- Valid high school TET threshold is HIGH_SCHOOL_TET_PASS_MARK = 60.) Tj ET
+BT /F2 11 Tf 50 198 Td (Elementary/Middle Seniority) Tj ET
+BT /F1 9 Tf 50 178 Td (- Earlier registration year comes first.) Tj ET
+BT /F1 9 Tf 50 165 Td (- If tied, earlier passing year comes first.) Tj ET
+BT /F1 9 Tf 50 152 Td (- If tied, older age comes first.) Tj ET
+BT /F2 11 Tf 50 130 Td (Elementary/Middle Appointment Mode) Tj ET
+BT /F1 9 Tf 50 110 Td (- TET-qualified candidates are prioritized.) Tj ET
+BT /F1 9 Tf 50 97 Td (- Elementary TET threshold is ELEMENTARY_TET_PASS_MARK = 40.) Tj ET
+BT /F1 9 Tf 50 84 Td (- Tie-breaks then follow registration year, passing year, and date of birth.) Tj ET
+BT /F1 8 Tf 50 28 Td (Generated from workspace source on 2026-06-10) Tj ET
+endstream
+endobj
+23 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 22 0 R >>
+endobj
+24 0 obj
+<< /Length 3608 >>
+stream
+BT /F2 8 Tf 50 815 Td (Seniority Portal - Enterprise Documentation Package) Tj ET
+BT /F1 8 Tf 500 815 Td (Page 10) Tj ET
+BT /F2 11 Tf 50 788 Td (Clergy Ordination) Tj ET
+BT /F1 9 Tf 50 768 Td (- Earlier year of passing comes first.) Tj ET
+BT /F1 9 Tf 50 755 Td (- If tied, higher years of experience comes first.) Tj ET
+BT /F1 9 Tf 50 742 Td (- If tied, older age comes first.) Tj ET
+BT /F2 14 Tf 50 720 Td (8. Configuration and Feature Flags) Tj ET
+BT /F1 9 Tf 50 700 Td (Current feature flags in src/app/config/features.ts:) Tj ET
+BT /F1 9 Tf 50 682 Td (- APPLY_SECTION_ENABLED = false.) Tj ET
+BT /F1 9 Tf 50 669 Td (- APPOINTMENT_REPORT_ENABLED = true.) Tj ET
+BT /F1 9 Tf 50 656 Td (- LANGUAGE_SWITCH_ENABLED = true.) Tj ET
+BT /F1 9 Tf 50 643 Td (- HIGH_SCHOOL_SECTION_ENABLED = true.) Tj ET
+BT /F1 9 Tf 50 630 Td (- MIDDLE_SCHOOL_SECTION_ENABLED = true.) Tj ET
+BT /F1 9 Tf 50 617 Td (- CLERGY_SECTION_ENABLED = true.) Tj ET
+BT /F1 9 Tf 50 604 Td (- NAVIGATION_TUTORIAL_ENABLED = true.) Tj ET
+BT /F1 9 Tf 50 591 Td (- HIGH_SCHOOL_TET_PASS_MARK = 60.) Tj ET
+BT /F1 9 Tf 50 578 Td (- ELEMENTARY_TET_PASS_MARK = 40.) Tj ET
+BT /F1 9 Tf 50 565 Td (- SHOW_MEMBER_ID = false.) Tj ET
+BT /F1 9 Tf 50 552 Td (- SHOW_ADDRESS = false.) Tj ET
+BT /F1 9 Tf 50 539 Td (- SHOW_PINCODE = false.) Tj ET
+BT /F1 9 Tf 50 526 Td (- DOWNLOAD_PDF_ENABLED = true.) Tj ET
+BT /F1 9 Tf 50 513 Td (- APPOINTMENT_REPORT_DOWNLOAD_ENABLED = true.) Tj ET
+BT /F1 9 Tf 50 495 Td (Environment variables documented or used:) Tj ET
+BT /F1 9 Tf 50 477 Td (- VITE_HIGH_SCHOOL_CSV_URL.) Tj ET
+BT /F1 9 Tf 50 464 Td (- VITE_ELEMENTARY_SCHOOL_CSV_URL.) Tj ET
+BT /F1 9 Tf 50 451 Td (- VITE_CLERGY_ORDINATION_CSV_URL.) Tj ET
+BT /F1 9 Tf 50 438 Td (- VITE_SCHOOL_VACANCY_CSV_URL.) Tj ET
+BT /F1 9 Tf 50 425 Td (- VITE_GOOGLE_SHEET_CSV_URL.) Tj ET
+BT /F1 9 Tf 50 412 Td (- VITE_HIGH_SCHOOL_DATA_URL.) Tj ET
+BT /F1 9 Tf 50 399 Td (- VITE_ELEMENTARY_SCHOOL_DATA_URL.) Tj ET
+BT /F1 9 Tf 50 386 Td (- VITE_CLERGY_ORDINATION_DATA_URL.) Tj ET
+BT /F1 9 Tf 50 373 Td (- VITE_GOOGLE_SHEET_DATA_URL.) Tj ET
+BT /F1 9 Tf 50 360 Td (- VITE_SCHOOL_VACANCY_DATA_URL.) Tj ET
+BT /F1 9 Tf 50 347 Td (- Sync script variables: GOOGLE_SHEET_PUB_URL, HIGH_SCHOOL_GID, ELEMENTARY_SCHOOL_GID,) Tj ET
+BT /F1 9 Tf 50 334 Td (  HIGH_SCHOOL_CSV_URL, ELEMENTARY_SCHOOL_CSV_URL, SCHOOL_VACANCY_CSV_URL.) Tj ET
+BT /F2 14 Tf 50 312 Td (9. Assets and Supporting Resources) Tj ET
+BT /F1 9 Tf 50 292 Td (Public assets:) Tj ET
+BT /F1 9 Tf 50 274 Td (- public/diocese-logo.png: logo used in header, splash screen, visual dashboard, and) Tj ET
+BT /F1 9 Tf 50 261 Td (  PDFs.) Tj ET
+BT /F1 9 Tf 50 248 Td (- public/seniority-data.json: generated/static data cache.) Tj ET
+BT /F1 9 Tf 50 235 Td (- public/forms/high-higher-secondary-school-form.pdf: form download.) Tj ET
+BT /F1 9 Tf 50 222 Td (- public/forms/elementry-middle-school-form.pdf: form download.) Tj ET
+BT /F1 9 Tf 50 209 Td (- public/forms/README.txt: form asset notes.) Tj ET
+BT /F1 9 Tf 50 191 Td (Supporting resources:) Tj ET
+BT /F1 9 Tf 50 173 Td (- guidelines/Guidelines.md.) Tj ET
+BT /F1 9 Tf 50 160 Td (- packages/ui-theme: shared theme framework.) Tj ET
+BT /F1 9 Tf 50 147 Td (- templates/csi-starter: reusable CSI starter application.) Tj ET
+BT /F2 14 Tf 50 125 Td (10. Deployment and Runtime) Tj ET
+BT /F2 11 Tf 50 101 Td (Static Hosting) Tj ET
+BT /F1 9 Tf 50 81 Td (The app builds to dist and can be deployed on a static host. vercel.json rewrites all paths) Tj ET
+BT /F1 9 Tf 50 68 Td (to index.html, enabling browser-router deep links.) Tj ET
+BT /F1 8 Tf 50 28 Td (Generated from workspace source on 2026-06-10) Tj ET
+endstream
+endobj
+25 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 24 0 R >>
+endobj
+26 0 obj
+<< /Length 3737 >>
+stream
+BT /F2 8 Tf 50 815 Td (Seniority Portal - Enterprise Documentation Package) Tj ET
+BT /F1 8 Tf 500 815 Td (Page 11) Tj ET
+BT /F2 11 Tf 50 788 Td (Docker Hosting) Tj ET
+BT /F1 9 Tf 50 768 Td (The Dockerfile:) Tj ET
+BT /F1 9 Tf 50 750 Td (1. Uses node:20-alpine to install dependencies and run npm run build.) Tj ET
+BT /F1 9 Tf 50 737 Td (2. Uses nginx:1.27-alpine to serve dist.) Tj ET
+BT /F1 9 Tf 50 724 Td (3. Exposes port 80.) Tj ET
+BT /F2 11 Tf 50 702 Td (Local Tooling Observation) Tj ET
+BT /F1 9 Tf 50 682 Td (In the current shell session, node and npm were not available on PATH, so a local npm run) Tj ET
+BT /F1 9 Tf 50 669 Td (build verification could not be performed here. The repository does contain node_modules,) Tj ET
+BT /F1 9 Tf 50 656 Td (package-lock.json, and a Node-oriented Docker build path.) Tj ET
+BT /F2 14 Tf 50 634 Td (11. Risks, Gaps, and Recommendations) Tj ET
+BT /F2 11 Tf 50 610 Td (Observed Gaps) Tj ET
+BT /F1 9 Tf 50 590 Td (- README.md documents npm run sync:sheet and npm run sync:sheet:watch, but those scripts) Tj ET
+BT /F1 9 Tf 50 577 Td (  are not present in package.json.) Tj ET
+BT /F1 9 Tf 50 564 Td (- The Apply route is implemented but disabled by current feature flag.) Tj ET
+BT /F1 9 Tf 50 551 Td (- ATTRIBUTIONS.md exists but is empty.) Tj ET
+BT /F1 9 Tf 50 538 Td (- Static form PDFs in public/forms are only 431 bytes each in this workspace, which) Tj ET
+BT /F1 9 Tf 50 525 Td (  should be reviewed to ensure they are valid production forms.) Tj ET
+BT /F1 9 Tf 50 512 Td (- No automated tests are present in the discovered file set.) Tj ET
+BT /F1 9 Tf 50 499 Td (- No authentication or authorization layer exists in this repository.) Tj ET
+BT /F2 11 Tf 50 477 Td (Recommendations) Tj ET
+BT /F1 9 Tf 50 457 Td (- Add sync:sheet and sync:sheet:watch scripts or update README.md.) Tj ET
+BT /F1 9 Tf 50 444 Td (- Add unit tests for ranking rules, CSV parsing, date parsing, and appointment handling.) Tj ET
+BT /F1 9 Tf 50 431 Td (- Add integration tests for data loading failures and HTML response detection.) Tj ET
+BT /F1 9 Tf 50 418 Td (- Validate bundled PDF forms.) Tj ET
+BT /F1 9 Tf 50 405 Td (- Decide whether member ID, address, and pincode are safe to ship in source data if) Tj ET
+BT /F1 9 Tf 50 392 Td (  hidden by UI flags.) Tj ET
+BT /F1 9 Tf 50 379 Td (- Add dependency/license attribution if required by the organization.) Tj ET
+BT /F1 9 Tf 50 366 Td (- Consider row virtualization if candidate counts grow substantially beyond current) Tj ET
+BT /F1 9 Tf 50 353 Td (  volumes.) Tj ET
+BT /F2 14 Tf 50 331 Td (12. Source Inventory) Tj ET
+BT /F1 9 Tf 50 311 Td (Key application files reviewed:) Tj ET
+BT /F1 9 Tf 50 293 Td (- README.md.) Tj ET
+BT /F1 9 Tf 50 280 Td (- package.json.) Tj ET
+BT /F1 9 Tf 50 267 Td (- vite.config.ts.) Tj ET
+BT /F1 9 Tf 50 254 Td (- vercel.json.) Tj ET
+BT /F1 9 Tf 50 241 Td (- Dockerfile.) Tj ET
+BT /F1 9 Tf 50 228 Td (- sync-google-sheet-to-json.js.) Tj ET
+BT /F1 9 Tf 50 215 Td (- src/app/App.tsx.) Tj ET
+BT /F1 9 Tf 50 202 Td (- src/app/routes.tsx.) Tj ET
+BT /F1 9 Tf 50 189 Td (- src/app/pages/Root.tsx.) Tj ET
+BT /F1 9 Tf 50 176 Td (- src/app/pages/Dashboard.tsx.) Tj ET
+BT /F1 9 Tf 50 163 Td (- src/app/pages/ApplyPage.tsx.) Tj ET
+BT /F1 9 Tf 50 150 Td (- src/app/config/features.ts.) Tj ET
+BT /F1 9 Tf 50 137 Td (- src/app/config/seniorityRules.ts.) Tj ET
+BT /F1 9 Tf 50 124 Td (- src/app/utils/fetchGoogleSheetData.ts.) Tj ET
+BT /F1 9 Tf 50 111 Td (- src/app/utils/helpers.ts.) Tj ET
+BT /F1 9 Tf 50 98 Td (- src/app/utils/pdfUtils.ts.) Tj ET
+BT /F1 9 Tf 50 85 Td (- src/app/components/Header.tsx.) Tj ET
+BT /F1 9 Tf 50 72 Td (- src/app/components/FilterSidebar.tsx.) Tj ET
+BT /F1 8 Tf 50 28 Td (Generated from workspace source on 2026-06-10) Tj ET
+endstream
+endobj
+27 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 26 0 R >>
+endobj
+28 0 obj
+<< /Length 930 >>
+stream
+BT /F2 8 Tf 50 815 Td (Seniority Portal - Enterprise Documentation Package) Tj ET
+BT /F1 8 Tf 500 815 Td (Page 12) Tj ET
+BT /F1 9 Tf 50 788 Td (- src/app/components/SeniorityTable.tsx.) Tj ET
+BT /F1 9 Tf 50 775 Td (- src/app/components/DashboardVisual.tsx.) Tj ET
+BT /F1 9 Tf 50 762 Td (- src/app/components/SchoolVacancyMap.tsx.) Tj ET
+BT /F1 9 Tf 50 749 Td (- src/app/components/AppGuidelines.tsx.) Tj ET
+BT /F1 9 Tf 50 736 Td (- src/app/i18n/language.tsx.) Tj ET
+BT /F1 9 Tf 50 723 Td (- packages/ui-theme/src/theme-manager.ts.) Tj ET
+BT /F1 9 Tf 50 710 Td (- packages/ui-theme/README.md.) Tj ET
+BT /F1 9 Tf 50 697 Td (- templates/csi-starter/README.md.) Tj ET
+BT /F1 9 Tf 50 684 Td (- public/seniority-data.json.) Tj ET
+BT /F1 9 Tf 50 671 Td (- data/high-higher-secondary-converted.csv.) Tj ET
+BT /F1 9 Tf 50 658 Td (- elementary-mock-data.csv.) Tj ET
+BT /F1 8 Tf 50 28 Td (Generated from workspace source on 2026-06-10) Tj ET
+endstream
+endobj
+29 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 28 0 R >>
+endobj
+xref
+0 30
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000198 00000 n 
+0000000268 00000 n 
+0000000343 00000 n 
+0000000411 00000 n 
+0000004701 00000 n 
+0000004847 00000 n 
+0000008999 00000 n 
+0000009145 00000 n 
+0000012860 00000 n 
+0000013008 00000 n 
+0000016710 00000 n 
+0000016858 00000 n 
+0000020358 00000 n 
+0000020506 00000 n 
+0000024524 00000 n 
+0000024672 00000 n 
+0000028409 00000 n 
+0000028557 00000 n 
+0000032067 00000 n 
+0000032215 00000 n 
+0000035523 00000 n 
+0000035671 00000 n 
+0000039332 00000 n 
+0000039480 00000 n 
+0000043270 00000 n 
+0000043418 00000 n 
+0000044400 00000 n 
+trailer
+<< /Size 30 /Root 1 0 R >>
+startxref
+44548
+%%EOF
