@@ -6,6 +6,15 @@ type SchoolDataPayload = {
   changeLog?: any[];
 };
 
+const DEFAULT_HIGH_SCHOOL_CSV_URL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQizNtmY220qkpPceFvfQk_M241lqzKs3K3ffxYTng5cLslZK_Xm6LlkQelDWdXQH2Plo_AmYwmnBew/pub?gid=0&single=true&output=csv";
+const DEFAULT_ELEMENTARY_SCHOOL_CSV_URL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQizNtmY220qkpPceFvfQk_M241lqzKs3K3ffxYTng5cLslZK_Xm6LlkQelDWdXQH2Plo_AmYwmnBew/pub?gid=882704265&single=true&output=csv";
+const DEFAULT_CLERGY_ORDINATION_CSV_URL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQizNtmY220qkpPceFvfQk_M241lqzKs3K3ffxYTng5cLslZK_Xm6LlkQelDWdXQH2Plo_AmYwmnBew/pub?gid=271291357&single=true&output=csv";
+const DEFAULT_CHANGE_LOG_CSV_URL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQizNtmY220qkpPceFvfQk_M241lqzKs3K3ffxYTng5cLslZK_Xm6LlkQelDWdXQH2Plo_AmYwmnBew/pub?gid=246990650&single=true&output=csv";
+
 function parseCSV(text: string) {
   const normalized = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
   const rows: string[][] = [];
@@ -32,9 +41,7 @@ function parseCSV(text: string) {
     if (ch === "\n" && !inQuotes) {
       currentRow.push(currentValue.trim());
       currentValue = "";
-      if (currentRow.some((value) => value.length > 0)) {
-        rows.push(currentRow);
-      }
+      if (currentRow.some((value) => value.length > 0)) rows.push(currentRow);
       currentRow = [];
       continue;
     }
@@ -43,9 +50,7 @@ function parseCSV(text: string) {
 
   if (currentValue.length > 0 || currentRow.length > 0) {
     currentRow.push(currentValue.trim());
-    if (currentRow.some((value) => value.length > 0)) {
-      rows.push(currentRow);
-    }
+    if (currentRow.some((value) => value.length > 0)) rows.push(currentRow);
   }
 
   if (!rows.length) return [];
@@ -61,7 +66,7 @@ function parseCSV(text: string) {
 }
 
 function appendNoCacheParam(url: string) {
-  const u = new URL(url, window.location.origin);
+  const u = new URL(url);
   u.searchParams.set("_ts", String(Date.now()));
   return u.toString();
 }
@@ -81,7 +86,7 @@ function normalizePayload(parsed: any): SchoolDataPayload {
 
 async function fetchRowsFromUrl(url: string, attempt = 1): Promise<any[] | SchoolDataPayload> {
   try {
-    const response = await fetch(appendNoCacheParam(url), { cache: "no-store", credentials: "include" });
+    const response = await fetch(appendNoCacheParam(url), { cache: "no-store" });
     if (!response.ok) throw new Error(`Failed to load data from ${url}`);
 
     const contentType = String(response.headers.get("content-type") || "").toLowerCase();
@@ -107,18 +112,75 @@ async function fetchRowsFromUrl(url: string, attempt = 1): Promise<any[] | Schoo
   }
 }
 
+function getConfiguredUrls() {
+  const highUrl =
+    import.meta.env.VITE_HIGH_SCHOOL_DATA_URL ||
+    import.meta.env.VITE_HIGH_SCHOOL_CSV_URL ||
+    import.meta.env.VITE_GOOGLE_SHEET_DATA_URL ||
+    import.meta.env.VITE_GOOGLE_SHEET_CSV_URL ||
+    DEFAULT_HIGH_SCHOOL_CSV_URL;
+
+  const elementaryUrl =
+    import.meta.env.VITE_ELEMENTARY_SCHOOL_DATA_URL ||
+    import.meta.env.VITE_ELEMENTARY_SCHOOL_CSV_URL ||
+    DEFAULT_ELEMENTARY_SCHOOL_CSV_URL;
+
+  const clergyUrl =
+    import.meta.env.VITE_CLERGY_ORDINATION_DATA_URL ||
+    import.meta.env.VITE_CLERGY_ORDINATION_CSV_URL ||
+    DEFAULT_CLERGY_ORDINATION_CSV_URL;
+
+  const changeLogUrl =
+    import.meta.env.VITE_CHANGE_LOG_DATA_URL ||
+    import.meta.env.VITE_CHANGE_LOG_CSV_URL ||
+    DEFAULT_CHANGE_LOG_CSV_URL;
+
+  return { highUrl, elementaryUrl, clergyUrl, changeLogUrl };
+}
+
 export async function fetchGoogleSheetData(): Promise<SchoolDataPayload> {
-  const response = await fetch("/api/seniority-data", { cache: "no-store", credentials: "include" });
-  if (!response.ok) {
-    throw new Error("Failed to load protected data");
+  const { highUrl, elementaryUrl, clergyUrl, changeLogUrl } = getConfiguredUrls();
+
+  const highResult = await fetchRowsFromUrl(highUrl);
+  if (!Array.isArray(highResult)) {
+    return {
+      highSchool: highResult.highSchool || [],
+      elementarySchool: highResult.elementarySchool || [],
+      clergyOrdination: highResult.clergyOrdination || [],
+      schoolVacancies: highResult.schoolVacancies || [],
+      changeLog: highResult.changeLog || [],
+    };
   }
 
-  const payload = await response.json();
+  let elementaryRows: any[] = [];
+  if (elementaryUrl) {
+    const elementaryResult = await fetchRowsFromUrl(elementaryUrl);
+    elementaryRows = Array.isArray(elementaryResult)
+      ? elementaryResult
+      : elementaryResult.elementarySchool || [];
+  }
+
+  let clergyRows: any[] = [];
+  if (clergyUrl) {
+    const clergyResult = await fetchRowsFromUrl(clergyUrl);
+    clergyRows = Array.isArray(clergyResult)
+      ? clergyResult
+      : clergyResult.clergyOrdination || [];
+  }
+
+  let changeLogRows: any[] = [];
+  if (changeLogUrl) {
+    const changeLogResult = await fetchRowsFromUrl(changeLogUrl);
+    changeLogRows = Array.isArray(changeLogResult)
+      ? changeLogResult
+      : changeLogResult.changeLog || [];
+  }
+
   return {
-    highSchool: Array.isArray(payload?.highSchool) ? payload.highSchool : [],
-    elementarySchool: Array.isArray(payload?.elementarySchool) ? payload.elementarySchool : [],
-    clergyOrdination: Array.isArray(payload?.clergyOrdination) ? payload.clergyOrdination : [],
-    schoolVacancies: Array.isArray(payload?.schoolVacancies) ? payload.schoolVacancies : [],
-    changeLog: Array.isArray(payload?.changeLog) ? payload.changeLog : [],
+    highSchool: highResult,
+    elementarySchool: elementaryRows,
+    clergyOrdination: clergyRows,
+    schoolVacancies: [],
+    changeLog: changeLogRows,
   };
 }

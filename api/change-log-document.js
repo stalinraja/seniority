@@ -1,4 +1,4 @@
-import { fetchRowsFromCsvUrl, getChangeLogDocumentKey, getChangeLogDocumentUrl, requireAuth, sendJson } from "./_shared.js";
+import { fetchRowsFromCsvUrl, getChangeLogDocumentKey, getChangeLogDocumentUrl, sendJson } from "./_shared.js";
 
 function getDriveFileId(url) {
   const trimmed = String(url || "").trim();
@@ -23,7 +23,7 @@ export default async function handler(req, res) {
     res.setHeader("allow", "GET");
     return sendJson(res, 405, { error: "Method not allowed" });
   }
-  if (!requireAuth(req, res)) return;
+  // public endpoint; no auth required
 
   const key = String(req.query.key || "");
   const mode = String(req.query.mode || "view") === "download" ? "download" : "view";

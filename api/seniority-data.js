@@ -1,4 +1,4 @@
-import { fetchRowsFromCsvUrl, requireAuth, sanitizeChangeLogRows, sendJson } from "./_shared.js";
+import { fetchRowsFromCsvUrl, sanitizeChangeLogRows, sendJson } from "./_shared.js";
 
 function getUrls() {
   return {
@@ -15,8 +15,6 @@ export default async function handler(req, res) {
     res.setHeader("allow", "GET");
     return sendJson(res, 405, { error: "Method not allowed" });
   }
-  if (!requireAuth(req, res)) return;
-
   const urls = getUrls();
   if (!urls.highSchool) {
     return sendJson(res, 500, { error: "Missing HIGH_SCHOOL_CSV_URL server environment variable" });
@@ -40,6 +38,6 @@ export default async function handler(req, res) {
       syncedAt: new Date().toISOString(),
     });
   } catch (error) {
-    return sendJson(res, 502, { error: "Failed to load protected Google Sheet data" });
+    return sendJson(res, 502, { error: "Failed to load Google Sheet data" });
   }
 }

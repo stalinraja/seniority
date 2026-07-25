@@ -67,19 +67,35 @@ function parseCSV(text: string) {
 }
 
 function appendNoCacheParam(url: string) {
-  const u = new URL(url, window.location.origin);
+  const u = new URL(url);
   u.searchParams.set("_ts", String(Date.now()));
   return u.toString();
 }
 
 async function fetchSchoolVacancyRows(): Promise<any[]> {
-  const response = await fetch("/api/seniority-data", { cache: "no-store", credentials: "include" });
+  const configuredUrl =
+    import.meta.env.VITE_SCHOOL_VACANCY_DATA_URL ||
+    import.meta.env.VITE_SCHOOL_VACANCY_CSV_URL ||
+    DEFAULT_SCHOOL_VACANCY_CSV_URL;
+
+  const urlToFetch = configuredUrl || "/seniority-data.json";
+  const response = await fetch(appendNoCacheParam(urlToFetch), { cache: "no-store" });
   if (!response.ok) {
     throw new Error("Failed to load school vacancy data");
   }
 
-  const payload = await response.json();
-  return Array.isArray(payload?.schoolVacancies) ? payload.schoolVacancies : [];
+  const contentType = String(response.headers.get("content-type") || "").toLowerCase();
+  const raw = await response.text();
+  const isJson = contentType.includes("application/json") || urlToFetch.toLowerCase().includes(".json");
+  if (isJson) {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed?.schoolVacancies) ? parsed.schoolVacancies : Array.isArray(parsed) ? parsed : [];
+  }
+
+  if (/<html/i.test(raw) || contentType.includes("text/html")) {
+    throw new Error("Expected CSV/JSON but got HTML");
+  }
+  return parseCSV(raw);
 }
 
 const FORM_FILES = {

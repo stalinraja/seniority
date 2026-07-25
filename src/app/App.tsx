@@ -4,7 +4,6 @@ import { router } from "./routes";
 import { Toaster } from "./components/ui/sonner";
 import { initTheme } from "../../packages/ui-theme/src/theme-manager";
 import { LanguageProvider } from "./i18n/language";
-import { AuthGate } from "./components/AuthGate";
 
 export default function App() {
   const [themeReady, setThemeReady] = useState(false);
@@ -30,10 +29,8 @@ export default function App() {
       </div>
       <div className="relative z-10">
         <LanguageProvider>
-          <AuthGate>
-            <RouterProvider router={router} />
-            <Toaster position="top-right" />
-          </AuthGate>
+          <RouterProvider router={router} />
+          <Toaster position="top-right" />
         </LanguageProvider>
       </div>
     </div>
