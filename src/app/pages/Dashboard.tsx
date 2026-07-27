@@ -1612,8 +1612,8 @@ export function Dashboard() {
             <DialogTitle>{t("Welcome", "அன்பார்ந்த வரவேற்பு")}</DialogTitle>
             <DialogDescription className="text-sm leading-6 text-slate-700">
               {t(
-                "Please review the priority list carefully. If you find any errors, mistakes, or missing data, please contact your Pastorate Chairman through a letter. It will be forwarded to the concerned departments so we can keep the priority list transparent, correct, and valid.",
-                "தயவுசெய்து முன்னுரிமை பட்டியலை கவனமாக பாருங்கள். ஏதேனும் பிழைகள், தவறுகள் அல்லது தகவல் காணவில்லை எனில், உங்கள் பாஸ்டரேட் தலைவரிடம் கடிதம் மூலம் தெரிவிக்கவும். அது தொடர்புடைய துறைகளுக்கு forwarding செய்யப்படும், இதனால் முன்னுரிமை பட்டியல் வெளிப்படையாகவும், சரியானதாகவும், செல்லுபடியாகவும் இருக்கும்."
+                "Please review the priority list carefully and ensure that all the details are accurate. If you notice any errors, omissions, or discrepancies, kindly submit a written representation to your Pastorate Chairman. Your representation will be forwarded to the appropriate departments for verification and necessary action. Your cooperation is greatly appreciated, as it helps us maintain a priority list that is transparent, accurate, and fair for everyone.",
+                "தயவுசெய்து முன்னுரிமை பட்டியலை கவனமாகப் பார்த்து, அனைத்து விவரங்களும் துல்லியமாக உள்ளதா என்பதை உறுதிப்படுத்திக் கொள்ளவும். ஏதேனும் பிழைகள், விடுபட்ட தகவல்கள் அல்லது முரண்பாடுகள் இருப்பதாக நீங்கள் உணர்ந்தால், தயவுசெய்து உங்கள் பாஸ்டரேட் தலைவரிடம் எழுத்து மூலம் பிரதிநிதித்துவம் (representation) அளிக்கவும். உங்கள் பிரதிநிதித்துவம், சரிபார்ப்பு மற்றும் தேவையான நடவடிக்கைகளுக்காக தொடர்புடைய துறைகளுக்கு அனுப்பப்படும். அனைவருக்கும் வெளிப்படையான, துல்லியமான மற்றும் நியாயமான முன்னுரிமை பட்டியலைப் பராமரிக்க உதவுவதற்காக உங்கள் ஒத்துழைப்பு மிகவும் பாராட்டத்தக்கது."
               )}
             </DialogDescription>
           </DialogHeader>
