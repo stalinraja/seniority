@@ -331,9 +331,9 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                   : showAppointments && isOnHold
                   ? "bg-orange-50/80 dark:bg-orange-900/20 hover:bg-orange-100/80 dark:hover:bg-orange-900/30"
                   : "hover:bg-slate-100/70 dark:hover:bg-slate-800/70";
-                const rowClassName = `optimized-row ${isIncompleteRow ? "border-l-2 border-[#ff3b30]/70 bg-red-50/70" : rowTone} ${onRowDoubleClick ? "cursor-pointer" : ""}`;
-                const incompleteTextClass = isIncompleteRow ? "font-semibold text-[#ff3b30]" : "text-gray-700";
-                const incompleteHeadingClass = isIncompleteRow ? "font-semibold text-[#ff3b30]" : "font-medium text-gray-900";
+                const rowClassName = `optimized-row ${isIncompleteRow ? "border-l-2 border-[#b45309]/20 bg-[#fff9f5]/80 shadow-[inset_1px_0_0_rgba(180,83,9,0.08)]" : rowTone} ${onRowDoubleClick ? "cursor-pointer" : ""}`;
+                const incompleteTextClass = isIncompleteRow ? "font-medium text-[#8a3b2a]" : "text-gray-700";
+                const incompleteHeadingClass = isIncompleteRow ? "font-semibold text-[#7a2f22]" : "font-medium text-gray-900";
                 return (
                   <TableRow
                   key={[
@@ -384,8 +384,8 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                           ))}
                         </div>
                       </TableCell>
-                      <TableCell className={incompleteTextClass}>{candidate.yearOfPassing || (isIncompleteRow ? "Missing" : "")}</TableCell>
-                      <TableCell className={incompleteTextClass}>{candidate.yearOfRegistering || (isIncompleteRow ? "Missing" : "")}</TableCell>
+                      <TableCell className={incompleteTextClass}>{candidate.yearOfPassing || (isIncompleteRow ? "Missing Data" : "")}</TableCell>
+                      <TableCell className={incompleteTextClass}>{candidate.yearOfRegistering || (isIncompleteRow ? "Missing Data" : "")}</TableCell>
                       <TableCell>
                         {String(candidate.category || "").toUpperCase().includes("UG") ? (
                           <Badge
@@ -486,11 +486,11 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                       {SHOW_MEMBER_ID ? <TableCell>{candidate.memberId || ""}</TableCell> : null}
                       <TableCell className={`table-responsive-cell ${incompleteHeadingClass}`}>{candidate.name}</TableCell>
                       <TableCell className={incompleteTextClass}>{formatDateWithAge(candidate.dateOfBirth)}</TableCell>
-                      <TableCell className={incompleteTextClass}>{candidate.yearOfPassing || (isIncompleteRow ? "Missing" : "")}</TableCell>
-                      <TableCell className={incompleteTextClass}>{candidate.yearOfRegistering || (isIncompleteRow ? "Missing" : "")}</TableCell>
+                      <TableCell className={incompleteTextClass}>{candidate.yearOfPassing || (isIncompleteRow ? "Missing Data" : "")}</TableCell>
+                      <TableCell className={incompleteTextClass}>{candidate.yearOfRegistering || (isIncompleteRow ? "Missing Data" : "")}</TableCell>
                       <TableCell className="text-gray-700 table-responsive-cell">
                         {candidate.missingRequiredFields?.includes("qualification") ? (
-                          <span className="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-red-700 ring-1 ring-red-300 shadow-sm">
+                          <span className="inline-flex items-center rounded-full bg-[#fff3ed] px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-[#9b2c2c] ring-1 ring-[#f2beb2] shadow-sm">
                             Missing Data
                           </span>
                         ) : (
@@ -519,7 +519,7 @@ export function SeniorityTable({ rows, schoolType, sortMode, onSortModeChange, s
                           {candidate.category || ""}
                         </Badge>
                       </TableCell>
-                      <TableCell className={incompleteTextClass}>{candidate.subject || candidate.level || (isIncompleteRow ? "Missing" : "")}</TableCell>
+                      <TableCell className={incompleteTextClass}>{candidate.subject || candidate.level || (isIncompleteRow ? "Missing Data" : "")}</TableCell>
                       <TableCell className="text-gray-700 table-responsive-cell">{candidate.pastorate || ""}</TableCell>
                       <TableCell className="text-gray-700 table-responsive-cell">{candidate.council || ""}</TableCell>
                       {showAppointments ? (

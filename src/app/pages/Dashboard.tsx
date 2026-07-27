@@ -228,45 +228,82 @@ function getDocumentDownloadUrl(url: string) {
   return trimmed;
 }
 
-function normalizePassingLabel(value: any) {
-  if (value === undefined || value === null) return "";
+function getMonthIndex(value: string): number | null {
+  const normalized = String(value || "").replace(/\./g, "").trim().toLowerCase();
+  if (!normalized) return null;
+  const token = normalized.slice(0, 3);
+  const months: Record<string, number> = {
+    jan: 0,
+    feb: 1,
+    mar: 2,
+    apr: 3,
+    may: 4,
+    jun: 5,
+    jul: 6,
+    aug: 7,
+    sep: 8,
+    oct: 9,
+    nov: 10,
+    dec: 11,
+  };
+  return Object.prototype.hasOwnProperty.call(months, token) ? months[token] : null;
+}
+
+function getMonthLabel(monthIndex: number | null) {
+  if (monthIndex === null) return null;
+  const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  return months[monthIndex] ?? null;
+}
+
+function parsePassingValue(value: any): { display: string; year: number | null; month: number | null } {
+  if (value === undefined || value === null) return { display: "", year: null, month: null };
+
   const raw = String(value).trim();
-  if (!raw) return "";
+  if (!raw) return { display: "", year: null, month: null };
 
   const compact = raw.replace(/\s+/g, " ");
-  const monthYear = compact.match(/^([A-Za-z]{3,9}\.?)\s*[-./]?\s*(\d{2,4})$/i);
-  if (monthYear) {
-    const yRaw = Number(monthYear[2]);
-    const year = monthYear[2].length === 2 ? (yRaw <= 30 ? 2000 + yRaw : 1900 + yRaw) : yRaw;
-    return String(year);
+  const excelSerial = /^\d{5}$/.test(compact);
+  if (excelSerial) {
+    return { display: "", year: null, month: null };
+  }
+  const monthYearMatch = compact.match(/^([A-Za-z]{3,9}\.?)(?:\s*[-./]?\s*|\s+)(\d{2,4})$/i);
+  if (monthYearMatch) {
+    const monthToken = monthYearMatch[1];
+    const monthIndex = getMonthIndex(monthToken);
+    const yRaw = Number(monthYearMatch[2]);
+    const year = monthYearMatch[2].length === 2 ? (yRaw <= 30 ? 2000 + yRaw : 1900 + yRaw) : yRaw;
+    const monthLabel = getMonthLabel(monthIndex);
+    const display = monthLabel ? `${monthLabel} ${year}` : String(year);
+    return { display, year: Number.isFinite(year) ? year : null, month: monthIndex };
   }
 
-  const monthYearWithSpace = compact.match(/^([A-Za-z]{3,9}\.?)\s+(\d{2,4})$/i);
-  if (monthYearWithSpace) {
-    const yRaw = Number(monthYearWithSpace[2]);
-    const year = monthYearWithSpace[2].length === 2 ? (yRaw <= 30 ? 2000 + yRaw : 1900 + yRaw) : yRaw;
-    return String(year);
+  const yearOnlyMatch = compact.match(/^(\d{2,4})$/);
+  if (yearOnlyMatch) {
+    const yRaw = Number(yearOnlyMatch[1]);
+    const year = yearOnlyMatch[1].length === 2 ? (yRaw <= 30 ? 2000 + yRaw : 1900 + yRaw) : yRaw;
+    return { display: String(year), year: Number.isFinite(year) ? year : null, month: null };
   }
 
-  const onlyYear = compact.match(/^(\d{2,4})$/);
-  if (onlyYear) {
-    const yRaw = Number(onlyYear[1]);
-    const year = onlyYear[1].length === 2 ? (yRaw <= 30 ? 2000 + yRaw : 1900 + yRaw) : yRaw;
-    return String(year);
+  const embeddedYear = compact.match(/\b(19|20)\d{2}\b/);
+  if (embeddedYear) {
+    return { display: compact, year: Number(embeddedYear[0]), month: null };
   }
 
-  return compact;
+  const twoDigitYear = compact.match(/\b(\d{2})\b/);
+  if (twoDigitYear) {
+    const yy = Number(twoDigitYear[1]);
+    return { display: compact, year: yy <= 30 ? 2000 + yy : 1900 + yy, month: null };
+  }
+
+  return { display: compact, year: null, month: null };
+}
+
+function normalizePassingLabel(value: any) {
+  return parsePassingValue(value).display;
 }
 
 function extractPassingYear(value: any): number | null {
-  const raw = normalizePassingLabel(value);
-  if (!raw) return null;
-  const fourDigit = raw.match(/\b(19|20)\d{2}\b/);
-  if (fourDigit) return Number(fourDigit[0]);
-  const twoDigit = raw.match(/\b(\d{2})\b/);
-  if (!twoDigit) return null;
-  const yy = Number(twoDigit[1]);
-  return yy <= 30 ? 2000 + yy : 1900 + yy;
+  return parsePassingValue(value).year;
 }
 
 function isMissingRequiredValue(value: any) {
@@ -417,7 +454,8 @@ function mapHighSchool(rows: any[]) {
   return rows
     .map((c: any, rowIndex: number) => {
       const dateOfBirth = parseDate(c.dateOfBirth || c.DateOfBirth || c["Date of Birth"]);
-      const yearOfPassing = toNumber(c.yearOfPassing || c.YearOfPassing || c["Year of Passing"]);
+      const yearOfPassingRaw = c.yearOfPassing || c.YearOfPassing || c["Year of Passing"];
+      const yearOfPassing = normalizePassingLabel(yearOfPassingRaw);
       const yearOfRegistering = toNumber(c.yearOfRegistering || c.YearOfRegistering || c["Year of Registering"]);
       const tetRaw = getLooseValue(c, [
         "tetCompletion",
@@ -486,6 +524,8 @@ function mapElementarySchool(rows: any[]) {
   return rows
     .map((c: any, rowIndex: number) => {
       const dateOfBirth = parseDate(c.dateOfBirth || c.DateOfBirth || c["Date of Birth"]);
+      const yearOfPassingRaw = c.yearOfPassing || c.YearOfPassing || c["Year of Passing"];
+      const yearOfPassing = normalizePassingLabel(yearOfPassingRaw);
       const tetRaw = getLooseValue(c, [
         "tetCompletion",
         "tedCompletion",
@@ -513,7 +553,7 @@ function mapElementarySchool(rows: any[]) {
       const missingRequiredFields = getMissingRequiredFields(
         {
           yearOfRegistering: toNumber(c.yearOfRegistering || c.YearOfRegistering || c["Year of Registering"]),
-          yearOfPassing: toNumber(c.yearOfPassing || c.YearOfPassing || c["Year of Passing"]),
+          yearOfPassing,
           qualification: c.qualification || c.Qualification || "",
           subject: c.subject || c.Subject || c.level || c.Level || "",
         },
@@ -524,7 +564,7 @@ function mapElementarySchool(rows: any[]) {
         memberId: c.memberId || c["Member ID"] || c["Member Id"] || "",
         name: c.name || c.Name || c["Full Name"] || "Unnamed",
         dateOfBirth,
-        yearOfPassing: toNumber(c.yearOfPassing || c.YearOfPassing || c["Year of Passing"]),
+        yearOfPassing,
         yearOfRegistering: toNumber(
           c.yearOfRegistering || c.YearOfRegistering || c["Year of Registering"]
         ),
@@ -663,8 +703,12 @@ function getRegisteringSortValue(value: any) {
 }
 
 function getPassingSortValue(value: any) {
-  const year = extractPassingYear(value);
-  if (year !== null) return year;
+  const parsed = parsePassingValue(value);
+  const year = parsed.year;
+  if (year !== null) {
+    const month = parsed.month ?? 12;
+    return year * 100 + month;
+  }
   const num = Number(value);
   return Number.isFinite(num) ? num : Number.MAX_SAFE_INTEGER;
 }
