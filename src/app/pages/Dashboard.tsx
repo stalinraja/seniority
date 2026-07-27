@@ -233,24 +233,29 @@ function normalizePassingLabel(value: any) {
   const raw = String(value).trim();
   if (!raw) return "";
 
-  const monthYear = raw.match(/^([A-Za-z]+\.?)\s*[-./]?\s*(\d{2,4})$/);
+  const compact = raw.replace(/\s+/g, " ");
+  const monthYear = compact.match(/^([A-Za-z]{3,9}\.?)\s*[-./]?\s*(\d{2,4})$/i);
   if (monthYear) {
-    const month = monthYear[1];
     const yRaw = Number(monthYear[2]);
-    const year =
-      monthYear[2].length === 2 ? (yRaw <= 30 ? 2000 + yRaw : 1900 + yRaw) : yRaw;
-    return `${month} ${year}`;
-  }
-
-  const onlyYear = raw.match(/^(\d{2,4})$/);
-  if (onlyYear) {
-    const yRaw = Number(onlyYear[1]);
-    const year =
-      onlyYear[1].length === 2 ? (yRaw <= 30 ? 2000 + yRaw : 1900 + yRaw) : yRaw;
+    const year = monthYear[2].length === 2 ? (yRaw <= 30 ? 2000 + yRaw : 1900 + yRaw) : yRaw;
     return String(year);
   }
 
-  return raw;
+  const monthYearWithSpace = compact.match(/^([A-Za-z]{3,9}\.?)\s+(\d{2,4})$/i);
+  if (monthYearWithSpace) {
+    const yRaw = Number(monthYearWithSpace[2]);
+    const year = monthYearWithSpace[2].length === 2 ? (yRaw <= 30 ? 2000 + yRaw : 1900 + yRaw) : yRaw;
+    return String(year);
+  }
+
+  const onlyYear = compact.match(/^(\d{2,4})$/);
+  if (onlyYear) {
+    const yRaw = Number(onlyYear[1]);
+    const year = onlyYear[1].length === 2 ? (yRaw <= 30 ? 2000 + yRaw : 1900 + yRaw) : yRaw;
+    return String(year);
+  }
+
+  return compact;
 }
 
 function extractPassingYear(value: any): number | null {
@@ -262,6 +267,50 @@ function extractPassingYear(value: any): number | null {
   if (!twoDigit) return null;
   const yy = Number(twoDigit[1]);
   return yy <= 30 ? 2000 + yy : 1900 + yy;
+}
+
+function isMissingRequiredValue(value: any) {
+  if (value === null || value === undefined) return true;
+  if (typeof value === "number") return !Number.isFinite(value) || value === 0;
+  const text = normalizeText(value);
+  return text === "" || text === "0";
+}
+
+function getMissingRequiredFields(candidate: any, schoolType: SchoolType) {
+  const missing: string[] = [];
+
+  const isAllowedEmpty = (field: string) =>
+    ["tetQualified", "tetCompletion", "pastorate", "council"].includes(field);
+
+  if (schoolType === "high") {
+    if (isMissingRequiredValue(candidate.yearOfRegistering) && !isAllowedEmpty("yearOfRegistering")) {
+      missing.push("yearOfRegistering");
+    }
+    if (isMissingRequiredValue(candidate.yearOfPassing) && !isAllowedEmpty("yearOfPassing")) {
+      missing.push("yearOfPassing");
+    }
+    if (isMissingRequiredValue(candidate.qualification) && !isAllowedEmpty("qualification")) {
+      missing.push("qualification");
+    }
+    return missing;
+  }
+
+  if (schoolType === "elementary") {
+    if (isMissingRequiredValue(candidate.yearOfRegistering) && !isAllowedEmpty("yearOfRegistering")) {
+      missing.push("yearOfRegistering");
+    }
+    if (isMissingRequiredValue(candidate.yearOfPassing) && !isAllowedEmpty("yearOfPassing")) {
+      missing.push("yearOfPassing");
+    }
+    if (isMissingRequiredValue(candidate.qualification) && !isAllowedEmpty("qualification")) {
+      missing.push("qualification");
+    }
+    if (isMissingRequiredValue(candidate.subject) && !isAllowedEmpty("subject")) {
+      missing.push("subject");
+    }
+  }
+
+  return missing;
 }
 
 function parseTetMetrics(value: any, passMark: number, mode: "elementary" | "high"):
@@ -392,6 +441,16 @@ function mapHighSchool(rows: any[]) {
         String(rowIndex),
       ].join("|");
 
+      const missingRequiredFields = getMissingRequiredFields(
+        {
+          yearOfRegistering,
+          yearOfPassing,
+          qualification: c.qualification || c.Qualification || "",
+          subject: "",
+        },
+        "high"
+      );
+
       return {
         id: c.id || c.ID || c.Id || fallbackId,
         memberId: c.memberId || c["Member ID"] || c["Member Id"] || "",
@@ -410,6 +469,7 @@ function mapHighSchool(rows: any[]) {
         tetScore: tetScore ?? null,
         tetYear: tetYear ?? null,
         tetRaw: normalizeText(tetRaw),
+        missingRequiredFields,
         email: c.email || c.Email || "",
         phone: c.phone || c.Phone || "",
         ...(() => {
@@ -450,6 +510,15 @@ function mapElementarySchool(rows: any[]) {
         c.subject || c.Subject || c.level || c.Level || "",
         String(rowIndex),
       ].join("|");
+      const missingRequiredFields = getMissingRequiredFields(
+        {
+          yearOfRegistering: toNumber(c.yearOfRegistering || c.YearOfRegistering || c["Year of Registering"]),
+          yearOfPassing: toNumber(c.yearOfPassing || c.YearOfPassing || c["Year of Passing"]),
+          qualification: c.qualification || c.Qualification || "",
+          subject: c.subject || c.Subject || c.level || c.Level || "",
+        },
+        "elementary"
+      );
       return {
         id: c.id || c.ID || c.Id || fallbackId,
         memberId: c.memberId || c["Member ID"] || c["Member Id"] || "",
@@ -470,6 +539,7 @@ function mapElementarySchool(rows: any[]) {
         tetQualified,
         tetScore: tetScore ?? null,
         tetYear: tetYear ?? null,
+        missingRequiredFields,
         ...(() => {
           const appointment = getAppointmentFields(c, "elementary");
           return appointment;
@@ -543,12 +613,26 @@ function assignRanksSkippingAppointments(rows: any[]) {
 }
 
 function rankHighSchool(rows: any[], mode: SortMode, includeAppointments: boolean) {
-  const sorted = [...rows].sort((a, b) => (mode === "seniority" ? compareHighSchoolSeniorityCandidates(a, b, extractPassingYear) : compareHighSchoolCandidates(a, b, extractPassingYear)));
+  const sorted = [...rows].sort((a, b) => {
+    const aMissing = Boolean(a.missingRequiredFields?.length);
+    const bMissing = Boolean(b.missingRequiredFields?.length);
+    if (aMissing !== bMissing) return aMissing ? 1 : -1;
+    return mode === "seniority"
+      ? compareHighSchoolSeniorityCandidates(a, b, extractPassingYear)
+      : compareHighSchoolCandidates(a, b, extractPassingYear);
+  });
   return includeAppointments ? assignRanksIncludingAppointments(sorted) : assignRanksSkippingAppointments(sorted);
 }
 
 function rankElementarySchool(rows: any[], mode: SortMode, includeAppointments: boolean) {
-  const sorted = [...rows].sort((a, b) => (mode === "seniority" ? compareElementarySchoolSeniorityCandidates(a, b, extractPassingYear) : compareElementarySchoolCandidates(a, b, extractPassingYear)));
+  const sorted = [...rows].sort((a, b) => {
+    const aMissing = Boolean(a.missingRequiredFields?.length);
+    const bMissing = Boolean(b.missingRequiredFields?.length);
+    if (aMissing !== bMissing) return aMissing ? 1 : -1;
+    return mode === "seniority"
+      ? compareElementarySchoolSeniorityCandidates(a, b, extractPassingYear)
+      : compareElementarySchoolCandidates(a, b, extractPassingYear);
+  });
   return includeAppointments ? assignRanksIncludingAppointments(sorted) : assignRanksSkippingAppointments(sorted);
 }
 
