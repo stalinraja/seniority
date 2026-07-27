@@ -5,7 +5,7 @@ import { SeniorityTable } from "../components/SeniorityTable";
 import { fetchGoogleSheetData } from "../utils/fetchGoogleSheetData";
 import { searchCandidatesGeneric } from "../utils/helpers";
 import { Button } from "../components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../components/ui/dialog";
 import { DashboardVisual } from "../components/DashboardVisual";
 import { useSearchParams } from "react-router";
 import {
@@ -770,6 +770,7 @@ export function Dashboard() {
   const [downloadingPdf, setDownloadingPdf] = useState(false);
   const [sortingPulse, setSortingPulse] = useState(false);
   const [downloadingReport, setDownloadingReport] = useState(false);
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const [downloadingExitReport, setDownloadingExitReport] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
@@ -914,6 +915,11 @@ export function Dashboard() {
       if (timeoutId) clearTimeout(timeoutId);
     };
   }, [readyToShowApp]);
+
+  useEffect(() => {
+    if (!initialLoadDone || loading || splashVisible || !readyToShowApp) return;
+    setShowWelcomeModal(true);
+  }, [initialLoadDone, loading, splashVisible, readyToShowApp]);
 
   const showSplash = splashVisible;
 
@@ -1556,6 +1562,22 @@ export function Dashboard() {
         </div>
       </div>
     </div>
+      <Dialog open={showWelcomeModal} onOpenChange={setShowWelcomeModal}>
+        <DialogContent className="border-white/40 bg-white/70 backdrop-blur-xl shadow-2xl sm:max-w-xl">
+          <DialogHeader>
+            <DialogTitle>{t("Welcome", "அன்பார்ந்த வரவேற்பு")}</DialogTitle>
+            <DialogDescription className="text-sm leading-6 text-slate-700">
+              {t(
+                "Please review the priority list carefully. If you find any errors, mistakes, or missing data, please contact your Pastorate Chairman through a letter. It will be forwarded to the concerned departments so we can keep the priority list transparent, correct, and valid.",
+                "தயவுசெய்து முன்னுரிமை பட்டியலை கவனமாக பாருங்கள். ஏதேனும் பிழைகள், தவறுகள் அல்லது தகவல் காணவில்லை எனில், உங்கள் பாஸ்டரேட் தலைவரிடம் கடிதம் மூலம் தெரிவிக்கவும். அது தொடர்புடைய துறைகளுக்கு forwarding செய்யப்படும், இதனால் முன்னுரிமை பட்டியல் வெளிப்படையாகவும், சரியானதாகவும், செல்லுபடியாகவும் இருக்கும்."
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-end">
+            <Button onClick={() => setShowWelcomeModal(false)}>{t("Close", "மூடு")}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       <Dialog open={Boolean(selectedDocument)} onOpenChange={(open) => !open && setSelectedDocument(null)}>
         <DialogContent className="max-h-[92dvh] overflow-y-auto sm:max-w-3xl">
           <DialogHeader>
