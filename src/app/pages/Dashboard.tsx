@@ -264,7 +264,7 @@ function extractPassingYear(value: any): number | null {
   return yy <= 30 ? 2000 + yy : 1900 + yy;
 }
 
-function parseTetMetrics(value: any): {
+function parseTetMetrics(value: any, passMark: number): {
   qualified: boolean | null;
   bestScore: number | null;
   bestYear: number | null;
@@ -294,10 +294,10 @@ function parseTetMetrics(value: any): {
   }
 
   if (pairs.length === 0) {
-    const standaloneScore = Number(low.replace("%", ""));
+    const standaloneScore = Number(low.replace(/[^0-9.-]/g, ""));
     if (Number.isFinite(standaloneScore)) {
       return {
-        qualified: standaloneScore >= HIGH_SCHOOL_TET_PASS_MARK,
+        qualified: standaloneScore >= passMark,
         bestScore: standaloneScore,
         bestYear: null,
       };
@@ -306,13 +306,13 @@ function parseTetMetrics(value: any): {
   }
 
   pairs.sort((a, b) => {
-    if (a.score !== b.score) return b.score - a.score; // higher score first
-    return a.year - b.year; // if tie score, earlier year first
+    if (a.score !== b.score) return b.score - a.score;
+    return a.year - b.year;
   });
 
   const best = pairs[0];
   return {
-    qualified: best.score >= HIGH_SCHOOL_TET_PASS_MARK,
+    qualified: best.score >= passMark,
     bestScore: best.score,
     bestYear: best.year,
   };
@@ -377,9 +377,19 @@ function mapHighSchool(rows: any[]) {
       const dateOfBirth = parseDate(c.dateOfBirth || c.DateOfBirth || c["Date of Birth"]);
       const yearOfPassing = toNumber(c.yearOfPassing || c.YearOfPassing || c["Year of Passing"]);
       const yearOfRegistering = toNumber(c.yearOfRegistering || c.YearOfRegistering || c["Year of Registering"]);
-      const tetRaw = c.tetCompletion || c["TET Completion"] || c["TET %"] || c["TET Qualified"] || "";
-      const tetCompletion = Number(String(tetRaw || "").replace("%", "").trim());
-      const tetQualified = Number.isFinite(tetCompletion) ? tetCompletion >= HIGH_SCHOOL_TET_PASS_MARK : /pass|yes|qualified|true/i.test(String(tetRaw || ""));
+      const tetRaw = getLooseValue(c, [
+        "tetCompletion",
+        "TET Completion",
+        "TET %",
+        "TET Qualified",
+        "TET Qualification",
+        "TET",
+      ]);
+      const tetMetrics = parseTetMetrics(tetRaw, HIGH_SCHOOL_TET_PASS_MARK);
+      const tetCompletion = tetMetrics.bestScore;
+      const tetQualified = tetMetrics.qualified;
+      const tetScore = tetMetrics.bestScore;
+      const tetYear = tetMetrics.bestYear;
 
       const fallbackId = [
         c.memberId || c["Member ID"] || "",
@@ -402,8 +412,10 @@ function mapHighSchool(rows: any[]) {
         department: normalizeText(c.department || c.Department || ""),
         category: normalizeText(c.category || c.Category || c.pgug || c.PGUG || c["PG/UG"] || ""),
         qualification: normalizeText(c.qualification || c.Qualification || ""),
-        tetCompletion: Number.isFinite(tetCompletion) ? tetCompletion : null,
+        tetCompletion: tetCompletion ?? null,
         tetQualified,
+        tetScore: tetScore ?? null,
+        tetYear: tetYear ?? null,
         tetRaw: normalizeText(tetRaw),
         email: c.email || c.Email || "",
         phone: c.phone || c.Phone || "",
@@ -421,20 +433,21 @@ function mapElementarySchool(rows: any[]) {
   return rows
     .map((c: any, rowIndex: number) => {
       const dateOfBirth = parseDate(c.dateOfBirth || c.DateOfBirth || c["Date of Birth"]);
-      const tetRaw =
-        c.tetCompletion ||
-        c.tedCompletion ||
-        c["Ted Completion"] ||
-        c["TET Qualification"] ||
-        c["TET %"] ||
-        c["TET Qualified"] ||
-        c["TET"] ||
-        "";
-      const tetRawText = String(tetRaw || "").trim();
-      const tetCompletion = Number(tetRawText.replace("%", "").trim());
-      const tetQualified = Number.isFinite(tetCompletion)
-        ? tetCompletion >= ELEMENTARY_TET_PASS_MARK
-        : /pass|yes|qualified|true/i.test(tetRawText);
+      const tetRaw = getLooseValue(c, [
+        "tetCompletion",
+        "tedCompletion",
+        "Ted Completion",
+        "TET Completion",
+        "TET Qualification",
+        "TET %",
+        "TET Qualified",
+        "TET",
+      ]);
+      const tetMetrics = parseTetMetrics(tetRaw, ELEMENTARY_TET_PASS_MARK);
+      const tetCompletion = tetMetrics.bestScore;
+      const tetQualified = tetMetrics.qualified;
+      const tetScore = tetMetrics.bestScore;
+      const tetYear = tetMetrics.bestYear;
       const subject = normalizeText(c.subject || c.Subject || c.level || c.Level || "");
       const fallbackId = [
         c.memberId || c["Member ID"] || c["Member Id"] || "",
@@ -460,8 +473,10 @@ function mapElementarySchool(rows: any[]) {
         subject,
         level: subject,
         qualification: normalizeText(c.qualification || c.Qualification || ""),
-        tetCompletion: Number.isFinite(tetCompletion) ? tetCompletion : null,
+        tetCompletion: tetCompletion ?? null,
         tetQualified,
+        tetScore: tetScore ?? null,
+        tetYear: tetYear ?? null,
         ...(() => {
           const appointment = getAppointmentFields(c, "elementary");
           return appointment;
