@@ -264,11 +264,8 @@ function extractPassingYear(value: any): number | null {
   return yy <= 30 ? 2000 + yy : 1900 + yy;
 }
 
-function parseTetMetrics(value: any, passMark: number): {
-  qualified: boolean | null;
-  bestScore: number | null;
-  bestYear: number | null;
-} {
+function parseTetMetrics(value: any, passMark: number, mode: "elementary" | "high"):
+  | { qualified: boolean | null; bestScore: number | null; bestYear: number | null } {
   if (value === undefined || value === null || String(value).trim() === "") {
     return { qualified: null, bestScore: null, bestYear: null };
   }
@@ -283,6 +280,10 @@ function parseTetMetrics(value: any, passMark: number): {
     return { qualified: false, bestScore: null, bestYear: null };
   }
 
+  if (mode === "elementary") {
+    return { qualified: false, bestScore: null, bestYear: null };
+  }
+
   const pairs: Array<{ year: number; score: number }> = [];
   const pairRegex = /(19|20)\d{2}\s*[-:/]\s*(\d{1,3})/g;
   for (const match of raw.matchAll(pairRegex)) {
@@ -294,14 +295,6 @@ function parseTetMetrics(value: any, passMark: number): {
   }
 
   if (pairs.length === 0) {
-    const standaloneScore = Number(low.replace(/[^0-9.-]/g, ""));
-    if (Number.isFinite(standaloneScore)) {
-      return {
-        qualified: standaloneScore >= passMark,
-        bestScore: standaloneScore,
-        bestYear: null,
-      };
-    }
     return { qualified: null, bestScore: null, bestYear: null };
   }
 
@@ -385,7 +378,7 @@ function mapHighSchool(rows: any[]) {
         "TET Qualification",
         "TET",
       ]);
-      const tetMetrics = parseTetMetrics(tetRaw, HIGH_SCHOOL_TET_PASS_MARK);
+      const tetMetrics = parseTetMetrics(tetRaw, HIGH_SCHOOL_TET_PASS_MARK, "high");
       const tetCompletion = tetMetrics.bestScore;
       const tetQualified = tetMetrics.qualified;
       const tetScore = tetMetrics.bestScore;
@@ -443,7 +436,7 @@ function mapElementarySchool(rows: any[]) {
         "TET Qualified",
         "TET",
       ]);
-      const tetMetrics = parseTetMetrics(tetRaw, ELEMENTARY_TET_PASS_MARK);
+      const tetMetrics = parseTetMetrics(tetRaw, ELEMENTARY_TET_PASS_MARK, "elementary");
       const tetCompletion = tetMetrics.bestScore;
       const tetQualified = tetMetrics.qualified;
       const tetScore = tetMetrics.bestScore;
